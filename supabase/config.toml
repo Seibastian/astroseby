@@ -1,0 +1,4 @@
+project_id = "tyrzadrrllefxwquixir"
+
+[functions.cosmic-synthesis]
+verify_jwt = false
