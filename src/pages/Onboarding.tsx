@@ -59,6 +59,25 @@ const Onboarding = () => {
         .eq("user_id", user.id);
 
       if (error) throw error;
+
+      // Fetch real planetary positions (moon & rising signs) in the background
+      fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/calculate-natal-chart`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            user_id: user.id,
+            date_of_birth: data.date_of_birth,
+            birth_time: data.birth_time || null,
+            birth_place: data.birth_place,
+          }),
+        }
+      ).catch(console.error); // fire-and-forget
+
       navigate("/dashboard");
     } catch (error: any) {
       toast.error(error.message);

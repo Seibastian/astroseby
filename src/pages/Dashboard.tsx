@@ -6,7 +6,8 @@ import StarField from "@/components/StarField";
 import BottomNav from "@/components/BottomNav";
 import AdBanner from "@/components/AdBanner";
 import { motion } from "framer-motion";
-import { BookOpen, Crown, Star, Sun, Moon, Sparkles } from "lucide-react";
+import { BookOpen, Crown, Star, Sun, Moon, Sparkles, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 
 const zodiacEmojis: Record<string, string> = {
   Aries: "♈", Taurus: "♉", Gemini: "♊", Cancer: "♋", Leo: "♌", Virgo: "♍",
@@ -17,22 +18,57 @@ const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
+  const fetchProfile = async () => {
     if (!user) return;
-    supabase
+    const { data } = await supabase
       .from("profiles")
       .select("*")
       .eq("user_id", user.id)
-      .single()
-      .then(({ data }) => {
-        if (data && !data.onboarding_completed) {
-          navigate("/onboarding");
-        } else {
-          setProfile(data);
+      .single();
+    if (data && !data.onboarding_completed) {
+      navigate("/onboarding");
+    } else {
+      setProfile(data);
+    }
+  };
+
+  useEffect(() => { fetchProfile(); }, [user, navigate]);
+
+  const refreshChart = async () => {
+    if (!user || !profile) return;
+    setRefreshing(true);
+    try {
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/calculate-natal-chart`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            user_id: user.id,
+            date_of_birth: profile.date_of_birth,
+            birth_time: profile.birth_time,
+            birth_place: profile.birth_place,
+          }),
         }
-      });
-  }, [user, navigate]);
+      );
+      const data = await resp.json();
+      if (resp.ok) {
+        await fetchProfile();
+        toast.success("Chart updated with real planetary data ✨");
+      } else {
+        toast.error(data.error || "Failed to refresh chart");
+      }
+    } catch {
+      toast.error("Failed to refresh chart");
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   if (!profile) return null;
 
@@ -64,6 +100,14 @@ const Dashboard = () => {
         >
           <h2 className="font-display text-lg text-foreground mb-4 flex items-center gap-2">
             <Star className="h-5 w-5 text-primary" /> Natal Chart
+            <button
+              onClick={refreshChart}
+              disabled={refreshing}
+              className="ml-auto p-1 rounded-full hover:bg-muted/50 transition-colors"
+              title="Refresh planetary positions"
+            >
+              <RefreshCw className={`h-4 w-4 text-primary ${refreshing ? "animate-spin" : ""}`} />
+            </button>
           </h2>
 
           {/* Visual chart placeholder */}
