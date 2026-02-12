@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { Plus, Sparkles, X, BookOpen, Loader2 } from "lucide-react";
+import { Plus, Sparkles, X, BookOpen, Loader2, Mic } from "lucide-react";
 import { format } from "date-fns";
+import { TR } from "@/lib/i18n";
 
 interface Dream {
   id: string;
@@ -74,7 +75,7 @@ const Dreams = () => {
       setContent("");
       setShowAdd(false);
       fetchDreams();
-      toast.success("Dream saved ✨");
+      toast.success(TR.dreams.saved);
     }
     setSaving(false);
   };
@@ -86,7 +87,6 @@ const Dreams = () => {
     setStreamingText("");
 
     try {
-      // Fetch profile for natal chart data
       const { data: profile } = await supabase
         .from("profiles")
         .select("*")
@@ -117,7 +117,7 @@ const Dreams = () => {
 
       if (!resp.ok || !resp.body) {
         const errData = await resp.json().catch(() => ({}));
-        throw new Error(errData.error || "AI analysis failed");
+        throw new Error(errData.error || "AI analizi başarısız");
       }
 
       const reader = resp.body.getReader();
@@ -153,7 +153,6 @@ const Dreams = () => {
         }
       }
 
-      // Save synthesis
       await supabase.from("syntheses").insert({
         user_id: user.id,
         dream_id: dream.id,
@@ -162,7 +161,7 @@ const Dreams = () => {
 
       setSyntheses((prev) => ({ ...prev, [dream.id]: fullText }));
     } catch (error: any) {
-      toast.error(error.message || "Analysis failed");
+      toast.error(error.message || "Analiz başarısız");
     } finally {
       setAnalyzingId(null);
       setStreamingText("");
@@ -175,7 +174,7 @@ const Dreams = () => {
       <div className="relative z-10 px-4 pt-8 max-w-lg mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-display text-foreground flex items-center gap-2">
-            <BookOpen className="h-6 w-6 text-primary" /> Dream Journal
+            <BookOpen className="h-6 w-6 text-primary" /> {TR.dreams.title}
           </h1>
           <Button size="icon" onClick={() => setShowAdd(!showAdd)} variant="outline" className="rounded-full">
             {showAdd ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
@@ -191,19 +190,29 @@ const Dreams = () => {
               className="glass-card rounded-2xl p-5 mb-6 overflow-hidden"
             >
               <Input
-                placeholder="Dream title..."
+                placeholder={TR.dreams.addTitle}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="bg-muted/50 border-border mb-3"
               />
-              <Textarea
-                placeholder="Describe your dream..."
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="bg-muted/50 border-border min-h-[120px] mb-3"
-              />
+              <div className="relative">
+                <Textarea
+                  placeholder={TR.dreams.addContent}
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  className="bg-muted/50 border-border min-h-[120px] mb-3 pr-12"
+                />
+                {/* Speech-to-text placeholder button */}
+                <button
+                  className="absolute right-3 top-3 p-1.5 rounded-full bg-muted/50 hover:bg-primary/20 transition-colors"
+                  title={TR.dreams.voiceInput}
+                  onClick={() => toast.info("Sesle yazma özelliği yakında eklenecek!")}
+                >
+                  <Mic className="h-4 w-4 text-primary" />
+                </button>
+              </div>
               <Button onClick={addDream} disabled={saving} className="w-full font-display">
-                {saving ? "Saving..." : "Save Dream ✨"}
+                {saving ? TR.dreams.saving : TR.dreams.saveDream}
               </Button>
             </motion.div>
           )}
@@ -212,7 +221,7 @@ const Dreams = () => {
         {dreams.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground">
             <BookOpen className="h-12 w-12 mx-auto mb-3 opacity-30" />
-            <p>No dreams yet. Start your journal!</p>
+            <p>{TR.dreams.noDreams}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -226,7 +235,7 @@ const Dreams = () => {
                 <div className="flex items-start justify-between mb-2">
                   <div onClick={() => setExpandedDream(expandedDream === dream.id ? null : dream.id)} className="cursor-pointer flex-1">
                     <h3 className="font-display text-sm text-foreground">{dream.title}</h3>
-                    <p className="text-xs text-muted-foreground">{format(new Date(dream.created_at), "MMM d, yyyy")}</p>
+                    <p className="text-xs text-muted-foreground">{format(new Date(dream.created_at), "d MMM yyyy")}</p>
                   </div>
                   <Button
                     size="sm"
@@ -247,18 +256,16 @@ const Dreams = () => {
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                     <p className="text-sm text-muted-foreground mb-3 whitespace-pre-wrap">{dream.content}</p>
 
-                    {/* Streaming AI text */}
                     {analyzingId === dream.id && streamingText && (
                       <div className="rounded-lg bg-cosmic-purple/30 p-3 border border-primary/20">
-                        <p className="text-xs text-primary font-display mb-1">Cosmic Synthesis</p>
+                        <p className="text-xs text-primary font-display mb-1">{TR.dreams.syncReport}</p>
                         <p className="text-sm text-foreground whitespace-pre-wrap">{streamingText}</p>
                       </div>
                     )}
 
-                    {/* Saved synthesis */}
                     {syntheses[dream.id] && analyzingId !== dream.id && (
                       <div className="rounded-lg bg-cosmic-purple/30 p-3 border border-primary/20">
-                        <p className="text-xs text-primary font-display mb-1">Cosmic Synthesis</p>
+                        <p className="text-xs text-primary font-display mb-1">{TR.dreams.syncReport}</p>
                         <p className="text-sm text-foreground whitespace-pre-wrap">{syntheses[dream.id]}</p>
                       </div>
                     )}

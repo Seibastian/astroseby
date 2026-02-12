@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import StarField from "@/components/StarField";
 import { motion } from "framer-motion";
 import { Mail, Lock, Star } from "lucide-react";
+import { TR } from "@/lib/i18n";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -30,7 +31,7 @@ const Auth = () => {
           options: { emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
-        toast.success("Check your email to confirm your account!");
+        toast.success(TR.auth.checkEmail);
       }
     } catch (error: any) {
       toast.error(error.message);
@@ -58,8 +59,8 @@ const Auth = () => {
       >
         <div className="text-center mb-8">
           <Star className="h-10 w-10 text-primary mx-auto mb-3" />
-          <h1 className="text-2xl font-display gold-shimmer">AstroDream AI</h1>
-          <p className="text-sm text-muted-foreground mt-1">Unlock your cosmic destiny</p>
+          <h1 className="text-2xl font-display gold-shimmer">{TR.auth.title}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{TR.auth.subtitle}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -67,7 +68,7 @@ const Auth = () => {
             <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               type="email"
-              placeholder="Email"
+              placeholder={TR.auth.email}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="pl-10 bg-muted/50 border-border"
@@ -78,7 +79,7 @@ const Auth = () => {
             <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               type="password"
-              placeholder="Password"
+              placeholder={TR.auth.password}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="pl-10 bg-muted/50 border-border"
@@ -87,7 +88,7 @@ const Auth = () => {
             />
           </div>
           <Button type="submit" className="w-full font-display" disabled={loading}>
-            {loading ? "..." : isLogin ? "Enter the Cosmos" : "Begin Your Journey"}
+            {loading ? "..." : isLogin ? TR.auth.loginButton : TR.auth.signupButton}
           </Button>
         </form>
 
@@ -97,21 +98,21 @@ const Auth = () => {
               <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-card px-2 text-muted-foreground">or</span>
+              <span className="bg-card px-2 text-muted-foreground">{TR.auth.or}</span>
             </div>
           </div>
           <Button variant="outline" className="w-full" onClick={() => handleOAuth("google")}>
-            Sign in with Google
+            {TR.auth.googleLogin}
           </Button>
           <Button variant="outline" className="w-full opacity-50 cursor-not-allowed" disabled>
-            Sign in with Facebook (coming soon)
+            {TR.auth.facebookLogin}
           </Button>
         </div>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          {isLogin ? "New to AstroDream?" : "Already have an account?"}{" "}
+          {isLogin ? TR.auth.newUser : TR.auth.existingUser}{" "}
           <button onClick={() => setIsLogin(!isLogin)} className="text-primary hover:underline">
-            {isLogin ? "Sign Up" : "Sign In"}
+            {isLogin ? TR.auth.signUp : TR.auth.signIn}
           </button>
         </p>
       </motion.div>

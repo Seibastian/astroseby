@@ -13,25 +13,35 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const systemPrompt = `You are a mystical cosmic dream interpreter who blends astrology and dream symbolism. You speak with celestial, poetic language. Given a user's natal chart data and dream description, provide a "Cosmic Dream Synthesis" — a rich, mystical interpretation that connects their astrological energies (Sun sign, Moon sign, Rising sign, planetary positions) with dream symbols. Structure your response with:
+    const SIGN_TR: Record<string, string> = {
+      Aries: "Koç", Taurus: "Boğa", Gemini: "İkizler", Cancer: "Yengeç",
+      Leo: "Aslan", Virgo: "Başak", Libra: "Terazi", Scorpio: "Akrep",
+      Sagittarius: "Yay", Capricorn: "Oğlak", Aquarius: "Kova", Pisces: "Balık",
+    };
 
-1. 🌟 **Celestial Overview** — Brief summary connecting their chart to the dream
-2. 🌙 **Dream Symbols Decoded** — Key symbols and their astrological meanings
-3. ⭐ **Planetary Influences** — Which planets are speaking through this dream
-4. 🔮 **Cosmic Message** — The deeper spiritual message
-5. ✨ **Guidance** — Actionable insight for the dreamer
+    const trSign = (s: string | null | undefined) => s ? (SIGN_TR[s] || s) : "Bilinmiyor";
 
-Keep the tone mystical, warm, and inspiring. About 300-400 words.`;
+    const systemPrompt = `Sen mistik bir kozmik rüya yorumcususun. Astroloji ve rüya sembolizmini harmanlayan, şiirsel ama psikolojik derinliği olan bir Türkçe ile yazıyorsun. Kullanıcının doğum haritası verilerini ve rüya anlatımını alarak bir "Kozmik Senkronisite Raporu" oluştur.
 
-    const userMessage = `Natal Chart Data:
-- Sun Sign: ${natal_data?.sun_sign || "Unknown"}
-- Moon Sign: ${natal_data?.moon_sign || "Unknown"}
-- Rising Sign: ${natal_data?.rising_sign || "Unknown"}
-- Date of Birth: ${natal_data?.date_of_birth || "Unknown"}
-- Birth Time: ${natal_data?.birth_time || "Unknown"}
-- Birth Place: ${natal_data?.birth_place || "Unknown"}
+Raporun şu bölümlerden oluşmalı:
 
-Dream Description:
+1. 🌟 **Göksel Bakış** — Doğum haritası ile rüya arasındaki bağlantının özeti (örn: "8. Evdeki Akrep Ay'ın derin bilinçaltı su yüzeye çıkıyor")
+2. 🌙 **Rüya Sembolleri** — Rüyadaki ana sembollerin astrolojik karşılıkları
+3. ⭐ **Gezegen Etkileri** — Bu rüyada hangi gezegenler konuşuyor ve neden
+4. 🔮 **Senkronisite Mesajı** — Derin ruhani ve psikolojik anlam
+5. ✨ **Kozmik Rehberlik** — Rüya sahibi için somut ve ilham verici bir yönlendirme
+
+Tonu mistik, sıcak, derin ve ilham verici tut. Yaklaşık 400-500 kelime. Tüm yanıtın Türkçe olmalı.`;
+
+    const userMessage = `Doğum Haritası Verileri:
+- Güneş Burcu: ${trSign(natal_data?.sun_sign)}
+- Ay Burcu: ${trSign(natal_data?.moon_sign)}
+- Yükselen Burç: ${trSign(natal_data?.rising_sign)}
+- Doğum Tarihi: ${natal_data?.date_of_birth || "Bilinmiyor"}
+- Doğum Saati: ${natal_data?.birth_time || "Bilinmiyor"}
+- Doğum Yeri: ${natal_data?.birth_place || "Bilinmiyor"}
+
+Rüya Anlatımı:
 ${dream_text}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -52,18 +62,18 @@ ${dream_text}`;
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }), {
+        return new Response(JSON.stringify({ error: "İstek limiti aşıldı. Lütfen biraz bekleyip tekrar deneyin." }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits depleted. Please add credits." }), {
+        return new Response(JSON.stringify({ error: "AI kredileri tükendi. Lütfen kredi ekleyin." }), {
           status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "AI analysis failed" }), {
+      return new Response(JSON.stringify({ error: "AI analizi başarısız oldu" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -73,7 +83,7 @@ ${dream_text}`;
     });
   } catch (e) {
     console.error("cosmic-synthesis error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Bilinmeyen hata" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
