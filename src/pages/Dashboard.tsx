@@ -1,18 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import StarField from "@/components/StarField";
 import BottomNav from "@/components/BottomNav";
 import AdBanner from "@/components/AdBanner";
+import AmbientAudio from "@/components/AmbientAudio";
+import NatalChartWheel from "@/components/NatalChartWheel";
 import { motion } from "framer-motion";
-import { BookOpen, Crown, Star, Sun, Moon, Sparkles, RefreshCw } from "lucide-react";
+import { BookOpen, Crown, Star, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
-
-const zodiacEmojis: Record<string, string> = {
-  Aries: "♈", Taurus: "♉", Gemini: "♊", Cancer: "♋", Leo: "♌", Virgo: "♍",
-  Libra: "♎", Scorpio: "♏", Sagittarius: "♐", Capricorn: "♑", Aquarius: "♒", Pisces: "♓",
-};
+import { TR, trSign, trPlanet } from "@/lib/i18n";
+import { calculateNatalChart, type NatalChartData } from "@/lib/astrology";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -59,36 +58,56 @@ const Dashboard = () => {
       const data = await resp.json();
       if (resp.ok) {
         await fetchProfile();
-        toast.success("Chart updated with real planetary data ✨");
+        toast.success("Harita güncellendi ✨");
       } else {
-        toast.error(data.error || "Failed to refresh chart");
+        toast.error(data.error || "Harita güncellenemedi");
       }
     } catch {
-      toast.error("Failed to refresh chart");
+      toast.error("Harita güncellenemedi");
     } finally {
       setRefreshing(false);
     }
   };
 
+  // Calculate natal chart locally for display
+  const chartData: NatalChartData | null = useMemo(() => {
+    if (!profile?.date_of_birth || !profile?.birth_place) return null;
+    try {
+      // Use approximate coordinates (will be refined by edge function)
+      // For display purposes, use a simple lat/lon estimation
+      return calculateNatalChart(
+        profile.date_of_birth,
+        profile.birth_time,
+        41.0, // default lat (Istanbul)
+        29.0  // default lon
+      );
+    } catch {
+      return null;
+    }
+  }, [profile]);
+
   if (!profile) return null;
 
-  const planets = [
-    { name: "Sun", icon: Sun, sign: profile.sun_sign || "—" },
-    { name: "Moon", icon: Moon, sign: profile.moon_sign || "—" },
-    { name: "Rising", icon: Sparkles, sign: profile.rising_sign || "—" },
+  const bigThree = [
+    { label: trPlanet("Sun"), sign: trSign(profile.sun_sign), emoji: TR.signEmojis[profile.sun_sign] || "☉" },
+    { label: trPlanet("Moon"), sign: trSign(profile.moon_sign), emoji: TR.signEmojis[profile.moon_sign] || "☽" },
+    { label: trPlanet("Rising"), sign: trSign(profile.rising_sign), emoji: TR.signEmojis[profile.rising_sign] || "⬆" },
   ];
 
   return (
     <div className="min-h-screen pb-32 relative">
       <StarField />
+      <AmbientAudio />
       <div className="relative z-10 px-4 pt-8 max-w-lg mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <p className="text-sm text-muted-foreground">Welcome back,</p>
+          <p className="text-sm text-muted-foreground">{TR.dashboard.welcome}</p>
           <h1 className="text-2xl font-display text-foreground">
-            {profile.name || "Stargazer"}{" "}
-            <span className="text-primary">{zodiacEmojis[profile.sun_sign] || "✨"}</span>
+            {profile.name || TR.dashboard.stargazer}{" "}
+            <span className="text-primary">{TR.signEmojis[profile.sun_sign] || "✨"}</span>
           </h1>
-          <p className="text-sm text-primary mt-1">{profile.sun_sign || "Unknown"} Sun</p>
+          <p className="text-sm text-primary mt-1">
+            {trSign(profile.sun_sign)} {trPlanet("Sun")}
+          </p>
         </motion.div>
 
         {/* Natal Chart Card */}
@@ -99,44 +118,39 @@ const Dashboard = () => {
           className="glass-card rounded-2xl p-6 mb-6"
         >
           <h2 className="font-display text-lg text-foreground mb-4 flex items-center gap-2">
-            <Star className="h-5 w-5 text-primary" /> Natal Chart
+            <Star className="h-5 w-5 text-primary" /> {TR.dashboard.natalChart}
             <button
               onClick={refreshChart}
               disabled={refreshing}
               className="ml-auto p-1 rounded-full hover:bg-muted/50 transition-colors"
-              title="Refresh planetary positions"
+              title={TR.dashboard.refreshChart}
             >
               <RefreshCw className={`h-4 w-4 text-primary ${refreshing ? "animate-spin" : ""}`} />
             </button>
           </h2>
 
-          {/* Visual chart placeholder */}
-          <div className="relative w-48 h-48 mx-auto mb-6">
-            <div className="absolute inset-0 rounded-full border-2 border-primary/30" />
-            <div className="absolute inset-4 rounded-full border border-primary/20" />
-            <div className="absolute inset-8 rounded-full border border-primary/10" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-3xl">{zodiacEmojis[profile.sun_sign] || "✨"}</span>
+          {/* Real Natal Chart Wheel */}
+          {chartData ? (
+            <div className="mb-6">
+              <NatalChartWheel data={chartData} size={280} />
             </div>
-            {/* Planet markers */}
-            {[0, 60, 120, 180, 240, 300].map((deg, i) => (
-              <div
-                key={i}
-                className="absolute w-3 h-3 rounded-full bg-primary/60"
-                style={{
-                  top: `${50 - 42 * Math.cos((deg * Math.PI) / 180)}%`,
-                  left: `${50 + 42 * Math.sin((deg * Math.PI) / 180)}%`,
-                  transform: "translate(-50%, -50%)",
-                }}
-              />
-            ))}
-          </div>
+          ) : (
+            <div className="relative w-48 h-48 mx-auto mb-6">
+              <div className="absolute inset-0 rounded-full border-2 border-primary/30" />
+              <div className="absolute inset-4 rounded-full border border-primary/20" />
+              <div className="absolute inset-8 rounded-full border border-primary/10" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-3xl">{TR.signEmojis[profile.sun_sign] || "✨"}</span>
+              </div>
+            </div>
+          )}
 
+          {/* Big Three */}
           <div className="grid grid-cols-3 gap-3">
-            {planets.map((p) => (
-              <div key={p.name} className="text-center p-2 rounded-lg bg-muted/30">
-                <p.icon className="h-4 w-4 mx-auto text-primary mb-1" />
-                <p className="text-xs text-muted-foreground">{p.name}</p>
+            {bigThree.map((p) => (
+              <div key={p.label} className="text-center p-2 rounded-lg bg-muted/30">
+                <span className="text-lg">{p.emoji}</span>
+                <p className="text-xs text-muted-foreground">{p.label}</p>
                 <p className="text-sm font-medium text-foreground">{p.sign}</p>
               </div>
             ))}
@@ -153,8 +167,8 @@ const Dashboard = () => {
             className="glass-card rounded-xl p-4 text-left hover:border-primary/50 transition-colors"
           >
             <BookOpen className="h-6 w-6 text-primary mb-2" />
-            <p className="font-display text-sm text-foreground">Dream Journal</p>
-            <p className="text-xs text-muted-foreground">Log your dreams</p>
+            <p className="font-display text-sm text-foreground">{TR.dashboard.dreamJournal}</p>
+            <p className="text-xs text-muted-foreground">{TR.dashboard.logDreams}</p>
           </motion.button>
           <motion.button
             initial={{ opacity: 0, y: 20 }}
@@ -164,8 +178,8 @@ const Dashboard = () => {
             className="glass-card rounded-xl p-4 text-left hover:border-primary/50 transition-colors"
           >
             <Crown className="h-6 w-6 text-primary mb-2" />
-            <p className="font-display text-sm text-foreground">Premium</p>
-            <p className="text-xs text-muted-foreground">Unlock full power</p>
+            <p className="font-display text-sm text-foreground">{TR.dashboard.premium}</p>
+            <p className="text-xs text-muted-foreground">{TR.dashboard.unlockPower}</p>
           </motion.button>
         </div>
       </div>

@@ -8,13 +8,14 @@ import StarField from "@/components/StarField";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { User, CalendarDays, Clock, MapPin, ChevronRight, ChevronLeft } from "lucide-react";
+import { TR } from "@/lib/i18n";
 
 const steps = [
-  { icon: User, label: "Your Name", field: "name" },
-  { icon: CalendarDays, label: "Date of Birth", field: "date_of_birth" },
-  { icon: Clock, label: "Birth Time", field: "birth_time" },
-  { icon: MapPin, label: "Birth Place", field: "birth_place" },
-] as const;
+  { icon: User, label: TR.onboarding.name, field: "name" as const },
+  { icon: CalendarDays, label: TR.onboarding.dateOfBirth, field: "date_of_birth" as const },
+  { icon: Clock, label: TR.onboarding.birthTime, field: "birth_time" as const },
+  { icon: MapPin, label: TR.onboarding.birthPlace, field: "birth_place" as const },
+];
 
 const getZodiacSign = (month: number, day: number): string => {
   const signs = [
@@ -60,7 +61,7 @@ const Onboarding = () => {
 
       if (error) throw error;
 
-      // Fetch real planetary positions (moon & rising signs) in the background
+      // Calculate real planetary positions in the background
       fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/calculate-natal-chart`,
         {
@@ -76,7 +77,7 @@ const Onboarding = () => {
             birth_place: data.birth_place,
           }),
         }
-      ).catch(console.error); // fire-and-forget
+      ).catch(console.error);
 
       navigate("/dashboard");
     } catch (error: any) {
@@ -94,7 +95,6 @@ const Onboarding = () => {
     <div className="min-h-screen flex items-center justify-center px-4 relative">
       <StarField />
       <div className="w-full max-w-sm relative z-10">
-        {/* Progress dots */}
         <div className="flex justify-center gap-3 mb-8">
           {steps.map((_, i) => (
             <div
@@ -137,7 +137,7 @@ const Onboarding = () => {
             ) : (
               <Input
                 type="text"
-                placeholder={currentStep.field === "name" ? "Enter your name" : "City, Country"}
+                placeholder={currentStep.field === "name" ? TR.onboarding.namePlaceholder : TR.onboarding.birthPlacePlaceholder}
                 value={data[currentStep.field]}
                 onChange={(e) => setData({ ...data, [currentStep.field]: e.target.value })}
                 className="bg-muted/50 border-border"
@@ -147,7 +147,7 @@ const Onboarding = () => {
             <div className="flex gap-3 mt-6">
               {step > 0 && (
                 <Button variant="outline" onClick={() => setStep(step - 1)} className="flex-1">
-                  <ChevronLeft className="h-4 w-4 mr-1" /> Back
+                  <ChevronLeft className="h-4 w-4 mr-1" /> {TR.onboarding.back}
                 </Button>
               )}
               <Button
@@ -155,7 +155,7 @@ const Onboarding = () => {
                 disabled={!canProceed || loading}
                 className="flex-1 font-display"
               >
-                {loading ? "..." : isLast ? "Reveal My Stars" : "Next"}
+                {loading ? "..." : isLast ? TR.onboarding.finish : TR.onboarding.next}
                 {!isLast && <ChevronRight className="h-4 w-4 ml-1" />}
               </Button>
             </div>

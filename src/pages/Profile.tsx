@@ -5,7 +5,8 @@ import StarField from "@/components/StarField";
 import BottomNav from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { LogOut, User, CalendarDays, MapPin, Star } from "lucide-react";
+import { LogOut, User, CalendarDays, MapPin, Star, Moon, Sparkles } from "lucide-react";
+import { TR, trSign } from "@/lib/i18n";
 
 const Profile = () => {
   const { user, signOut } = useAuth();
@@ -19,10 +20,12 @@ const Profile = () => {
   if (!profile) return null;
 
   const details = [
-    { icon: User, label: "Name", value: profile.name || "—" },
-    { icon: Star, label: "Sun Sign", value: profile.sun_sign || "—" },
-    { icon: CalendarDays, label: "Date of Birth", value: profile.date_of_birth || "—" },
-    { icon: MapPin, label: "Birth Place", value: profile.birth_place || "—" },
+    { icon: User, label: TR.profile.name, value: profile.name || "—" },
+    { icon: Star, label: TR.profile.sunSign, value: trSign(profile.sun_sign) },
+    { icon: Moon, label: TR.profile.moonSign, value: trSign(profile.moon_sign) },
+    { icon: Sparkles, label: TR.profile.risingSign, value: trSign(profile.rising_sign) },
+    { icon: CalendarDays, label: TR.profile.dateOfBirth, value: profile.date_of_birth || "—" },
+    { icon: MapPin, label: TR.profile.birthPlace, value: profile.birth_place || "—" },
   ];
 
   return (
@@ -33,7 +36,7 @@ const Profile = () => {
           <div className="h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-3 border-2 border-primary/40">
             <User className="h-10 w-10 text-primary" />
           </div>
-          <h1 className="text-xl font-display text-foreground">{profile.name || "Stargazer"}</h1>
+          <h1 className="text-xl font-display text-foreground">{profile.name || TR.dashboard.stargazer}</h1>
           <p className="text-sm text-muted-foreground">{user?.email}</p>
         </motion.div>
 
@@ -50,7 +53,7 @@ const Profile = () => {
         </div>
 
         <Button variant="outline" onClick={signOut} className="w-full">
-          <LogOut className="h-4 w-4 mr-2" /> Sign Out
+          <LogOut className="h-4 w-4 mr-2" /> {TR.profile.signOut}
         </Button>
       </div>
       <BottomNav />

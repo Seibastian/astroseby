@@ -1,11 +1,12 @@
 import { Home, BookOpen, Crown, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { TR } from "@/lib/i18n";
 
 const tabs = [
-  { path: "/dashboard", icon: Home, label: "Home" },
-  { path: "/dreams", icon: BookOpen, label: "Dreams" },
-  { path: "/premium", icon: Crown, label: "Premium" },
-  { path: "/profile", icon: User, label: "Profile" },
+  { path: "/dashboard", icon: Home, label: TR.nav.home },
+  { path: "/dreams", icon: BookOpen, label: TR.nav.dreams },
+  { path: "/premium", icon: Crown, label: TR.nav.premium },
+  { path: "/profile", icon: User, label: TR.nav.profile },
 ];
 
 const BottomNav = () => {
