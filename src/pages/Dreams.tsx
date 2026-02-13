@@ -7,9 +7,10 @@ import AdBanner from "@/components/AdBanner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { Plus, Sparkles, X, BookOpen, Loader2, Mic } from "lucide-react";
+import { Plus, Sparkles, X, BookOpen, Loader2, Mic, Layers } from "lucide-react";
 import { format } from "date-fns";
 import { TR } from "@/lib/i18n";
 
@@ -37,6 +38,10 @@ const Dreams = () => {
   const [syntheses, setSyntheses] = useState<Record<string, string>>({});
   const [streamingText, setStreamingText] = useState("");
   const [expandedDream, setExpandedDream] = useState<string | null>(null);
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedDreams, setSelectedDreams] = useState<Set<string>>(new Set());
+  const [collectiveAnalyzing, setCollectiveAnalyzing] = useState(false);
+  const [collectiveReport, setCollectiveReport] = useState("");
 
   const fetchDreams = async () => {
     if (!user) return;
@@ -80,6 +85,43 @@ const Dreams = () => {
     setSaving(false);
   };
 
+  const streamSSE = async (resp: Response): Promise<string> => {
+    if (!resp.body) return "";
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let fullText = "";
+    let buffer = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+
+      let newlineIndex: number;
+      while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
+        let line = buffer.slice(0, newlineIndex);
+        buffer = buffer.slice(newlineIndex + 1);
+        if (line.endsWith("\r")) line = line.slice(0, -1);
+        if (line.startsWith(":") || line.trim() === "") continue;
+        if (!line.startsWith("data: ")) continue;
+        const jsonStr = line.slice(6).trim();
+        if (jsonStr === "[DONE]") break;
+        try {
+          const parsed = JSON.parse(jsonStr);
+          const c = parsed.choices?.[0]?.delta?.content;
+          if (c) {
+            fullText += c;
+            setStreamingText(fullText);
+          }
+        } catch {
+          buffer = line + "\n" + buffer;
+          break;
+        }
+      }
+    }
+    return fullText;
+  };
+
   const analyzeDream = async (dream: Dream) => {
     if (!user) return;
     setAnalyzingId(dream.id);
@@ -120,38 +162,7 @@ const Dreams = () => {
         throw new Error(errData.error || "AI analizi başarısız");
       }
 
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let fullText = "";
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-
-        let newlineIndex: number;
-        while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
-          let line = buffer.slice(0, newlineIndex);
-          buffer = buffer.slice(newlineIndex + 1);
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (line.startsWith(":") || line.trim() === "") continue;
-          if (!line.startsWith("data: ")) continue;
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") break;
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const c = parsed.choices?.[0]?.delta?.content;
-            if (c) {
-              fullText += c;
-              setStreamingText(fullText);
-            }
-          } catch {
-            buffer = line + "\n" + buffer;
-            break;
-          }
-        }
-      }
+      const fullText = await streamSSE(resp);
 
       await supabase.from("syntheses").insert({
         user_id: user.id,
@@ -168,6 +179,71 @@ const Dreams = () => {
     }
   };
 
+  const toggleDreamSelection = (id: string) => {
+    setSelectedDreams((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const analyzeCollective = async () => {
+    if (!user || selectedDreams.size === 0) return;
+    setCollectiveAnalyzing(true);
+    setStreamingText("");
+    setCollectiveReport("");
+
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      const selectedDreamTexts = dreams
+        .filter((d) => selectedDreams.has(d.id))
+        .map((d, i) => `--- Rüya ${i + 1}: "${d.title}" ---\n${d.content}`)
+        .join("\n\n");
+
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/cosmic-synthesis`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            dream_text: `[TOPLU ANALİZ - ${selectedDreams.size} RÜYA]\n\n${selectedDreamTexts}`,
+            natal_data: {
+              sun_sign: profile?.sun_sign,
+              moon_sign: profile?.moon_sign,
+              rising_sign: profile?.rising_sign,
+              date_of_birth: profile?.date_of_birth,
+              birth_time: profile?.birth_time,
+              birth_place: profile?.birth_place,
+            },
+            collective: true,
+          }),
+        }
+      );
+
+      if (!resp.ok || !resp.body) {
+        const errData = await resp.json().catch(() => ({}));
+        throw new Error(errData.error || "Toplu analiz başarısız");
+      }
+
+      const fullText = await streamSSE(resp);
+      setCollectiveReport(fullText);
+    } catch (error: any) {
+      toast.error(error.message || "Analiz başarısız");
+    } finally {
+      setCollectiveAnalyzing(false);
+      setStreamingText("");
+    }
+  };
+
   return (
     <div className="min-h-screen pb-32 relative">
       <StarField />
@@ -176,10 +252,66 @@ const Dreams = () => {
           <h1 className="text-2xl font-display text-foreground flex items-center gap-2">
             <BookOpen className="h-6 w-6 text-primary" /> {TR.dreams.title}
           </h1>
-          <Button size="icon" onClick={() => setShowAdd(!showAdd)} variant="outline" className="rounded-full">
-            {showAdd ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-          </Button>
+          <div className="flex gap-2">
+            {dreams.length > 1 && (
+              <Button
+                size="icon"
+                variant={selectMode ? "default" : "outline"}
+                className="rounded-full"
+                onClick={() => {
+                  setSelectMode(!selectMode);
+                  setSelectedDreams(new Set());
+                  setCollectiveReport("");
+                }}
+              >
+                <Layers className="h-4 w-4" />
+              </Button>
+            )}
+            <Button size="icon" onClick={() => setShowAdd(!showAdd)} variant="outline" className="rounded-full">
+              {showAdd ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+            </Button>
+          </div>
         </div>
+
+        {/* Collective analysis bar */}
+        {selectMode && selectedDreams.size > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-card rounded-xl p-3 mb-4 flex items-center justify-between"
+          >
+            <span className="text-xs text-muted-foreground">
+              {selectedDreams.size} {TR.dreams.selectedCount}
+            </span>
+            <Button
+              size="sm"
+              onClick={analyzeCollective}
+              disabled={collectiveAnalyzing}
+              className="font-display"
+            >
+              {collectiveAnalyzing ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-1" />
+              ) : (
+                <Sparkles className="h-4 w-4 mr-1" />
+              )}
+              {TR.dreams.analyzeSelected}
+            </Button>
+          </motion.div>
+        )}
+
+        {/* Collective report */}
+        {(collectiveReport || (collectiveAnalyzing && streamingText)) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="glass-card rounded-xl p-4 mb-4 border border-primary/30"
+          >
+            <p className="text-xs text-primary font-display mb-2">{TR.dreams.collectiveAnalysis}</p>
+            <p className="text-sm text-foreground whitespace-pre-wrap">
+              {collectiveAnalyzing ? streamingText : collectiveReport}
+            </p>
+          </motion.div>
+        )}
 
         <AnimatePresence>
           {showAdd && (
@@ -202,7 +334,6 @@ const Dreams = () => {
                   onChange={(e) => setContent(e.target.value)}
                   className="bg-muted/50 border-border min-h-[120px] mb-3 pr-12"
                 />
-                {/* Speech-to-text placeholder button */}
                 <button
                   className="absolute right-3 top-3 p-1.5 rounded-full bg-muted/50 hover:bg-primary/20 transition-colors"
                   title={TR.dreams.voiceInput}
@@ -230,41 +361,54 @@ const Dreams = () => {
                 key={dream.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="glass-card rounded-xl p-4"
+                className={`glass-card rounded-xl p-4 ${selectMode && selectedDreams.has(dream.id) ? "border-primary/50" : ""}`}
               >
                 <div className="flex items-start justify-between mb-2">
-                  <div onClick={() => setExpandedDream(expandedDream === dream.id ? null : dream.id)} className="cursor-pointer flex-1">
+                  {selectMode && (
+                    <div className="mr-3 pt-1">
+                      <Checkbox
+                        checked={selectedDreams.has(dream.id)}
+                        onCheckedChange={() => toggleDreamSelection(dream.id)}
+                      />
+                    </div>
+                  )}
+                  <div
+                    onClick={() => !selectMode && setExpandedDream(expandedDream === dream.id ? null : dream.id)}
+                    className="cursor-pointer flex-1"
+                  >
                     <h3 className="font-display text-sm text-foreground">{dream.title}</h3>
                     <p className="text-xs text-muted-foreground">{format(new Date(dream.created_at), "d MMM yyyy")}</p>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => analyzeDream(dream)}
-                    disabled={analyzingId === dream.id}
-                    className="text-primary shrink-0"
-                  >
-                    {analyzingId === dream.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Sparkles className="h-4 w-4" />
-                    )}
-                  </Button>
+                  {!selectMode && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => analyzeDream(dream)}
+                      disabled={analyzingId === dream.id}
+                      className="text-primary shrink-0"
+                    >
+                      {analyzingId === dream.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Sparkles className="h-4 w-4" />
+                      )}
+                    </Button>
+                  )}
                 </div>
 
-                {expandedDream === dream.id && (
+                {expandedDream === dream.id && !selectMode && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                     <p className="text-sm text-muted-foreground mb-3 whitespace-pre-wrap">{dream.content}</p>
 
                     {analyzingId === dream.id && streamingText && (
-                      <div className="rounded-lg bg-cosmic-purple/30 p-3 border border-primary/20">
+                      <div className="rounded-lg bg-accent/30 p-3 border border-primary/20">
                         <p className="text-xs text-primary font-display mb-1">{TR.dreams.syncReport}</p>
                         <p className="text-sm text-foreground whitespace-pre-wrap">{streamingText}</p>
                       </div>
                     )}
 
                     {syntheses[dream.id] && analyzingId !== dream.id && (
-                      <div className="rounded-lg bg-cosmic-purple/30 p-3 border border-primary/20">
+                      <div className="rounded-lg bg-accent/30 p-3 border border-primary/20">
                         <p className="text-xs text-primary font-display mb-1">{TR.dreams.syncReport}</p>
                         <p className="text-sm text-foreground whitespace-pre-wrap">{syntheses[dream.id]}</p>
                       </div>

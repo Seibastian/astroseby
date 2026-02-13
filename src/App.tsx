@@ -8,6 +8,7 @@ import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Dreams from "./pages/Dreams";
+import Mentor from "./pages/Mentor";
 import Premium from "./pages/Premium";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
@@ -28,6 +29,7 @@ const AppRoutes = () => (
     <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
     <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
     <Route path="/dreams" element={<ProtectedRoute><Dreams /></ProtectedRoute>} />
+    <Route path="/mentor" element={<ProtectedRoute><Mentor /></ProtectedRoute>} />
     <Route path="/premium" element={<ProtectedRoute><Premium /></ProtectedRoute>} />
     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />

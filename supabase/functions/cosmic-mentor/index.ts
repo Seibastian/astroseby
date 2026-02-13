@@ -9,7 +9,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { dream_text, natal_data, collective } = await req.json();
+    const { messages, natal_summary, profile } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -18,33 +18,41 @@ serve(async (req) => {
       Leo: "Aslan", Virgo: "Başak", Libra: "Terazi", Scorpio: "Akrep",
       Sagittarius: "Yay", Capricorn: "Oğlak", Aquarius: "Kova", Pisces: "Balık",
     };
-
     const trSign = (s: string | null | undefined) => s ? (SIGN_TR[s] || s) : "Bilinmiyor";
 
-    const collectiveInstructions = collective ? `\n\nBu bir TOPLU RÜYA ANALİZİDİR. Birden fazla rüya metni verilmiştir. Görevin:\n1. Rüyalar arasındaki TEKRARLAYAN SEMBOLLERİ tespit et\n2. Duygusal döngüleri ve kalıpları keşfet\n3. Tüm rüyaları astrolojik profille sentezle\n4. Bilinçaltının kolektif mesajını ortaya çıkar\n5. Gölge ve Işık analizini derinleştir` : "";
+    const systemPrompt = `Sen "Kozmik Mentor"sun — astroloji, derinlik psikolojisi ve rüya yorumu konularında uzman bir AI rehbersin. Türkçe konuşursun. Tüm yanıtların profesyonel, mistik ve psikolojik derinliği olan Türkçe ile olmalı.
 
-    const systemPrompt = `Sen mistik bir kozmik rüya yorumcusu ve derinlik psikoloğusun. "Gölge ve Işık" (Shadow & Light) çalışması ana felsefendir.
+TEMEL FELSEFENİ:
+- "Gölge ve Işık" (Shadow & Light) çalışması rehberin. Carl Jung'un gölge arketipi ve astrolojik gölge kavramlarını sentezliyorsun.
+- Kullanıcının doğum haritasını BİRİNCİL VERİ KAYNAĞI olarak kullanıyorsun. Her yanıtında spesifik yerleşimlere referans vermelisin.
+- Sadece "söyleme" — "sor" da. Kullanıcıya kendini keşfetmesi için sorular sor.
+- Rüya analizi yaparken, rüya sembollerini doğum haritasındaki spesifik yerleşimlerle ilişkilendir.
 
-Raporun şu bölümlerden oluşmalı:
-1. 🌟 **Göksel Bakış** — Spesifik gezegen yerleşimlerine referans ver
-2. 🌙 **Rüya Sembolleri** — Astrolojik karşılıklar
-3. 🌑 **Gölge Analizi** — Hangi gölge arketipleri konuşuyor
-4. ☀️ **Işık Potansiyeli** — Gölgenin dönüşüm potansiyeli
-5. ⭐ **Gezegen Etkileri** — Spesifik ev ve derece referanslarıyla
-6. 🔮 **Senkronisite Mesajı**
-7. ❓ **Düşündürücü Soru** — Kullanıcıya kendini keşfetmesi için bir soru
-8. ✨ **Kozmik Rehberlik**${collectiveInstructions}
+KULLANICININ DOĞUM HARİTASI:
+İsim: ${profile?.name || "Bilinmiyor"}
+Güneş: ${trSign(profile?.sun_sign)}
+Ay: ${trSign(profile?.moon_sign)}
+Yükselen: ${trSign(profile?.rising_sign)}
 
-Tonu mistik, sıcak, derin tut. 500-700 kelime. Tüm yanıtın Türkçe olmalı.`;
+Detaylı Gezegen Pozisyonları:
+${natal_summary || "Henüz hesaplanmadı"}
 
-    const userMessage = `Doğum Haritası:
-- Güneş: ${trSign(natal_data?.sun_sign)}
-- Ay: ${trSign(natal_data?.moon_sign)}
-- Yükselen: ${trSign(natal_data?.rising_sign)}
-- Doğum: ${natal_data?.date_of_birth || "?"} ${natal_data?.birth_time || ""} ${natal_data?.birth_place || ""}
+YANITLAMA KURALLARI:
+1. Her yanıtta en az bir spesifik gezegen yerleşimine referans ver (örn: "4. evdeki Oğlak Mars'ın...")
+2. Gölge ve Işık dengesi kur — hem zorlukları hem potansiyeli göster
+3. Kullanıcıya en az bir düşündürücü soru sor
+4. Ton: mistik, sıcak, bilge, empatik — asla yargılayıcı değil
+5. Rüya analizi istendiğinde, tekrarlayan sembolleri ve duygusal döngüleri tara
+6. Astrolojik terimleri Türkçe kullan (ev, burç, gezegen, açı)
+7. Yanıtlarını markdown formatında yaz, başlıklar ve vurgular kullan`;
 
-Rüya:
-${dream_text}`;
+    const aiMessages = [
+      { role: "system", content: systemPrompt },
+      ...messages.map((m: { role: string; content: string }) => ({
+        role: m.role,
+        content: m.content,
+      })),
+    ];
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -54,17 +62,14 @@ ${dream_text}`;
       },
       body: JSON.stringify({
         model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userMessage },
-        ],
+        messages: aiMessages,
         stream: true,
       }),
     });
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "İstek limiti aşıldı." }), {
+        return new Response(JSON.stringify({ error: "İstek limiti aşıldı. Lütfen biraz bekleyip tekrar deneyin." }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -75,7 +80,7 @@ ${dream_text}`;
       }
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "AI analizi başarısız" }), {
+      return new Response(JSON.stringify({ error: "Mentor yanıt veremedi" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -84,7 +89,7 @@ ${dream_text}`;
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {
-    console.error("cosmic-synthesis error:", e);
+    console.error("cosmic-mentor error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Bilinmeyen hata" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
