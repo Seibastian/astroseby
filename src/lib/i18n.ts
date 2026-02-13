@@ -40,6 +40,7 @@ export const TR = {
   nav: {
     home: "Ana Sayfa",
     dreams: "Rüyalar",
+    mentor: "Mentor",
     premium: "Premium",
     profile: "Profil",
   },
@@ -55,6 +56,10 @@ export const TR = {
     logDreams: "Rüyalarını kaydet",
     premium: "Premium",
     unlockPower: "Tam gücü aç",
+    planetaryPositions: "Gezegen Pozisyonları",
+    houseCusps: "Ev Kapıları",
+    mentor: "Kozmik Mentor",
+    askMentor: "AI Mentoruna sor",
   },
 
   // Dreams
@@ -70,6 +75,20 @@ export const TR = {
     voiceInput: "Sesle Yaz",
     analyzing: "Analiz ediliyor...",
     syncReport: "Senkronisite Raporu",
+    collectiveAnalysis: "Toplu Analiz",
+    selectDreams: "Rüya seç",
+    selectedCount: "rüya seçildi",
+    analyzeSelected: "Seçilenleri Analiz Et",
+  },
+
+  // Mentor
+  mentor: {
+    title: "Kozmik Mentor",
+    subtitle: "Gölge ve Işık rehberin",
+    placeholder: "Mentoruna bir soru sor...",
+    send: "Gönder",
+    thinking: "Düşünüyor...",
+    welcome: "Merhaba, ben senin Kozmik Mentorun. Doğum haritanı derinlemesine biliyor ve gölge ile ışık yönlerini keşfetmende sana rehberlik ediyorum. Ne hakkında konuşmak istersin?",
   },
 
   // Premium
@@ -99,7 +118,7 @@ export const TR = {
     signOut: "Çıkış Yap",
   },
 
-  // Planets
+  // Planets (extended)
   planets: {
     Sun: "Güneş",
     Moon: "Ay",
@@ -111,8 +130,14 @@ export const TR = {
     Uranus: "Uranüs",
     Neptune: "Neptün",
     Pluto: "Plüton",
+    Chiron: "Chiron",
+    Lilith: "Lilith",
+    NorthNode: "Kuzey Düğümü",
+    SouthNode: "Güney Düğümü",
+    Vertex: "Vertex",
     Rising: "Yükselen",
-    Ascendant: "Yükselen",
+    Ascendant: "Yükselen (AC)",
+    MC: "Gökyüzü Ortası (MC)",
   } as Record<string, string>,
 
   // Zodiac signs

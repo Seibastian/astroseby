@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.calculate-natal-chart]
 verify_jwt = false
+
+[functions.cosmic-mentor]
+verify_jwt = false

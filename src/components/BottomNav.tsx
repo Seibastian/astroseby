@@ -1,10 +1,11 @@
-import { Home, BookOpen, Crown, User } from "lucide-react";
+import { Home, BookOpen, Crown, User, Sparkles } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { TR } from "@/lib/i18n";
 
 const tabs = [
   { path: "/dashboard", icon: Home, label: TR.nav.home },
   { path: "/dreams", icon: BookOpen, label: TR.nav.dreams },
+  { path: "/mentor", icon: Sparkles, label: TR.nav.mentor },
   { path: "/premium", icon: Crown, label: TR.nav.premium },
   { path: "/profile", icon: User, label: TR.nav.profile },
 ];
@@ -22,12 +23,12 @@ const BottomNav = () => {
             <button
               key={tab.path}
               onClick={() => navigate(tab.path)}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1 transition-colors ${
+              className={`flex flex-col items-center gap-0.5 px-2 py-1 transition-colors ${
                 isActive ? "text-primary" : "text-muted-foreground"
               }`}
             >
               <tab.icon className="h-5 w-5" />
-              <span className="text-[10px] font-medium">{tab.label}</span>
+              <span className="text-[9px] font-medium">{tab.label}</span>
             </button>
           );
         })}

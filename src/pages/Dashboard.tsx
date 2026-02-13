@@ -8,7 +8,7 @@ import AdBanner from "@/components/AdBanner";
 import AmbientAudio from "@/components/AmbientAudio";
 import NatalChartWheel from "@/components/NatalChartWheel";
 import { motion } from "framer-motion";
-import { BookOpen, Crown, Star, RefreshCw } from "lucide-react";
+import { BookOpen, Crown, Star, RefreshCw, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { TR, trSign, trPlanet } from "@/lib/i18n";
 import { calculateNatalChart, type NatalChartData } from "@/lib/astrology";
@@ -18,6 +18,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [showAllPlanets, setShowAllPlanets] = useState(false);
 
   const fetchProfile = async () => {
     if (!user) return;
@@ -69,18 +70,10 @@ const Dashboard = () => {
     }
   };
 
-  // Calculate natal chart locally for display
   const chartData: NatalChartData | null = useMemo(() => {
     if (!profile?.date_of_birth || !profile?.birth_place) return null;
     try {
-      // Use approximate coordinates (will be refined by edge function)
-      // For display purposes, use a simple lat/lon estimation
-      return calculateNatalChart(
-        profile.date_of_birth,
-        profile.birth_time,
-        41.0, // default lat (Istanbul)
-        29.0  // default lon
-      );
+      return calculateNatalChart(profile.date_of_birth, profile.birth_time, 41.0, 29.0);
     } catch {
       return null;
     }
@@ -93,6 +86,9 @@ const Dashboard = () => {
     { label: trPlanet("Moon"), sign: trSign(profile.moon_sign), emoji: TR.signEmojis[profile.moon_sign] || "☽" },
     { label: trPlanet("Rising"), sign: trSign(profile.rising_sign), emoji: TR.signEmojis[profile.rising_sign] || "⬆" },
   ];
+
+  // All planets for detailed list
+  const allPlanets = chartData?.planets || [];
 
   return (
     <div className="min-h-screen pb-32 relative">
@@ -129,7 +125,6 @@ const Dashboard = () => {
             </button>
           </h2>
 
-          {/* Real Natal Chart Wheel */}
           {chartData ? (
             <div className="mb-6">
               <NatalChartWheel data={chartData} size={280} />
@@ -146,7 +141,7 @@ const Dashboard = () => {
           )}
 
           {/* Big Three */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-3 mb-4">
             {bigThree.map((p) => (
               <div key={p.label} className="text-center p-2 rounded-lg bg-muted/30">
                 <span className="text-lg">{p.emoji}</span>
@@ -155,10 +150,65 @@ const Dashboard = () => {
               </div>
             ))}
           </div>
+
+          {/* Detailed Planetary Positions */}
+          {allPlanets.length > 0 && (
+            <div>
+              <button
+                onClick={() => setShowAllPlanets(!showAllPlanets)}
+                className="flex items-center gap-1 text-xs text-primary font-display mb-2 hover:underline"
+              >
+                {TR.dashboard.planetaryPositions}
+                {showAllPlanets ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+              </button>
+              {showAllPlanets && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="space-y-1.5"
+                >
+                  {allPlanets.map((planet) => (
+                    <div
+                      key={planet.name}
+                      className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/20"
+                    >
+                      <span className="text-muted-foreground font-medium">
+                        {planet.symbol || ""} {trPlanet(planet.name)}
+                      </span>
+                      <span className="text-foreground">
+                        {trSign(planet.sign)} {planet.house}. ev ({planet.dms})
+                      </span>
+                    </div>
+                  ))}
+                  {/* House Cusps */}
+                  {chartData && (
+                    <div className="mt-3 pt-2 border-t border-border/30">
+                      <p className="text-xs text-primary font-display mb-1">{TR.dashboard.houseCusps}</p>
+                      <div className="grid grid-cols-2 gap-1">
+                        {chartData.houses.map((cusp, i) => {
+                          const sign = trSign(
+                            ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"][Math.floor(((cusp % 360) + 360) % 360 / 30)]
+                          );
+                          const deg = ((cusp % 360) + 360) % 360 % 30;
+                          const d = Math.floor(deg);
+                          const m = Math.floor((deg - d) * 60);
+                          return (
+                            <div key={i} className="text-xs text-muted-foreground">
+                              {i + 1}. Ev: {sign} {d}° {m}'
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </div>
+          )}
         </motion.div>
 
         {/* Quick Links */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           <motion.button
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -167,8 +217,17 @@ const Dashboard = () => {
             className="glass-card rounded-xl p-4 text-left hover:border-primary/50 transition-colors"
           >
             <BookOpen className="h-6 w-6 text-primary mb-2" />
-            <p className="font-display text-sm text-foreground">{TR.dashboard.dreamJournal}</p>
-            <p className="text-xs text-muted-foreground">{TR.dashboard.logDreams}</p>
+            <p className="font-display text-xs text-foreground">{TR.dashboard.dreamJournal}</p>
+          </motion.button>
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            onClick={() => navigate("/mentor")}
+            className="glass-card rounded-xl p-4 text-left hover:border-primary/50 transition-colors"
+          >
+            <Sparkles className="h-6 w-6 text-primary mb-2" />
+            <p className="font-display text-xs text-foreground">{TR.dashboard.mentor}</p>
           </motion.button>
           <motion.button
             initial={{ opacity: 0, y: 20 }}
@@ -178,8 +237,7 @@ const Dashboard = () => {
             className="glass-card rounded-xl p-4 text-left hover:border-primary/50 transition-colors"
           >
             <Crown className="h-6 w-6 text-primary mb-2" />
-            <p className="font-display text-sm text-foreground">{TR.dashboard.premium}</p>
-            <p className="text-xs text-muted-foreground">{TR.dashboard.unlockPower}</p>
+            <p className="font-display text-xs text-foreground">{TR.dashboard.premium}</p>
           </motion.button>
         </div>
       </div>
