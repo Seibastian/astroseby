@@ -21,12 +21,11 @@ function getEclipticLongitude(body: Astronomy.Body, date: Date): number {
     const sunPos = Astronomy.SunPosition(date);
     return sunPos.elon;
   }
-  if (body === Astronomy.Body.Moon) {
-    const geo = Astronomy.GeoVector(Astronomy.Body.Moon, date, true);
-    const ecl = Astronomy.Ecliptic(geo);
-    return ecl.elon;
-  }
-  return Astronomy.EclipticLongitude(body, date);
+  // Use GeoVector for ALL bodies to get GEOCENTRIC ecliptic longitude
+  // (EclipticLongitude returns heliocentric which is wrong for natal charts)
+  const geo = Astronomy.GeoVector(body, date, true);
+  const ecl = Astronomy.Ecliptic(geo);
+  return ecl.elon;
 }
 
 // ────────────────────────────────────────────────────
@@ -152,12 +151,13 @@ function calculatePlacidusHouses(
 
       let targetRA: number;
       if (aboveHorizon) {
-        // Cusp should have completed `fraction` of its diurnal semi-arc since MC
+        // Above horizon: fraction of diurnal semi-arc from MC
         targetRA = (lstDeg + fraction * dsa) % 360;
       } else {
-        // Below horizon: fraction of nocturnal semi-arc from IC
-        const nsa = 180 - dsa; // nocturnal semi-arc
-        targetRA = (lstDeg + 180 + fraction * nsa) % 360;
+        // Below horizon: interpolate between ASC (H=-DSA) and IC (H=-180°)
+        // H(cusp) = -(1-fraction)*DSA - fraction*180
+        // RA = RAMC - H = RAMC + (1-fraction)*DSA + fraction*180
+        targetRA = (lstDeg + (1 - fraction) * dsa + fraction * 180) % 360;
       }
 
       // Convert target RA back to ecliptic longitude

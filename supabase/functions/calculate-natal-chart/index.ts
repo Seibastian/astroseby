@@ -35,12 +35,11 @@ function getEclipticLongitude(body: Astronomy.Body, date: Date): number {
     const sunPos = Astronomy.SunPosition(date);
     return sunPos.elon;
   }
-  if (body === Astronomy.Body.Moon) {
-    const geo = Astronomy.GeoVector(Astronomy.Body.Moon, date, true);
-    const ecl = Astronomy.Ecliptic(geo);
-    return ecl.elon;
-  }
-  return Astronomy.EclipticLongitude(body, date);
+  // Use GeoVector for ALL bodies to get GEOCENTRIC ecliptic longitude
+  // (EclipticLongitude returns heliocentric which is wrong for natal charts)
+  const geo = Astronomy.GeoVector(body, date, true);
+  const ecl = Astronomy.Ecliptic(geo);
+  return ecl.elon;
 }
 
 function getObliquity(jd: number): number {
@@ -121,8 +120,8 @@ function placidusCusp(fraction: number, aboveHorizon: boolean, lstDeg: number, l
     if (aboveHorizon) {
       targetRA = (lstDeg + fraction * dsa) % 360;
     } else {
-      const nsa = 180 - dsa;
-      targetRA = (lstDeg + 180 + fraction * nsa) % 360;
+      // Below horizon: H = -(1-f)*DSA - f*180, RA = RAMC + (1-f)*DSA + f*180
+      targetRA = (lstDeg + (1 - fraction) * dsa + fraction * 180) % 360;
     }
 
     const targetRARad = targetRA * Math.PI / 180;
