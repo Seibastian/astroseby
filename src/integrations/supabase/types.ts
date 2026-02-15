@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      chamber_messages: {
+        Row: {
+          chamber_id: string
+          content: string
+          created_at: string
+          id: string
+          sender_handle: string
+          user_id: string
+        }
+        Insert: {
+          chamber_id: string
+          content: string
+          created_at?: string
+          id?: string
+          sender_handle: string
+          user_id: string
+        }
+        Update: {
+          chamber_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          sender_handle?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       dreams: {
         Row: {
           content: string
@@ -197,7 +224,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_sun_sign: { Args: { _user_id: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never

@@ -41,6 +41,7 @@ export const TR = {
     home: "Ana Sayfa",
     dreams: "Rüyalar",
     karmic: "Kader",
+    chambers: "Salon",
     mentor: "Mentor",
     premium: "Premium",
     profile: "Profil",

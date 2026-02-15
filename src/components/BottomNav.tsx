@@ -1,4 +1,4 @@
-import { Home, BookOpen, Crown, User, Sparkles, Heart } from "lucide-react";
+import { Home, BookOpen, User, Sparkles, Heart, Users } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { TR } from "@/lib/i18n";
 
@@ -6,7 +6,7 @@ const tabs = [
   { path: "/dashboard", icon: Home, label: TR.nav.home },
   { path: "/dreams", icon: BookOpen, label: TR.nav.dreams },
   { path: "/karmic", icon: Heart, label: TR.nav.karmic },
-  { path: "/mentor", icon: Sparkles, label: TR.nav.mentor },
+  { path: "/chambers", icon: Users, label: TR.nav.chambers },
   { path: "/profile", icon: User, label: TR.nav.profile },
 ];
 
