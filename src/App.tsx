@@ -11,6 +11,7 @@ import Dreams from "./pages/Dreams";
 import Mentor from "./pages/Mentor";
 import Premium from "./pages/Premium";
 import Profile from "./pages/Profile";
+import KarmicMatch from "./pages/KarmicMatch";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const AppRoutes = () => (
     <Route path="/dreams" element={<ProtectedRoute><Dreams /></ProtectedRoute>} />
     <Route path="/mentor" element={<ProtectedRoute><Mentor /></ProtectedRoute>} />
     <Route path="/premium" element={<ProtectedRoute><Premium /></ProtectedRoute>} />
+    <Route path="/karmic" element={<ProtectedRoute><KarmicMatch /></ProtectedRoute>} />
     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>

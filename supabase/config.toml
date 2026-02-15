@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.cosmic-mentor]
 verify_jwt = false
+
+[functions.karmic-match]
+verify_jwt = false
+
+[functions.karmic-analysis]
+verify_jwt = false
