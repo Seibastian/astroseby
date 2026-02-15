@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -8,10 +8,88 @@ import AdBanner from "@/components/AdBanner";
 import AmbientAudio from "@/components/AmbientAudio";
 import NatalChartWheel from "@/components/NatalChartWheel";
 import { motion } from "framer-motion";
-import { BookOpen, Crown, Star, RefreshCw, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import { BookOpen, Crown, Star, RefreshCw, Sparkles, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { TR, trSign, trPlanet } from "@/lib/i18n";
-import { calculateNatalChart, type NatalChartData } from "@/lib/astrology";
+import type { NatalChartData, PlanetPosition } from "@/lib/astrology";
+import { ZODIAC_SIGNS } from "@/lib/astrology";
+
+interface EdgeFunctionPlanet {
+  name: string;
+  longitude: number;
+  sign: string;
+  degree: number;
+  dms: string;
+  house: number;
+}
+
+interface EdgeFunctionResult {
+  sun_sign: string;
+  moon_sign: string;
+  rising_sign: string;
+  planets: EdgeFunctionPlanet[];
+  ascendant: { longitude: number; sign: string; degree: number; dms: string };
+  midheaven: { longitude: number; sign: string; degree: number; dms: string };
+  houses: Array<{ house: number; longitude: number; sign: string; degree: number; dms: string }>;
+  coordinates: { lat: number; lon: number };
+  utc_offset: number;
+  house_system: string;
+}
+
+function edgeResultToChartData(result: EdgeFunctionResult): NatalChartData {
+  const planets: PlanetPosition[] = [];
+
+  // Add Ascendant
+  const ascIdx = ZODIAC_SIGNS.indexOf(result.ascendant.sign);
+  planets.push({
+    name: "Ascendant",
+    longitude: result.ascendant.longitude,
+    sign: result.ascendant.sign,
+    degreeInSign: result.ascendant.degree,
+    symbol: ascIdx >= 0 ? ["♈","♉","♊","♋","♌","♍","♎","♏","♐","♑","♒","♓"][ascIdx] : "AC",
+    house: 1,
+    dms: result.ascendant.dms,
+  });
+
+  // Add planets
+  for (const p of result.planets) {
+    const GLYPHS: Record<string, string> = {
+      Sun: "☉", Moon: "☽", Mercury: "☿", Venus: "♀", Mars: "♂",
+      Jupiter: "♃", Saturn: "♄", Uranus: "♅", Neptune: "♆", Pluto: "♇",
+      Chiron: "⚷", Lilith: "⚸", NorthNode: "☊", SouthNode: "☋", Vertex: "Vx",
+    };
+    planets.push({
+      name: p.name,
+      longitude: p.longitude,
+      sign: p.sign,
+      degreeInSign: p.degree,
+      symbol: GLYPHS[p.name] || "?",
+      house: p.house,
+      dms: p.dms,
+    });
+  }
+
+  // Add MC
+  const mcIdx = ZODIAC_SIGNS.indexOf(result.midheaven.sign);
+  planets.push({
+    name: "MC",
+    longitude: result.midheaven.longitude,
+    sign: result.midheaven.sign,
+    degreeInSign: result.midheaven.degree,
+    symbol: mcIdx >= 0 ? ["♈","♉","♊","♋","♌","♍","♎","♏","♐","♑","♒","♓"][mcIdx] : "MC",
+    house: 10,
+    dms: result.midheaven.dms,
+  });
+
+  return {
+    planets,
+    houses: result.houses.map((h) => h.longitude),
+    ascendant: result.ascendant.longitude,
+    ascendantSign: result.ascendant.sign,
+    midheaven: result.midheaven.longitude,
+    midheavenSign: result.midheaven.sign,
+  };
+}
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -19,8 +97,10 @@ const Dashboard = () => {
   const [profile, setProfile] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [showAllPlanets, setShowAllPlanets] = useState(false);
+  const [chartData, setChartData] = useState<NatalChartData | null>(null);
+  const [chartLoading, setChartLoading] = useState(false);
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     if (!user) return;
     const { data } = await supabase
       .from("profiles")
@@ -32,12 +112,47 @@ const Dashboard = () => {
     } else {
       setProfile(data);
     }
-  };
+  }, [user, navigate]);
 
-  useEffect(() => { fetchProfile(); }, [user, navigate]);
+  const fetchChart = useCallback(async (prof: any) => {
+    if (!prof?.date_of_birth || !prof?.birth_place) return;
+    setChartLoading(true);
+    try {
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/calculate-natal-chart`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            user_id: prof.user_id,
+            date_of_birth: prof.date_of_birth,
+            birth_time: prof.birth_time,
+            birth_place: prof.birth_place,
+          }),
+        }
+      );
+      if (resp.ok) {
+        const result: EdgeFunctionResult = await resp.json();
+        setChartData(edgeResultToChartData(result));
+      }
+    } catch {
+      // silently fail, chart will show placeholder
+    } finally {
+      setChartLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchProfile(); }, [fetchProfile]);
+
+  useEffect(() => {
+    if (profile) fetchChart(profile);
+  }, [profile, fetchChart]);
 
   const refreshChart = async () => {
-    if (!user || !profile) return;
+    if (!profile) return;
     setRefreshing(true);
     try {
       const resp = await fetch(
@@ -49,18 +164,20 @@ const Dashboard = () => {
             Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
           body: JSON.stringify({
-            user_id: user.id,
+            user_id: profile.user_id,
             date_of_birth: profile.date_of_birth,
             birth_time: profile.birth_time,
             birth_place: profile.birth_place,
           }),
         }
       );
-      const data = await resp.json();
       if (resp.ok) {
+        const result: EdgeFunctionResult = await resp.json();
+        setChartData(edgeResultToChartData(result));
         await fetchProfile();
         toast.success("Harita güncellendi ✨");
       } else {
+        const data = await resp.json();
         toast.error(data.error || "Harita güncellenemedi");
       }
     } catch {
@@ -70,15 +187,6 @@ const Dashboard = () => {
     }
   };
 
-  const chartData: NatalChartData | null = useMemo(() => {
-    if (!profile?.date_of_birth || !profile?.birth_place) return null;
-    try {
-      return calculateNatalChart(profile.date_of_birth, profile.birth_time, 41.0, 29.0);
-    } catch {
-      return null;
-    }
-  }, [profile]);
-
   if (!profile) return null;
 
   const bigThree = [
@@ -87,7 +195,6 @@ const Dashboard = () => {
     { label: trPlanet("Rising"), sign: trSign(profile.rising_sign), emoji: TR.signEmojis[profile.rising_sign] || "⬆" },
   ];
 
-  // All planets for detailed list
   const allPlanets = chartData?.planets || [];
 
   return (
@@ -125,7 +232,11 @@ const Dashboard = () => {
             </button>
           </h2>
 
-          {chartData ? (
+          {chartLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 text-primary animate-spin" />
+            </div>
+          ) : chartData ? (
             <div className="mb-6">
               <NatalChartWheel data={chartData} size={280} />
             </div>
@@ -187,7 +298,7 @@ const Dashboard = () => {
                       <div className="grid grid-cols-2 gap-1">
                         {chartData.houses.map((cusp, i) => {
                           const sign = trSign(
-                            ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"][Math.floor(((cusp % 360) + 360) % 360 / 30)]
+                            ZODIAC_SIGNS[Math.floor(((cusp % 360) + 360) % 360 / 30)]
                           );
                           const deg = ((cusp % 360) + 360) % 360 % 30;
                           const d = Math.floor(deg);
