@@ -38,6 +38,45 @@ export type Database = {
         }
         Relationships: []
       }
+      karmic_matches: {
+        Row: {
+          accepted_a: boolean
+          accepted_b: boolean
+          ai_analysis: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          score: number
+          score_details: Json | null
+          user_a: string
+          user_b: string
+        }
+        Insert: {
+          accepted_a?: boolean
+          accepted_b?: boolean
+          ai_analysis?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          score?: number
+          score_details?: Json | null
+          user_a: string
+          user_b: string
+        }
+        Update: {
+          accepted_a?: boolean
+          accepted_b?: boolean
+          ai_analysis?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          score?: number
+          score_details?: Json | null
+          user_a?: string
+          user_b?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -46,6 +85,7 @@ export type Database = {
           created_at: string
           date_of_birth: string | null
           id: string
+          karmic_match_enabled: boolean
           moon_sign: string | null
           name: string | null
           onboarding_completed: boolean
@@ -61,6 +101,7 @@ export type Database = {
           created_at?: string
           date_of_birth?: string | null
           id?: string
+          karmic_match_enabled?: boolean
           moon_sign?: string | null
           name?: string | null
           onboarding_completed?: boolean
@@ -76,6 +117,7 @@ export type Database = {
           created_at?: string
           date_of_birth?: string | null
           id?: string
+          karmic_match_enabled?: boolean
           moon_sign?: string | null
           name?: string | null
           onboarding_completed?: boolean
@@ -85,6 +127,38 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      soul_chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          match_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          match_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          match_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "soul_chat_messages_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "karmic_matches"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       syntheses: {
         Row: {

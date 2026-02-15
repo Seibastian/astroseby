@@ -40,6 +40,7 @@ export const TR = {
   nav: {
     home: "Ana Sayfa",
     dreams: "Rüyalar",
+    karmic: "Kader",
     mentor: "Mentor",
     premium: "Premium",
     profile: "Profil",
