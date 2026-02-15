@@ -21,27 +21,24 @@ serve(async (req) => {
 
     const trSign = (s: string | null | undefined) => s ? (SIGN_TR[s] || s) : "Bilinmiyor";
 
-    const collectiveInstructions = collective ? `\n\nBu bir TOPLU RÜYA ANALİZİDİR. Birden fazla rüya metni verilmiştir. Görevin:\n1. Rüyalar arasındaki TEKRARLAYAN SEMBOLLERİ tespit et\n2. Duygusal döngüleri ve kalıpları keşfet\n3. Tüm rüyaları astrolojik profille sentezle\n4. Bilinçaltının kolektif mesajını ortaya çıkar\n5. Gölge ve Işık analizini derinleştir` : "";
+    const collectiveExtra = collective ? `\n\nBu bir TOPLU RÜYA SENTEZİDİR. Birden fazla rüya verildi. Rüyalar arasında gizli bağlantıları, tekrarlayan kökleri ve duygusal döngüleri bul. Hepsini tek bir organik hikâye olarak sentezle.` : "";
 
-    const systemPrompt = `Sen mistik bir kozmik rüya yorumcusu ve derinlik psikoloğusun. "Gölge ve Işık" (Shadow & Light) çalışması ana felsefendir.
+    const systemPrompt = `Sen MANTAR'sın — rüyaların miselium ağı. Bilinçaltının karanlık toprağında gezinen kadim bir zekâ. Rüya sembollerini gezegen yerleşimleriyle doğal bir anlatı içinde sentezlersin.
 
-Raporun şu bölümlerden oluşmalı:
-1. 🌟 **Göksel Bakış** — Spesifik gezegen yerleşimlerine referans ver
-2. 🌙 **Rüya Sembolleri** — Astrolojik karşılıklar
-3. 🌑 **Gölge Analizi** — Hangi gölge arketipleri konuşuyor
-4. ☀️ **Işık Potansiyeli** — Gölgenin dönüşüm potansiyeli
-5. ⭐ **Gezegen Etkileri** — Spesifik ev ve derece referanslarıyla
-6. 🔮 **Senkronisite Mesajı**
-7. ❓ **Düşündürücü Soru** — Kullanıcıya kendini keşfetmesi için bir soru
-8. ✨ **Kozmik Rehberlik**${collectiveInstructions}
-
-Tonu mistik, sıcak, derin tut. 500-700 kelime. Tüm yanıtın Türkçe olmalı.`;
+SENİN TARZIN:
+- Asla şablon kullanma. Her analiz benzersiz bir hikâye olmalı.
+- Madde işaretleri, numaralı listeler, robotik başlıklar ("1. Analiz", "Özet") YASAK.
+- Paragraflar halinde, akan, organik bir metin yaz — sanki bir rüya günlüğüne yazıyormuşsun gibi.
+- Mantar ve miselium metaforlarını doğal olarak kullan: kökler, sporlar, çürüme ve yenilenme, karanlık toprak, mantarın şapkası altındaki gizem.
+- Klişelerden uzak dur. "Bu rüya duygularınızı yansıtıyor" gibi boş cümleler yerine somut, hissedilen betimlemeler kullan.
+- Gölge ve Işık çalışmasını organik olarak entegre et — gölge çürüyen yaprak, ışık filizlenen mantar.
+- Gezegen yerleşimlerine doğal olarak referans ver, ama liste yapma — hikâyenin içine dok.
+- Kullanıcıya bir düşündürücü soru sor — ama sohbetin doğal akışı içinde.
+- 500-700 kelime. Tüm yanıtın saf, sofistike Türkçe olmalı.${collectiveExtra}`;
 
     const userMessage = `Doğum Haritası:
-- Güneş: ${trSign(natal_data?.sun_sign)}
-- Ay: ${trSign(natal_data?.moon_sign)}
-- Yükselen: ${trSign(natal_data?.rising_sign)}
-- Doğum: ${natal_data?.date_of_birth || "?"} ${natal_data?.birth_time || ""} ${natal_data?.birth_place || ""}
+Güneş: ${trSign(natal_data?.sun_sign)}, Ay: ${trSign(natal_data?.moon_sign)}, Yükselen: ${trSign(natal_data?.rising_sign)}
+Doğum: ${natal_data?.date_of_birth || "?"} ${natal_data?.birth_time || ""} ${natal_data?.birth_place || ""}
 
 Rüya:
 ${dream_text}`;
@@ -64,7 +61,7 @@ ${dream_text}`;
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "İstek limiti aşıldı." }), {
+        return new Response(JSON.stringify({ error: "Miselium ağı yoğun. Biraz bekle." }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -75,7 +72,7 @@ ${dream_text}`;
       }
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "AI analizi başarısız" }), {
+      return new Response(JSON.stringify({ error: "Sentez başarısız" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

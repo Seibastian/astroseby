@@ -1,4 +1,5 @@
-import { Home, BookOpen, User, Sparkles, Heart, Users } from "lucide-react";
+import { Home, BookOpen, User, Heart, Users } from "lucide-react";
+import mantarImg from "@/assets/mantar-avatar.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import { TR } from "@/lib/i18n";
 
@@ -7,6 +8,7 @@ const tabs = [
   { path: "/dreams", icon: BookOpen, label: TR.nav.dreams },
   { path: "/karmic", icon: Heart, label: TR.nav.karmic },
   { path: "/chambers", icon: Users, label: TR.nav.chambers },
+  { path: "/mentor", icon: null, label: TR.nav.mentor, isMantar: true },
   { path: "/profile", icon: User, label: TR.nav.profile },
 ];
 
@@ -27,7 +29,15 @@ const BottomNav = () => {
                 isActive ? "text-primary" : "text-muted-foreground"
               }`}
             >
-              <tab.icon className="h-5 w-5" />
+              {tab.isMantar ? (
+                <img
+                  src={mantarImg}
+                  alt="Mantar"
+                  className={`h-5 w-5 rounded-full ${isActive ? "ring-1 ring-primary" : "opacity-60"}`}
+                />
+              ) : (
+                tab.icon && <tab.icon className="h-5 w-5" />
+              )}
               <span className="text-[9px] font-medium">{tab.label}</span>
             </button>
           );

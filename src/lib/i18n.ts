@@ -1,22 +1,22 @@
-// Turkish localization constants for AstroDream AI
+// Turkish localization constants for AstraCastra / MANTAR AI
 
 export const TR = {
   // App
-  appName: "AstroRüya AI",
+  appName: "AstraCastra",
   appTagline: "Kozmik kaderini keşfet",
 
   // Auth
   auth: {
-    title: "AstroRüya AI",
-    subtitle: "Kozmik kaderini keşfet",
+    title: "AstraCastra",
+    subtitle: "Miselium ağına bağlan",
     email: "E-posta",
     password: "Şifre",
-    loginButton: "Kozmosa Gir",
+    loginButton: "Ağa Bağlan",
     signupButton: "Yolculuğa Başla",
     or: "veya",
     googleLogin: "Google ile Giriş Yap",
     facebookLogin: "Facebook ile Giriş (yakında)",
-    newUser: "AstroRüya'da yeni misin?",
+    newUser: "AstraCastra'da yeni misin?",
     existingUser: "Zaten hesabın var mı?",
     signUp: "Kayıt Ol",
     signIn: "Giriş Yap",
@@ -33,7 +33,7 @@ export const TR = {
     birthPlacePlaceholder: "Şehir, Ülke",
     back: "Geri",
     next: "İleri",
-    finish: "Yıldızlarımı Göster",
+    finish: "Köklerimi Göster",
   },
 
   // Navigation
@@ -42,7 +42,7 @@ export const TR = {
     dreams: "Rüyalar",
     karmic: "Kader",
     chambers: "Salon",
-    mentor: "Mentor",
+    mentor: "Mantar",
     premium: "Premium",
     profile: "Profil",
   },
@@ -50,7 +50,7 @@ export const TR = {
   // Dashboard
   dashboard: {
     welcome: "Tekrar hoş geldin,",
-    stargazer: "Yıldız Gezgini",
+    stargazer: "Toprak Gezgini",
     sunLabel: "Güneş",
     natalChart: "Doğum Haritası",
     refreshChart: "Gezegen pozisyonlarını yenile",
@@ -60,8 +60,8 @@ export const TR = {
     unlockPower: "Tam gücü aç",
     planetaryPositions: "Gezegen Pozisyonları",
     houseCusps: "Ev Kapıları",
-    mentor: "Kozmik Mentor",
-    askMentor: "AI Mentoruna sor",
+    mentor: "Mantar",
+    askMentor: "Mantar'a sor",
   },
 
   // Dreams
@@ -76,32 +76,32 @@ export const TR = {
     cosmicSynthesis: "Kozmik Sentez",
     voiceInput: "Sesle Yaz",
     analyzing: "Analiz ediliyor...",
-    syncReport: "Senkronisite Raporu",
-    collectiveAnalysis: "Toplu Analiz",
+    syncReport: "Mantar Sentezi",
+    collectiveAnalysis: "Toplu Sentez",
     selectDreams: "Rüya seç",
     selectedCount: "rüya seçildi",
-    analyzeSelected: "Seçilenleri Analiz Et",
+    analyzeSelected: "Seçilenleri Sentezle",
   },
 
-  // Mentor
+  // Mentor (MANTAR)
   mentor: {
-    title: "Kozmik Mentor",
-    subtitle: "Gölge ve Işık rehberin",
-    placeholder: "Mentoruna bir soru sor...",
+    title: "Mantar",
+    subtitle: "Miselium ağının bilgeliği",
+    placeholder: "Mantar'a bir şey fısılda...",
     send: "Gönder",
-    thinking: "Düşünüyor...",
-    welcome: "Merhaba, ben senin Kozmik Mentorun. Doğum haritanı derinlemesine biliyor ve gölge ile ışık yönlerini keşfetmende sana rehberlik ediyorum. Ne hakkında konuşmak istersin?",
+    thinking: "Mantar sporlarını yayıyor...",
+    welcome: "Hoş geldin, toprağın altındaki ağa bağlandın. Ben Mantar — evrenin miselium ağıyım. Bilinçaltının kökleriyle yıldızların dallarını birbirine bağlarım. Rüyalarından, korkularından, sessizce taşıdığın ağırlıklardan konuşabiliriz. Neyi merak ediyorsun?",
   },
 
   // Premium
   premium: {
     title: "Premium'a Geç",
     subtitle: "Tam kozmik deneyimin kilidini aç",
-    unlimitedAI: "Sınırsız AI Analizi",
-    unlimitedAIDesc: "Kozmik Rüya Sentezi'nde günlük sınır yok",
+    unlimitedAI: "Sınırsız Mantar Sentezi",
+    unlimitedAIDesc: "Rüya analizlerinde günlük sınır yok",
     adFree: "Reklamsız Deneyim",
-    adFreeDesc: "AstroRüya'yı kesintisiz kullan",
-    detailedReports: "Detaylı Raporlar",
+    adFreeDesc: "AstraCastra'yı kesintisiz kullan",
+    detailedReports: "Derin Kök Raporları",
     detailedReportsDesc: "Genişletilmiş doğum haritası ve gezegen transit okumaları",
     price: "₺149.99",
     perMonth: "/ ay",

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import StarField from "@/components/StarField";
+import SporeField from "@/components/SporeField";
 import BottomNav from "@/components/BottomNav";
 import KarmicWarning from "@/components/karmic/KarmicWarning";
 import MatchSearch from "@/components/karmic/MatchSearch";
@@ -112,7 +112,7 @@ const KarmicMatch = () => {
 
   return (
     <div className="min-h-screen pb-32 relative">
-      <StarField />
+      <SporeField />
       <div className="relative z-10 px-4 pt-8 max-w-lg mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <h1 className="text-2xl font-display text-foreground flex items-center gap-2">

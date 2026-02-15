@@ -1,14 +1,18 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import StarField from "@/components/StarField";
+import SporeField from "@/components/SporeField";
 import BottomNav from "@/components/BottomNav";
+import MantarAvatar from "@/components/MantarAvatar";
+import SporeLoading from "@/components/SporeLoading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Loader2, Sparkles, User } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 import { TR, trSign, trPlanet } from "@/lib/i18n";
-import { calculateNatalChart, type NatalChartData, type PlanetPosition } from "@/lib/astrology";
+import { calculateNatalChart, type NatalChartData } from "@/lib/astrology";
+import { useTypewriter } from "@/hooks/useTypewriter";
+import ReactMarkdown from "react-markdown";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -20,6 +24,21 @@ function buildNatalSummary(chart: NatalChartData): string {
     .map((p) => `${trPlanet(p.name)}: ${trSign(p.sign)} ${p.house}. ev (${p.dms})`)
     .join("\n");
 }
+
+const MentorMessage = ({ content, isLatest, isStreaming }: { content: string; isLatest: boolean; isStreaming: boolean }) => {
+  const { displayed, isTyping } = useTypewriter(content, 12);
+  const showText = isLatest ? displayed : content;
+
+  return (
+    <div className="flex gap-3 items-start">
+      <MantarAvatar size="sm" pulsing={isTyping && isLatest} />
+      <div className="glass-card rounded-xl px-4 py-3 text-sm max-w-[85%] prose prose-sm prose-invert">
+        <ReactMarkdown>{showText}</ReactMarkdown>
+        {isTyping && isLatest && <span className="typewriter-cursor" />}
+      </div>
+    </div>
+  );
+};
 
 const Mentor = () => {
   const { user } = useAuth();
@@ -41,12 +60,7 @@ const Mentor = () => {
         if (data) {
           setProfile(data);
           try {
-            const chart = calculateNatalChart(
-              data.date_of_birth,
-              data.birth_time,
-              41.0,
-              29.0
-            );
+            const chart = calculateNatalChart(data.date_of_birth, data.birth_time, 41.0, 29.0);
             setChartData(chart);
           } catch {}
         }
@@ -93,14 +107,13 @@ const Mentor = () => {
 
       if (!resp.ok || !resp.body) {
         const errData = await resp.json().catch(() => ({}));
-        throw new Error(errData.error || "Mentor yanıt veremedi");
+        throw new Error(errData.error || "Mantar yanıt veremedi");
       }
 
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
 
-      // Add empty assistant message
       setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
 
       while (true) {
@@ -153,27 +166,22 @@ const Mentor = () => {
 
   return (
     <div className="min-h-screen pb-16 relative flex flex-col">
-      <StarField />
+      <SporeField />
       <div className="relative z-10 flex-1 flex flex-col max-w-lg mx-auto w-full">
         {/* Header */}
-        <div className="px-4 pt-6 pb-3">
-          <h1 className="text-xl font-display text-foreground flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" /> {TR.mentor.title}
-          </h1>
-          <p className="text-xs text-muted-foreground">{TR.mentor.subtitle}</p>
+        <div className="px-4 pt-6 pb-3 flex items-center gap-3">
+          <MantarAvatar size="md" />
+          <div>
+            <h1 className="text-xl font-display text-foreground">{TR.mentor.title}</h1>
+            <p className="text-xs text-muted-foreground">{TR.mentor.subtitle}</p>
+          </div>
         </div>
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-4 space-y-3 pb-4">
-          {/* Welcome message */}
           {messages.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="glass-card rounded-xl p-4 text-sm text-foreground"
-            >
-              <Sparkles className="h-4 w-4 text-primary mb-2" />
-              <p className="whitespace-pre-wrap">{TR.mentor.welcome}</p>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <MentorMessage content={TR.mentor.welcome} isLatest isStreaming={false} />
             </motion.div>
           )}
 
@@ -183,23 +191,27 @@ const Mentor = () => {
                 key={i}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                className={msg.role === "user" ? "flex justify-end" : ""}
               >
-                <div
-                  className={`max-w-[85%] rounded-xl px-4 py-3 text-sm whitespace-pre-wrap ${
-                    msg.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "glass-card text-foreground"
-                  }`}
-                >
-                  {msg.role === "assistant" && (
-                    <Sparkles className="h-3 w-3 text-primary mb-1 inline-block mr-1" />
-                  )}
-                  {msg.content || (loading && i === messages.length - 1 ? "..." : "")}
-                </div>
+                {msg.role === "user" ? (
+                  <div className="max-w-[85%] rounded-xl px-4 py-3 text-sm bg-primary text-primary-foreground">
+                    {msg.content}
+                  </div>
+                ) : (
+                  <MentorMessage
+                    content={msg.content || (loading && i === messages.length - 1 ? "" : "")}
+                    isLatest={i === messages.length - 1}
+                    isStreaming={loading && i === messages.length - 1}
+                  />
+                )}
               </motion.div>
             ))}
           </AnimatePresence>
+
+          {loading && messages[messages.length - 1]?.role !== "assistant" && (
+            <SporeLoading />
+          )}
+
           <div ref={scrollRef} />
         </div>
 
