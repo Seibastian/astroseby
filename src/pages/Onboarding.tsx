@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import StarField from "@/components/StarField";
+import SporeField from "@/components/SporeField";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { User, CalendarDays, Clock, MapPin, ChevronRight, ChevronLeft } from "lucide-react";
@@ -93,7 +93,7 @@ const Onboarding = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 relative">
-      <StarField />
+      <SporeField />
       <div className="w-full max-w-sm relative z-10">
         <div className="flex justify-center gap-3 mb-8">
           {steps.map((_, i) => (

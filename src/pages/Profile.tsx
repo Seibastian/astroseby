@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import StarField from "@/components/StarField";
+import SporeField from "@/components/SporeField";
 import BottomNav from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -30,7 +30,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen pb-24 relative">
-      <StarField />
+      <SporeField />
       <div className="relative z-10 px-4 pt-8 max-w-lg mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
           <div className="h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-3 border-2 border-primary/40">

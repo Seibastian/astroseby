@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import StarField from "@/components/StarField";
+import SporeField from "@/components/SporeField";
 import { motion } from "framer-motion";
 import { Mail, Lock, Star } from "lucide-react";
 import { TR } from "@/lib/i18n";
@@ -50,7 +50,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 relative">
-      <StarField />
+      <SporeField />
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}

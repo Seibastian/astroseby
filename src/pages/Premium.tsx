@@ -1,4 +1,4 @@
-import StarField from "@/components/StarField";
+import SporeField from "@/components/SporeField";
 import BottomNav from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -13,7 +13,7 @@ const benefits = [
 
 const Premium = () => (
   <div className="min-h-screen pb-24 relative">
-    <StarField />
+    <SporeField />
     <div className="relative z-10 px-4 pt-8 max-w-lg mx-auto">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
         <Crown className="h-12 w-12 text-primary mx-auto mb-3" />

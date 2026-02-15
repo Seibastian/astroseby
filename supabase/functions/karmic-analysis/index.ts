@@ -36,23 +36,20 @@ serve(async (req) => {
     let systemPrompt: string;
 
     if (mode === "icebreaker") {
-      systemPrompt = `Sen bir astrolojik sohbet kolaylaştırıcısısın. İki kişinin doğum haritasına dayalı olarak derin, anlamlı ve mistik bir "buz kırıcı" soru üret. Soru Türkçe olmalı, ruhani ve düşündürücü olmalı. Tek bir soru üret, açıklama ekleme.
+      systemPrompt = `Sen MANTAR'sın — iki ruhun miselium ağındaki bağlantı noktasısın. İki kişinin doğum haritasına dayalı olarak derin, organik, düşündürücü bir "buz kırıcı" soru üret. Tek bir soru üret, açıklama ekleme. Mantar metaforlarını doğal olarak kullanabilirsin.
 
 Kişi A: ${profile_a?.name || "Gizemli Ruh"} — Güneş: ${trSign(profile_a?.sun_sign)}, Ay: ${trSign(profile_a?.moon_sign)}, Yükselen: ${trSign(profile_a?.rising_sign)}
 Kişi B: ${profile_b?.name || "Gizemli Ruh"} — Güneş: ${trSign(profile_b?.sun_sign)}, Ay: ${trSign(profile_b?.moon_sign)}, Yükselen: ${trSign(profile_b?.rising_sign)}`;
     } else {
-      systemPrompt = `Sen derin astroloji ve karmik ilişkiler konusunda uzman bir kozmik rehbersin. Türkçe yazıyorsun. Yüksek titreşimli, mistik ve psikolojik derinliği olan bir dil kullanıyorsun.
+      systemPrompt = `Sen MANTAR'sın — karmik bağların miselium ağı. İki ruhun neden aynı toprağa düştüğünü, köklerin nasıl birbirine dolandığını anlatırsın.
 
-İki kişinin sinastri (karşılaştırmalı harita) analizini yapacaksın. TAM OLARAK 3 paragraf yaz:
-
-**Paragraf 1 — "Neden Bir Araya Geldiniz?"**
-Gezegen dizilimlerine odaklan. Element uyumlarını, Güneş-Ay ilişkisini ve yükselen burç etkileşimlerini açıkla.
-
-**Paragraf 2 — "Karmik Göreviniz"**
-Birbirlerine ne öğretebileceklerini açıkla. Gölge çalışması (shadow work) perspektifinden yaz. Her iki kişinin potansiyel gölge yönlerini ve karşılıklı iyileşme alanlarını belirt.
-
-**Paragraf 3 — "Potansiyel Gelecek"**
-Ruhani büyüme perspektifinden yaz. Bu bağlantının her iki kişiyi nereye götürebileceğini, evrimsel potansiyellerini açıkla.
+TARZIN:
+- Şablon veya liste KULLANMA. Akan, organik paragraflar yaz.
+- "Neden bir araya geldiniz" sorusunu toprağın altındaki köklerin buluşması olarak anlat.
+- "Karmik görev"i miseliumun bilgi taşıma süreci olarak betimle.
+- "Potansiyel gelecek"i filizlenme ve yeni mantarların doğuşu olarak yaz.
+- Klişelerden kaçın. Somut, hissedilen, organik metaforlar kullan.
+- Gezegen yerleşimlerine doğal olarak referans ver.
 
 VERİLER:
 Kişi A: ${profile_a?.name || "Gizemli Ruh"}
@@ -68,7 +65,7 @@ Kişi B: ${profile_b?.name || "Gizemli Ruh"}
 Karmik Skor: ${score}/100
 Skor Detayları: ${JSON.stringify(score_details?.reasons || [])}
 
-Markdown formatında yaz. Her paragrafın başlığını kalın yap.`;
+Markdown formatında yaz ama sadece *italik* ve **kalın** kullan — başlık hiyerarşisi veya listeler kullanma.`;
     }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -81,7 +78,7 @@ Markdown formatında yaz. Her paragrafın başlığını kalın yap.`;
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: mode === "icebreaker" ? "Bu iki kişi için derin bir buz kırıcı soru üret." : "Bu iki kişinin karmik bağ analizini yap." },
+          { role: "user", content: mode === "icebreaker" ? "Bu iki ruh için derin bir buz kırıcı soru üret." : "Bu iki ruhun karmik bağ analizini yap." },
         ],
         stream: true,
       }),
@@ -89,7 +86,7 @@ Markdown formatında yaz. Her paragrafın başlığını kalın yap.`;
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "İstek limiti aşıldı. Lütfen biraz bekleyin." }), {
+        return new Response(JSON.stringify({ error: "Miselium ağı yoğun. Biraz bekle." }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }

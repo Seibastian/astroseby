@@ -6,80 +6,87 @@
 
 @layer base {
   :root {
-    --background: 260 60% 5%;
-    --foreground: 45 80% 92%;
+    --background: 150 30% 4%;
+    --foreground: 80 20% 88%;
 
-    --card: 255 40% 12%;
-    --card-foreground: 45 80% 92%;
+    --card: 150 25% 8%;
+    --card-foreground: 80 20% 88%;
 
-    --popover: 255 40% 12%;
-    --popover-foreground: 45 80% 92%;
+    --popover: 150 25% 8%;
+    --popover-foreground: 80 20% 88%;
 
-    --primary: 45 80% 55%;
-    --primary-foreground: 260 60% 5%;
+    --primary: 160 80% 45%;
+    --primary-foreground: 150 30% 4%;
 
-    --secondary: 230 40% 18%;
-    --secondary-foreground: 45 80% 92%;
+    --secondary: 200 30% 14%;
+    --secondary-foreground: 80 20% 88%;
 
-    --muted: 255 30% 16%;
-    --muted-foreground: 240 15% 60%;
+    --muted: 150 20% 12%;
+    --muted-foreground: 150 15% 50%;
 
-    --accent: 270 50% 30%;
-    --accent-foreground: 45 80% 92%;
+    --accent: 340 45% 35%;
+    --accent-foreground: 80 20% 88%;
 
     --destructive: 0 70% 50%;
-    --destructive-foreground: 45 80% 92%;
+    --destructive-foreground: 80 20% 88%;
 
-    --border: 255 30% 20%;
-    --input: 255 30% 20%;
-    --ring: 45 80% 55%;
+    --border: 150 20% 16%;
+    --input: 150 20% 16%;
+    --ring: 160 80% 45%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 260 50% 8%;
-    --sidebar-foreground: 45 80% 92%;
-    --sidebar-primary: 45 80% 55%;
-    --sidebar-primary-foreground: 260 60% 5%;
-    --sidebar-accent: 255 30% 16%;
-    --sidebar-accent-foreground: 45 80% 92%;
-    --sidebar-border: 255 30% 20%;
-    --sidebar-ring: 45 80% 55%;
+    --sidebar-background: 150 25% 6%;
+    --sidebar-foreground: 80 20% 88%;
+    --sidebar-primary: 160 80% 45%;
+    --sidebar-primary-foreground: 150 30% 4%;
+    --sidebar-accent: 150 20% 12%;
+    --sidebar-accent-foreground: 80 20% 88%;
+    --sidebar-border: 150 20% 16%;
+    --sidebar-ring: 160 80% 45%;
 
     --gold: 45 80% 55%;
     --gold-light: 45 70% 70%;
     --deep-purple: 260 60% 5%;
     --midnight-blue: 230 50% 12%;
     --cosmic-purple: 270 50% 20%;
+
+    /* Mantar theme tokens */
+    --mantar-glow: 160 90% 50%;
+    --mantar-cap: 340 50% 40%;
+    --mantar-earth: 30 40% 18%;
+    --mantar-spore: 180 60% 60%;
+    --mantar-mycelium: 120 30% 25%;
   }
 
   .dark {
-    --background: 260 60% 5%;
-    --foreground: 45 80% 92%;
-    --card: 255 40% 12%;
-    --card-foreground: 45 80% 92%;
-    --popover: 255 40% 12%;
-    --popover-foreground: 45 80% 92%;
-    --primary: 45 80% 55%;
-    --primary-foreground: 260 60% 5%;
-    --secondary: 230 40% 18%;
-    --secondary-foreground: 45 80% 92%;
-    --muted: 255 30% 16%;
-    --muted-foreground: 240 15% 60%;
-    --accent: 270 50% 30%;
-    --accent-foreground: 45 80% 92%;
+    --background: 150 30% 4%;
+    --foreground: 80 20% 88%;
+    --card: 150 25% 8%;
+    --card-foreground: 80 20% 88%;
+    --popover: 150 25% 8%;
+    --popover-foreground: 80 20% 88%;
+    --primary: 160 80% 45%;
+    --primary-foreground: 150 30% 4%;
+    --secondary: 200 30% 14%;
+    --secondary-foreground: 80 20% 88%;
+    --muted: 150 20% 12%;
+    --muted-foreground: 150 15% 50%;
+    --accent: 340 45% 35%;
+    --accent-foreground: 80 20% 88%;
     --destructive: 0 70% 50%;
-    --destructive-foreground: 45 80% 92%;
-    --border: 255 30% 20%;
-    --input: 255 30% 20%;
-    --ring: 45 80% 55%;
-    --sidebar-background: 260 50% 8%;
-    --sidebar-foreground: 45 80% 92%;
-    --sidebar-primary: 45 80% 55%;
-    --sidebar-primary-foreground: 260 60% 5%;
-    --sidebar-accent: 255 30% 16%;
-    --sidebar-accent-foreground: 45 80% 92%;
-    --sidebar-border: 255 30% 20%;
-    --sidebar-ring: 45 80% 55%;
+    --destructive-foreground: 80 20% 88%;
+    --border: 150 20% 16%;
+    --input: 150 20% 16%;
+    --ring: 160 80% 45%;
+    --sidebar-background: 150 25% 6%;
+    --sidebar-foreground: 80 20% 88%;
+    --sidebar-primary: 160 80% 45%;
+    --sidebar-primary-foreground: 150 30% 4%;
+    --sidebar-accent: 150 20% 12%;
+    --sidebar-accent-foreground: 80 20% 88%;
+    --sidebar-border: 150 20% 16%;
+    --sidebar-ring: 160 80% 45%;
   }
 }
 
@@ -97,22 +104,32 @@
   }
 }
 
-/* Star-dust particles */
-@keyframes twinkle {
-  0%, 100% { opacity: 0.2; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1.2); }
+/* Spore particles (replaces star-dust) */
+@keyframes spore-drift {
+  0% { transform: translateY(0) translateX(0) scale(0.6); opacity: 0; }
+  20% { opacity: 0.7; }
+  80% { opacity: 0.5; }
+  100% { transform: translateY(-80vh) translateX(40px) scale(1.2); opacity: 0; }
 }
 
-@keyframes float-up {
-  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+@keyframes spore-glow {
+  0%, 100% { opacity: 0.2; filter: brightness(0.8); }
+  50% { opacity: 0.9; filter: brightness(1.4); }
+}
+
+@keyframes mycelium-pulse {
+  0%, 100% { opacity: 0.05; }
+  50% { opacity: 0.15; }
 }
 
 @keyframes shimmer {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
+}
+
+@keyframes typewriter-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 .star-field {
@@ -125,25 +142,66 @@
 
 .star {
   position: absolute;
-  width: 2px;
-  height: 2px;
-  background: hsl(45 80% 70%);
+  width: 3px;
+  height: 3px;
+  background: hsl(160 90% 50% / 0.6);
   border-radius: 50%;
-  animation: twinkle var(--duration, 3s) ease-in-out infinite;
+  box-shadow: 0 0 6px 2px hsl(160 90% 50% / 0.3);
+  animation: spore-glow var(--duration, 3s) ease-in-out infinite;
   animation-delay: var(--delay, 0s);
 }
 
 .glass-card {
-  background: hsl(255 40% 12% / 0.6);
+  background: hsl(150 25% 8% / 0.7);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid hsl(255 30% 25% / 0.5);
+  border: 1px solid hsl(150 20% 20% / 0.4);
 }
 
 .gold-shimmer {
-  background: linear-gradient(90deg, hsl(45 80% 55%), hsl(45 70% 70%), hsl(45 80% 55%));
+  background: linear-gradient(90deg, hsl(160 80% 45%), hsl(180 60% 60%), hsl(160 80% 45%));
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: shimmer 3s ease-in-out infinite;
+}
+
+/* Mycelium background pattern */
+.mycelium-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: 
+    radial-gradient(ellipse at 20% 80%, hsl(160 90% 50% / 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, hsl(340 50% 40% / 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, hsl(120 30% 25% / 0.05) 0%, transparent 70%);
+  animation: mycelium-pulse 8s ease-in-out infinite;
+}
+
+/* Spore loading animation */
+.spore-loading {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.spore-loading .spore {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: hsl(160 90% 50%);
+  animation: spore-glow 1.4s ease-in-out infinite;
+}
+
+.spore-loading .spore:nth-child(2) { animation-delay: 0.2s; }
+.spore-loading .spore:nth-child(3) { animation-delay: 0.4s; }
+.spore-loading .spore:nth-child(4) { animation-delay: 0.6s; }
+.spore-loading .spore:nth-child(5) { animation-delay: 0.8s; }
+
+/* Typewriter cursor */
+.typewriter-cursor::after {
+  content: '▍';
+  animation: typewriter-cursor 0.8s steps(1) infinite;
+  color: hsl(160 80% 45%);
 }

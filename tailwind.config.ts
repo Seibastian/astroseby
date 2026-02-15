@@ -60,6 +60,13 @@ export default {
           deep: "hsl(var(--deep-purple))",
           midnight: "hsl(var(--midnight-blue))",
         },
+        mantar: {
+          glow: "hsl(var(--mantar-glow))",
+          cap: "hsl(var(--mantar-cap))",
+          earth: "hsl(var(--mantar-earth))",
+          spore: "hsl(var(--mantar-spore))",
+          mycelium: "hsl(var(--mantar-mycelium))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

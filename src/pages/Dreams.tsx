@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import StarField from "@/components/StarField";
+import SporeField from "@/components/SporeField";
 import BottomNav from "@/components/BottomNav";
 import AdBanner from "@/components/AdBanner";
 import { Button } from "@/components/ui/button";
@@ -246,7 +246,7 @@ const Dreams = () => {
 
   return (
     <div className="min-h-screen pb-32 relative">
-      <StarField />
+      <SporeField />
       <div className="relative z-10 px-4 pt-8 max-w-lg mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-display text-foreground flex items-center gap-2">

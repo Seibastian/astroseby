@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import StarField from "@/components/StarField";
+import SporeField from "@/components/SporeField";
 import BottomNav from "@/components/BottomNav";
 import AdBanner from "@/components/AdBanner";
 import AmbientAudio from "@/components/AmbientAudio";
@@ -199,7 +199,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen pb-32 relative">
-      <StarField />
+      <SporeField />
       <AmbientAudio />
       <div className="relative z-10 px-4 pt-8 max-w-lg mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
