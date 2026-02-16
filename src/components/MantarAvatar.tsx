@@ -18,7 +18,7 @@ const MantarAvatar = ({ size = "md", className = "", pulsing = false }: MantarAv
       pulsing ? "animate-pulse" : ""
     } ${className}`}
     style={{
-      boxShadow: "0 0 12px 3px hsl(160 90% 50% / 0.3)",
+      boxShadow: "0 0 12px 3px hsl(38 85% 55% / 0.3)",
     }}
   >
     <img src={mantarImg} alt="Mantar" className="w-full h-full object-cover" />
