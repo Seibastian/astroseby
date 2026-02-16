@@ -172,13 +172,13 @@ const Mentor = () => {
       {/* Forest green bioluminescent background */}
       <div className="fixed inset-0 z-0 pointer-events-none"
         style={{
-          background: "radial-gradient(ellipse at 40% 70%, hsla(140, 50%, 12%, 0.5) 0%, transparent 60%), radial-gradient(ellipse at 70% 30%, hsla(160, 60%, 10%, 0.4) 0%, transparent 50%), linear-gradient(to bottom, hsl(150 30% 4%), hsl(140 25% 3%))",
+          background: "radial-gradient(ellipse at 40% 70%, hsla(270, 40%, 15%, 0.5) 0%, transparent 60%), radial-gradient(ellipse at 70% 30%, hsla(260, 50%, 12%, 0.4) 0%, transparent 50%), linear-gradient(to bottom, hsl(260 40% 5%), hsl(265 35% 4%))",
         }}
       />
-      {/* Neon accents */}
+      {/* Warm accents */}
       <div className="fixed inset-0 z-0 pointer-events-none"
         style={{
-          background: "radial-gradient(circle at 20% 90%, hsla(160, 90%, 50%, 0.03) 0%, transparent 30%), radial-gradient(circle at 80% 10%, hsla(180, 70%, 50%, 0.02) 0%, transparent 25%)",
+          background: "radial-gradient(circle at 20% 90%, hsla(38, 85%, 55%, 0.03) 0%, transparent 30%), radial-gradient(circle at 80% 10%, hsla(45, 70%, 50%, 0.02) 0%, transparent 25%)",
         }}
       />
 
