@@ -2,13 +2,14 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import SporeField from "@/components/SporeField";
 import BottomNav from "@/components/BottomNav";
 import AdBanner from "@/components/AdBanner";
 import AmbientAudio from "@/components/AmbientAudio";
 import NatalChartWheel from "@/components/NatalChartWheel";
+import AnimatedNatalBackground from "@/components/AnimatedNatalBackground";
+import CosmicLetterModal from "@/components/CosmicLetterModal";
 import { motion } from "framer-motion";
-import { BookOpen, Crown, Star, RefreshCw, Sparkles, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { BookOpen, Crown, Star, RefreshCw, Sparkles, ChevronDown, ChevronUp, Loader2, ScrollText } from "lucide-react";
 import { toast } from "sonner";
 import { TR, trSign, trPlanet } from "@/lib/i18n";
 import type { NatalChartData, PlanetPosition } from "@/lib/astrology";
@@ -38,8 +39,6 @@ interface EdgeFunctionResult {
 
 function edgeResultToChartData(result: EdgeFunctionResult): NatalChartData {
   const planets: PlanetPosition[] = [];
-
-  // Add Ascendant
   const ascIdx = ZODIAC_SIGNS.indexOf(result.ascendant.sign);
   planets.push({
     name: "Ascendant",
@@ -51,7 +50,6 @@ function edgeResultToChartData(result: EdgeFunctionResult): NatalChartData {
     dms: result.ascendant.dms,
   });
 
-  // Add planets
   for (const p of result.planets) {
     const GLYPHS: Record<string, string> = {
       Sun: "☉", Moon: "☽", Mercury: "☿", Venus: "♀", Mars: "♂",
@@ -69,7 +67,6 @@ function edgeResultToChartData(result: EdgeFunctionResult): NatalChartData {
     });
   }
 
-  // Add MC
   const mcIdx = ZODIAC_SIGNS.indexOf(result.midheaven.sign);
   planets.push({
     name: "MC",
@@ -91,6 +88,12 @@ function edgeResultToChartData(result: EdgeFunctionResult): NatalChartData {
   };
 }
 
+function buildNatalSummary(data: NatalChartData): string {
+  return data.planets
+    .map((p) => `${trPlanet(p.name)}: ${trSign(p.sign)} ${p.house}. ev (${p.dms})`)
+    .join("\n");
+}
+
 const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -99,6 +102,7 @@ const Dashboard = () => {
   const [showAllPlanets, setShowAllPlanets] = useState(false);
   const [chartData, setChartData] = useState<NatalChartData | null>(null);
   const [chartLoading, setChartLoading] = useState(false);
+  const [letterOpen, setLetterOpen] = useState(false);
 
   const fetchProfile = useCallback(async () => {
     if (!user) return;
@@ -139,17 +143,14 @@ const Dashboard = () => {
         setChartData(edgeResultToChartData(result));
       }
     } catch {
-      // silently fail, chart will show placeholder
+      // silently fail
     } finally {
       setChartLoading(false);
     }
   }, []);
 
   useEffect(() => { fetchProfile(); }, [fetchProfile]);
-
-  useEffect(() => {
-    if (profile) fetchChart(profile);
-  }, [profile, fetchChart]);
+  useEffect(() => { if (profile) fetchChart(profile); }, [profile, fetchChart]);
 
   const refreshChart = async () => {
     if (!profile) return;
@@ -198,20 +199,53 @@ const Dashboard = () => {
   const allPlanets = chartData?.planets || [];
 
   return (
-    <div className="min-h-screen pb-32 relative">
-      <SporeField />
+    <div className="min-h-screen pb-32 relative theme-home">
+      {/* Animated natal chart background */}
+      <AnimatedNatalBackground data={chartData} />
+      
+      {/* Cosmic purple overlay */}
+      <div className="fixed inset-0 z-0 pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse at 30% 20%, hsla(270, 50%, 20%, 0.15) 0%, transparent 60%), radial-gradient(ellipse at 70% 80%, hsla(260, 60%, 15%, 0.2) 0%, transparent 50%)",
+        }}
+      />
+
       <AmbientAudio />
       <div className="relative z-10 px-4 pt-8 max-w-lg mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <p className="text-sm text-muted-foreground">{TR.dashboard.welcome}</p>
           <h1 className="text-2xl font-display text-foreground">
-            {profile.name || TR.dashboard.stargazer}{" "}
+            {profile.nickname || profile.name || TR.dashboard.stargazer}{" "}
             <span className="text-primary">{TR.signEmojis[profile.sun_sign] || "✨"}</span>
           </h1>
           <p className="text-sm text-primary mt-1">
             {trSign(profile.sun_sign)} {trPlanet("Sun")}
           </p>
         </motion.div>
+
+        {/* Cosmic Letter CTA */}
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          onClick={() => setLetterOpen(true)}
+          className="w-full mb-6 p-4 rounded-2xl text-left flex items-center gap-4 transition-all hover:scale-[1.01]"
+          style={{
+            background: "linear-gradient(135deg, hsla(270, 40%, 18%, 0.8), hsla(260, 50%, 12%, 0.9))",
+            border: "1px solid hsla(270, 50%, 35%, 0.3)",
+            boxShadow: "0 4px 20px hsla(270, 50%, 20%, 0.3)",
+          }}
+        >
+          <div className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: "hsla(270, 60%, 50%, 0.2)" }}
+          >
+            <ScrollText className="h-5 w-5" style={{ color: "hsl(270, 60%, 70%)" }} />
+          </div>
+          <div>
+            <p className="font-display text-sm text-foreground">{TR.dashboard.cosmicLetter}</p>
+            <p className="text-xs text-muted-foreground">{TR.dashboard.cosmicLetterDesc}</p>
+          </div>
+        </motion.button>
 
         {/* Natal Chart Card */}
         <motion.div
@@ -291,7 +325,6 @@ const Dashboard = () => {
                       </span>
                     </div>
                   ))}
-                  {/* House Cusps */}
                   {chartData && (
                     <div className="mt-3 pt-2 border-t border-border/30">
                       <p className="text-xs text-primary font-display mb-1">{TR.dashboard.houseCusps}</p>
@@ -352,6 +385,15 @@ const Dashboard = () => {
           </motion.button>
         </div>
       </div>
+
+      {/* Cosmic Letter Modal */}
+      <CosmicLetterModal
+        open={letterOpen}
+        onClose={() => setLetterOpen(false)}
+        profile={profile}
+        natalSummary={chartData ? buildNatalSummary(chartData) : ""}
+      />
+
       <AdBanner />
       <BottomNav />
     </div>

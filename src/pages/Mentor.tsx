@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import SporeField from "@/components/SporeField";
 import BottomNav from "@/components/BottomNav";
 import MantarAvatar from "@/components/MantarAvatar";
 import SporeLoading from "@/components/SporeLoading";
@@ -25,7 +24,7 @@ function buildNatalSummary(chart: NatalChartData): string {
     .join("\n");
 }
 
-const MentorMessage = ({ content, isLatest, isStreaming }: { content: string; isLatest: boolean; isStreaming: boolean }) => {
+const MentorMessage = ({ content, isLatest }: { content: string; isLatest: boolean }) => {
   const { displayed, isTyping } = useTypewriter(content, 12);
   const showText = isLatest ? displayed : content;
 
@@ -97,6 +96,10 @@ const Mentor = () => {
             natal_summary: natalSummary,
             profile: {
               name: profile?.name,
+              nickname: (profile as any)?.nickname,
+              gender: (profile as any)?.gender,
+              profession: (profile as any)?.profession,
+              relationship_status: (profile as any)?.relationship_status,
               sun_sign: profile?.sun_sign,
               moon_sign: profile?.moon_sign,
               rising_sign: profile?.rising_sign,
@@ -165,12 +168,24 @@ const Mentor = () => {
   };
 
   return (
-    <div className="min-h-screen pb-16 relative flex flex-col">
-      <SporeField />
+    <div className="min-h-screen pb-16 relative flex flex-col theme-mentor">
+      {/* Forest green bioluminescent background */}
+      <div className="fixed inset-0 z-0 pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse at 40% 70%, hsla(140, 50%, 12%, 0.5) 0%, transparent 60%), radial-gradient(ellipse at 70% 30%, hsla(160, 60%, 10%, 0.4) 0%, transparent 50%), linear-gradient(to bottom, hsl(150 30% 4%), hsl(140 25% 3%))",
+        }}
+      />
+      {/* Neon accents */}
+      <div className="fixed inset-0 z-0 pointer-events-none"
+        style={{
+          background: "radial-gradient(circle at 20% 90%, hsla(160, 90%, 50%, 0.03) 0%, transparent 30%), radial-gradient(circle at 80% 10%, hsla(180, 70%, 50%, 0.02) 0%, transparent 25%)",
+        }}
+      />
+
       <div className="relative z-10 flex-1 flex flex-col max-w-lg mx-auto w-full">
         {/* Header */}
         <div className="px-4 pt-6 pb-3 flex items-center gap-3">
-          <MantarAvatar size="md" />
+          <MantarAvatar size="md" pulsing={loading} />
           <div>
             <h1 className="text-xl font-display text-foreground">{TR.mentor.title}</h1>
             <p className="text-xs text-muted-foreground">{TR.mentor.subtitle}</p>
@@ -181,7 +196,7 @@ const Mentor = () => {
         <div className="flex-1 overflow-y-auto px-4 space-y-3 pb-4">
           {messages.length === 0 && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-              <MentorMessage content={TR.mentor.welcome} isLatest isStreaming={false} />
+              <MentorMessage content={TR.mentor.welcome} isLatest />
             </motion.div>
           )}
 
@@ -199,9 +214,8 @@ const Mentor = () => {
                   </div>
                 ) : (
                   <MentorMessage
-                    content={msg.content || (loading && i === messages.length - 1 ? "" : "")}
+                    content={msg.content || ""}
                     isLatest={i === messages.length - 1}
-                    isStreaming={loading && i === messages.length - 1}
                   />
                 )}
               </motion.div>

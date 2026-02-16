@@ -50,7 +50,7 @@ export const TR = {
   // Dashboard
   dashboard: {
     welcome: "Tekrar hoş geldin,",
-    stargazer: "Toprak Gezgini",
+    stargazer: "Gezgin",
     sunLabel: "Güneş",
     natalChart: "Doğum Haritası",
     refreshChart: "Gezegen pozisyonlarını yenile",
@@ -62,6 +62,8 @@ export const TR = {
     houseCusps: "Ev Kapıları",
     mentor: "Mantar",
     askMentor: "Mantar'a sor",
+    cosmicLetter: "Haritamı Analiz Et",
+    cosmicLetterDesc: "Kişisel kozmik mektubunu oku",
   },
 
   // Dreams
@@ -86,11 +88,11 @@ export const TR = {
   // Mentor (MANTAR)
   mentor: {
     title: "Mantar",
-    subtitle: "Miselium ağının bilgeliği",
-    placeholder: "Mantar'a bir şey fısılda...",
+    subtitle: "Kozmik danışmanın",
+    placeholder: "Mantar'a bir şey sor...",
     send: "Gönder",
-    thinking: "Mantar sporlarını yayıyor...",
-    welcome: "Hoş geldin, toprağın altındaki ağa bağlandın. Ben Mantar — evrenin miselium ağıyım. Bilinçaltının kökleriyle yıldızların dallarını birbirine bağlarım. Rüyalarından, korkularından, sessizce taşıdığın ağırlıklardan konuşabiliriz. Neyi merak ediyorsun?",
+    thinking: "Mantar düşünüyor...",
+    welcome: "Selam! Ben Mantar. Haritanı inceledim, seni biraz tanıyorum zaten. Bugün neler oluyor, ne konuşmak istersin?",
   },
 
   // Premium
@@ -118,6 +120,11 @@ export const TR = {
     dateOfBirth: "Doğum Tarihi",
     birthPlace: "Doğum Yeri",
     signOut: "Çıkış Yap",
+    personalInfo: "Kişisel Bilgiler",
+    nickname: "Takma Ad",
+    gender: "Cinsiyet",
+    profession: "Meslek",
+    relationship: "İlişki Durumu",
   },
 
   // Planets (extended)
