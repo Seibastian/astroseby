@@ -202,9 +202,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen pb-32 relative theme-home">
-      {/* Animated natal chart background */}
-      <AnimatedNatalBackground data={chartData} />
-      
       {/* Cosmic purple overlay */}
       <div className="fixed inset-0 z-0 pointer-events-none"
         style={{
@@ -273,8 +270,9 @@ const Dashboard = () => {
               <Loader2 className="h-8 w-8 text-primary animate-spin" />
             </div>
           ) : chartData ? (
-            <div className="mb-6">
+            <div className="mb-6 relative mx-auto" style={{ width: 280, height: 280 }}>
               <NatalChartWheel data={chartData} size={280} />
+              <AnimatedNatalBackground data={chartData} size={280} />
             </div>
           ) : (
             <div className="relative w-48 h-48 mx-auto mb-6">
