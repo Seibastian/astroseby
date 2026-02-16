@@ -8,8 +8,10 @@ import AmbientAudio from "@/components/AmbientAudio";
 import NatalChartWheel from "@/components/NatalChartWheel";
 import AnimatedNatalBackground from "@/components/AnimatedNatalBackground";
 import CosmicLetterModal from "@/components/CosmicLetterModal";
+import AspectFeed from "@/components/AspectFeed";
+import MantarAvatar from "@/components/MantarAvatar";
 import { motion } from "framer-motion";
-import { BookOpen, Crown, Star, RefreshCw, Sparkles, ChevronDown, ChevronUp, Loader2, ScrollText } from "lucide-react";
+import { BookOpen, Crown, Star, RefreshCw, Sparkles, ChevronDown, ChevronUp, Loader2, ScrollText, Heart, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { TR, trSign, trPlanet } from "@/lib/i18n";
 import type { NatalChartData, PlanetPosition } from "@/lib/astrology";
@@ -351,36 +353,62 @@ const Dashboard = () => {
           )}
         </motion.div>
 
+        {/* Aspect Feed */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="glass-card rounded-2xl p-5 mb-6"
+        >
+          <AspectFeed data={chartData} />
+        </motion.div>
+
+        {/* Mantar Quick Chat CTA */}
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          onClick={() => navigate("/mentor")}
+          className="w-full mb-6 p-4 rounded-2xl flex items-center gap-4 transition-all hover:scale-[1.01] glass-card"
+        >
+          <MantarAvatar size="md" pulsing />
+          <div className="text-left flex-1">
+            <p className="font-display text-sm text-foreground">{TR.dashboard.askMentor}</p>
+            <p className="text-xs text-muted-foreground">Haritanı yorumlayalım, bugün ne hissediyorsun?</p>
+          </div>
+          <MessageCircle className="h-5 w-5 text-primary shrink-0" />
+        </motion.button>
+
         {/* Quick Links */}
         <div className="grid grid-cols-3 gap-3">
           <motion.button
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.25 }}
             onClick={() => navigate("/dreams")}
-            className="glass-card rounded-xl p-4 text-left hover:border-primary/50 transition-colors"
+            className="glass-card rounded-xl p-4 text-center hover:border-primary/50 transition-colors"
           >
-            <BookOpen className="h-6 w-6 text-primary mb-2" />
+            <BookOpen className="h-6 w-6 text-primary mb-2 mx-auto" />
             <p className="font-display text-xs text-foreground">{TR.dashboard.dreamJournal}</p>
           </motion.button>
           <motion.button
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-            onClick={() => navigate("/mentor")}
-            className="glass-card rounded-xl p-4 text-left hover:border-primary/50 transition-colors"
+            transition={{ delay: 0.3 }}
+            onClick={() => navigate("/karmic-match")}
+            className="glass-card rounded-xl p-4 text-center hover:border-accent/50 transition-colors"
           >
-            <Sparkles className="h-6 w-6 text-primary mb-2" />
-            <p className="font-display text-xs text-foreground">{TR.dashboard.mentor}</p>
+            <Heart className="h-6 w-6 text-accent mb-2 mx-auto" />
+            <p className="font-display text-xs text-foreground">{TR.nav.karmic}</p>
           </motion.button>
           <motion.button
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.35 }}
             onClick={() => navigate("/premium")}
-            className="glass-card rounded-xl p-4 text-left hover:border-primary/50 transition-colors"
+            className="glass-card rounded-xl p-4 text-center hover:border-gold/50 transition-colors"
           >
-            <Crown className="h-6 w-6 text-primary mb-2" />
+            <Crown className="h-6 w-6 text-gold mb-2 mx-auto" />
             <p className="font-display text-xs text-foreground">{TR.dashboard.premium}</p>
           </motion.button>
         </div>
