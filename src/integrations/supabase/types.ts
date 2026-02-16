@@ -111,11 +111,15 @@ export type Database = {
           birth_time: string | null
           created_at: string
           date_of_birth: string | null
+          gender: string | null
           id: string
           karmic_match_enabled: boolean
           moon_sign: string | null
           name: string | null
+          nickname: string | null
           onboarding_completed: boolean
+          profession: string | null
+          relationship_status: string | null
           rising_sign: string | null
           sun_sign: string | null
           updated_at: string
@@ -127,11 +131,15 @@ export type Database = {
           birth_time?: string | null
           created_at?: string
           date_of_birth?: string | null
+          gender?: string | null
           id?: string
           karmic_match_enabled?: boolean
           moon_sign?: string | null
           name?: string | null
+          nickname?: string | null
           onboarding_completed?: boolean
+          profession?: string | null
+          relationship_status?: string | null
           rising_sign?: string | null
           sun_sign?: string | null
           updated_at?: string
@@ -143,11 +151,15 @@ export type Database = {
           birth_time?: string | null
           created_at?: string
           date_of_birth?: string | null
+          gender?: string | null
           id?: string
           karmic_match_enabled?: boolean
           moon_sign?: string | null
           name?: string | null
+          nickname?: string | null
           onboarding_completed?: boolean
+          profession?: string | null
+          relationship_status?: string | null
           rising_sign?: string | null
           sun_sign?: string | null
           updated_at?: string

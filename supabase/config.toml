@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.karmic-analysis]
 verify_jwt = false
+
+[functions.cosmic-letter]
+verify_jwt = false

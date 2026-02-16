@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import SporeField from "@/components/SporeField";
 import BottomNav from "@/components/BottomNav";
 import KarmicWarning from "@/components/karmic/KarmicWarning";
 import MatchSearch from "@/components/karmic/MatchSearch";
@@ -111,19 +110,30 @@ const KarmicMatch = () => {
   const bothAccepted = match?.accepted_a && match?.accepted_b;
 
   return (
-    <div className="min-h-screen pb-32 relative">
-      <SporeField />
+    <div className="min-h-screen pb-32 relative theme-karmic">
+      {/* Deep velvet red & gold background */}
+      <div className="fixed inset-0 z-0 pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse at 50% 40%, hsla(340, 50%, 15%, 0.4) 0%, transparent 60%), radial-gradient(ellipse at 30% 80%, hsla(0, 40%, 12%, 0.3) 0%, transparent 50%), linear-gradient(to bottom, hsl(340 30% 5%), hsl(350 25% 3%))",
+        }}
+      />
+      {/* Gold thread accents */}
+      <div className="fixed inset-0 z-0 pointer-events-none"
+        style={{
+          background: "radial-gradient(circle at 60% 20%, hsla(45, 80%, 55%, 0.03) 0%, transparent 25%), radial-gradient(circle at 40% 90%, hsla(45, 70%, 50%, 0.02) 0%, transparent 20%)",
+        }}
+      />
+
       <div className="relative z-10 px-4 pt-8 max-w-lg mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <h1 className="text-2xl font-display text-foreground flex items-center gap-2">
-            <Heart className="h-6 w-6 text-primary" /> Kadersel Tanışma
+            <Heart className="h-6 w-6 text-accent" /> Kadersel Tanışma
           </h1>
           <p className="text-sm text-muted-foreground mt-1">Kozmik bağlarını keşfet</p>
         </motion.div>
 
         <KarmicWarning />
 
-        {/* Opt-in Toggle */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -132,7 +142,7 @@ const KarmicMatch = () => {
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Sparkles className="h-5 w-5 text-primary" />
+              <Sparkles className="h-5 w-5 text-accent" />
               <div>
                 <p className="text-sm font-display text-foreground">Kadersel Tanışma Sistemi</p>
                 <p className="text-xs text-muted-foreground">Eşleşme havuzuna katıl</p>
@@ -151,9 +161,9 @@ const KarmicMatch = () => {
           >
             <button
               onClick={findMatch}
-              className="glass-card rounded-2xl px-8 py-4 border border-primary/40 hover:border-primary/80 transition-all group"
+              className="glass-card rounded-2xl px-8 py-4 border border-accent/40 hover:border-accent/80 transition-all group"
             >
-              <Sparkles className="h-8 w-8 text-primary mx-auto mb-2 group-hover:animate-spin" />
+              <Sparkles className="h-8 w-8 text-accent mx-auto mb-2 group-hover:animate-spin" />
               <p className="font-display text-foreground">Kadersel Eşleşmeni Bul</p>
               <p className="text-xs text-muted-foreground mt-1">Günde 1 eşleşme hakkın var</p>
             </button>
