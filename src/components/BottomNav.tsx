@@ -1,4 +1,4 @@
-import { Home, BookOpen, User, Heart, Users } from "lucide-react";
+import { Home, BookOpen, User, Heart, Users, Share2 } from "lucide-react";
 import mantarImg from "@/assets/mantar-avatar.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import { TR } from "@/lib/i18n";
@@ -8,6 +8,7 @@ const tabs = [
   { path: "/dreams", icon: BookOpen, label: TR.nav.dreams },
   { path: "/karmic", icon: Heart, label: TR.nav.karmic },
   { path: "/chambers", icon: Users, label: TR.nav.chambers },
+  { path: "/whoami", icon: Share2, label: "Ben" },
   { path: "/mentor", icon: null, label: TR.nav.mentor, isMantar: true },
   { path: "/profile", icon: User, label: TR.nav.profile },
 ];

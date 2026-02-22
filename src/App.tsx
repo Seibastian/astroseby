@@ -14,6 +14,7 @@ import Profile from "./pages/Profile";
 import KarmicMatch from "./pages/KarmicMatch";
 import SoulChambers from "./pages/SoulChambers";
 import NotFound from "./pages/NotFound";
+import WhoAmI from "./pages/WhoAmI";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const AppRoutes = () => (
     <Route path="/premium" element={<ProtectedRoute><Premium /></ProtectedRoute>} />
     <Route path="/karmic" element={<ProtectedRoute><KarmicMatch /></ProtectedRoute>} />
     <Route path="/chambers" element={<ProtectedRoute><SoulChambers /></ProtectedRoute>} />
+    <Route path="/whoami" element={<ProtectedRoute><WhoAmI /></ProtectedRoute>} />
     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
