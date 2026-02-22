@@ -379,6 +379,44 @@ Gelecekte eklenecek premium içerikler:
 
 ---
 
+## 📝 Gelişim Notları
+
+### 🔍 Keşifler (Bug Fixes & Discoveries)
+
+- **Doğum haritası hesaplama bug:** Ev numaraları yanlış çıkıyordu — Placidus ev sistemi hesaplaması düzeltildi (ev dizini düzeltmesi)
+- **Türkiye timezone:** UTC+3 yerine UTC+2 (DST dahil) olarak düzeltildi
+- **Local calculation:** Supabase Edge Function yerine tarayıcıda astronomy-engine ile lokal hesaplamaya geçildi
+- **Route mismatch:** `/karmic` → `/karmic-match` olarak düzeltildi
+- **Lovable referansları:** index.html'deki Lovable image referansları temizlendi
+- **AI bağımlılığı:** Tüm AI fonksiyonları `https://ai.gateway.lovable.dev/v1/chat/completions` kullanıyor — ileride OpenAI/Claude'a geçilecek
+
+### ✅ Tamamlananlar
+
+- Doğum haritası hesaplama (Placidus ev sistemi + Türkiye DST)
+- "Ben Kimim?" AI kimlik kartı özelliği
+- Route düzeltmeleri (/karmic-match)
+- Lovable referanslarının temizlenmesi
+- README detaylandırması (vizyon, manifesto, psikoloji, roadmap)
+
+### 📌 Yapılacaklar (Next Steps)
+
+- Rüya sistemi geliştirme (tek tek kayıt + kronolojik analiz)
+- Karmik eşleştirme düzeltmeleri
+- PWA yapısı ekleme
+- AI sağlayıcısını Lovable'dan OpenAI/Claude'a taşıma
+
+### 📂 İlgili Dosyalar
+
+- `src/lib/astrology.ts` - Doğum haritası hesaplama
+- `src/pages/Dashboard.tsx` - Ana sayfa, lokal hesaplama
+- `src/pages/WhoAmI.tsx` - "Ben Kimim?" AI kartı
+- `src/App.tsx` - Rotalar
+- `src/components/BottomNav.tsx` - Navigasyon
+- `index.html` - Lovable temizliği
+- `README.md` - Proje dokümantasyonu
+
+---
+
 ## 💌 Son Söz
 
 *"Kozmos, bizim için bir aynadır. Yıldızlar, içimizdeki yıldızları yansıtır. Rüyalar, bilinçaltımızın fısıltılarıdır. Bu iki dünyayı birleştirerek, insanlığın en kadim sorusuna cevap arıyoruz: 'Kimim ben ve nereden geliyorum?'"*
