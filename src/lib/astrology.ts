@@ -47,7 +47,6 @@ function getJulianDate(date: Date): number {
 // ────────────────────────────────────────────────────
 function getObliquity(jd: number): number {
   const T = (jd - 2451545.0) / 36525.0;
-  // IAU formula in arcseconds, converted to degrees
   const eps = 23.439291 - 0.0130042 * T - 1.64e-7 * T * T + 5.036e-7 * T * T * T;
   return eps;
 }
@@ -107,60 +106,36 @@ function calculatePlacidusHouses(
 ): number[] {
   const latRad = latDeg * Math.PI / 180;
   const oblRad = oblDeg * Math.PI / 180;
-  const ramcRad = lstDeg * Math.PI / 180; // RAMC = LST
-
-  const houses: number[] = new Array(12);
-  houses[0] = ascendant; // 1st house cusp = ASC
-  houses[9] = mc;        // 10th house cusp = MC
-  houses[6] = (mc + 180) % 360; // IC (4th house cusp)
-  houses[3] = (ascendant + 180) % 360; // DSC (7th house cusp)
-
-  // Placidus intermediate cusps via iterative method
-  // Houses 11, 12 (above horizon, between MC and ASC)
-  // Houses 2, 3 (below horizon, between ASC and IC)
 
   const placidusCusp = (fraction: number, aboveHorizon: boolean): number => {
-    // fraction: 1/3 or 2/3
-    // Start with equal house estimate
     let lon: number;
     if (aboveHorizon) {
-      // Between MC and ASC
       let diff = ascendant - mc;
       if (diff < 0) diff += 360;
       lon = (mc + diff * fraction) % 360;
     } else {
-      // Between IC and DSC... actually between ASC and IC for houses 2,3
       const ic = (mc + 180) % 360;
       let diff = ic - ascendant;
       if (diff < 0) diff += 360;
       lon = (ascendant + diff * fraction) % 360;
     }
 
-    // Iterate to find the Placidus cusp
     for (let iter = 0; iter < 50; iter++) {
       const lonRad = lon * Math.PI / 180;
       const dec = Math.asin(Math.sin(lonRad) * Math.sin(oblRad));
       const ra = Math.atan2(Math.sin(lonRad) * Math.cos(oblRad), Math.cos(lonRad));
-      const raPositive = ((ra * 180 / Math.PI) % 360 + 360) % 360;
 
-      // Diurnal semi-arc
       const tanDecTanLat = Math.tan(dec) * Math.tan(latRad);
-      // Clamp to prevent NaN at extreme latitudes
       const clamped = Math.max(-1, Math.min(1, -tanDecTanLat));
-      const dsa = Math.acos(clamped) * 180 / Math.PI; // in degrees
+      const dsa = Math.acos(clamped) * 180 / Math.PI;
 
       let targetRA: number;
       if (aboveHorizon) {
-        // Above horizon: fraction of diurnal semi-arc from MC
         targetRA = (lstDeg + fraction * dsa) % 360;
       } else {
-        // Below horizon: interpolate between ASC (H=-DSA) and IC (H=-180°)
-        // H(cusp) = -(1-fraction)*DSA - fraction*180
-        // RA = RAMC - H = RAMC + (1-fraction)*DSA + fraction*180
         targetRA = (lstDeg + (1 - fraction) * dsa + fraction * 180) % 360;
       }
 
-      // Convert target RA back to ecliptic longitude
       const targetRARad = targetRA * Math.PI / 180;
       let newLon = Math.atan2(
         Math.sin(targetRARad),
@@ -168,7 +143,6 @@ function calculatePlacidusHouses(
       ) * 180 / Math.PI;
       newLon = ((newLon % 360) + 360) % 360;
 
-      // Check convergence
       let diff = Math.abs(newLon - lon);
       if (diff > 180) diff = 360 - diff;
       lon = newLon;
@@ -177,22 +151,25 @@ function calculatePlacidusHouses(
     return lon;
   };
 
-  // House 11: 1/3 of semi-arc above horizon (MC → ASC)
-  houses[10] = placidusCusp(1 / 3, true);
-  // House 12: 2/3 of semi-arc above horizon (MC → ASC)
-  houses[11] = placidusCusp(2 / 3, true);
-  // House 2: 1/3 of semi-arc below horizon (ASC → IC)
-  houses[1] = placidusCusp(1 / 3, false);
-  // House 3: 2/3 of semi-arc below horizon (ASC → IC)
-  houses[2] = placidusCusp(2 / 3, false);
+  const h2 = placidusCusp(1 / 3, false);
+  const h3 = placidusCusp(2 / 3, false);
+  const h11 = placidusCusp(1 / 3, true);
+  const h12 = placidusCusp(2 / 3, true);
 
-  // Opposite houses
-  houses[4] = (houses[10] + 180) % 360; // 5th = opposite of 11th
-  houses[5] = (houses[11] + 180) % 360; // 6th = opposite of 12th
-  houses[7] = (houses[1] + 180) % 360;  // 8th = opposite of 2nd
-  houses[8] = (houses[2] + 180) % 360;  // 9th = opposite of 3rd
-
-  return houses;
+  return [
+    ascendant,   // 1
+    h2,          // 2
+    h3,          // 3
+    (mc + 180) % 360, // 4 (IC)
+    (h11 + 180) % 360, // 5
+    (h12 + 180) % 360, // 6
+    (ascendant + 180) % 360, // 7 (DSC)
+    (h2 + 180) % 360, // 8
+    (h3 + 180) % 360, // 9
+    mc,          // 10 (MC)
+    h11,         // 11
+    h12,         // 12
+  ];
 }
 
 // ────────────────────────────────────────────────────
@@ -216,25 +193,21 @@ function getHouse(longitude: number, houses: number[]): number {
 // Turkey timezone offset (handles DST history)
 // ────────────────────────────────────────────────────
 export function getTurkeyUTCOffset(date: Date): number {
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1; // 1-12
-  const day = date.getDate();
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth() + 1;
+  const day = date.getUTCDate();
 
-  // After October 30, 2016: permanent UTC+3
   if (year > 2016 || (year === 2016 && (month > 10 || (month === 10 && day >= 30)))) {
     return 3;
   }
 
-  // Before 2016: EET (UTC+2), EEST (UTC+3) with DST
-  // DST was last Sunday of March to last Sunday of October
-  // Approximate: April-October = +3, otherwise +2
   if (month >= 4 && month <= 10) {
-    return 3; // Summer time (EEST)
+    return 3;
   }
   if (month === 3 && day >= 25) {
-    return 3; // Late March (approximate)
+    return 3;
   }
-  return 2; // Winter time (EET)
+  return 2;
 }
 
 // ────────────────────────────────────────────────────
@@ -327,8 +300,6 @@ export function calculateNatalChart(
   lat: number,
   lon: number
 ): NatalChartData {
-  // Build the local date
-  const dob = new Date(dateOfBirth);
   let hour = 12, minute = 0;
   if (birthTime) {
     const parts = birthTime.split(":");
@@ -336,12 +307,14 @@ export function calculateNatalChart(
     minute = parseInt(parts[1], 10);
   }
 
-  // Create a date object representing local birth time
-  const localDate = new Date(dob.getFullYear(), dob.getMonth(), dob.getDate(), hour, minute, 0, 0);
-
-  // Convert local time → UTC using timezone estimation
-  const utcOffset = estimateUTCOffset(lat, lon, localDate);
-  const utcDate = new Date(localDate.getTime() - utcOffset * 3600000);
+  const utcOffset = estimateUTCOffset(lat, lon, new Date(dateOfBirth));
+  
+  const birthDateTime = new Date(dateOfBirth);
+  const year = birthDateTime.getUTCFullYear();
+  const month = birthDateTime.getUTCMonth();
+  const day = birthDateTime.getUTCDate();
+  
+  const utcDate = new Date(Date.UTC(year, month, day, hour, minute, 0) - utcOffset * 3600000);
 
   // Julian Date for obliquity
   const jd = getJulianDate(utcDate);

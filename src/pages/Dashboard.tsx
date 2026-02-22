@@ -15,7 +15,7 @@ import { BookOpen, Crown, Star, RefreshCw, Sparkles, ChevronDown, ChevronUp, Loa
 import { toast } from "sonner";
 import { TR, trSign, trPlanet } from "@/lib/i18n";
 import type { NatalChartData, PlanetPosition } from "@/lib/astrology";
-import { ZODIAC_SIGNS } from "@/lib/astrology";
+import { ZODIAC_SIGNS, calculateNatalChart } from "@/lib/astrology";
 
 interface EdgeFunctionPlanet {
   name: string;
@@ -90,6 +90,10 @@ function edgeResultToChartData(result: EdgeFunctionResult): NatalChartData {
   };
 }
 
+function edgeResultToChartDataLocal(result: NatalChartData): NatalChartData {
+  return result;
+}
+
 function buildNatalSummary(data: NatalChartData): string {
   return data.planets
     .map((p) => `${trPlanet(p.name)}: ${trSign(p.sign)} ${p.house}. ev (${p.dms})`)
@@ -124,26 +128,22 @@ const Dashboard = () => {
     if (!prof?.date_of_birth || !prof?.birth_place) return;
     setChartLoading(true);
     try {
-      const resp = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/calculate-natal-chart`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({
-            user_id: prof.user_id,
-            date_of_birth: prof.date_of_birth,
-            birth_time: prof.birth_time,
-            birth_place: prof.birth_place,
-          }),
-        }
+      // Try to geocode the birth place
+      const geoRes = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(prof.birth_place)}&format=json&limit=1`,
+        { headers: { "User-Agent": "AstroSeBy/1.0" } }
       );
-      if (resp.ok) {
-        const result: EdgeFunctionResult = await resp.json();
-        setChartData(edgeResultToChartData(result));
+      const geoData = await geoRes.json();
+      
+      let lat = 41.0, lon = 29.0;
+      if (geoData?.length) {
+        lat = parseFloat(geoData[0].lat);
+        lon = parseFloat(geoData[0].lon);
       }
+
+      // Calculate locally using the fixed astrology.ts
+      const result = calculateNatalChart(prof.date_of_birth, prof.birth_time, lat, lon);
+      setChartData(edgeResultToChartDataLocal(result));
     } catch {
       // silently fail
     } finally {
@@ -158,31 +158,24 @@ const Dashboard = () => {
     if (!profile) return;
     setRefreshing(true);
     try {
-      const resp = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/calculate-natal-chart`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({
-            user_id: profile.user_id,
-            date_of_birth: profile.date_of_birth,
-            birth_time: profile.birth_time,
-            birth_place: profile.birth_place,
-          }),
-        }
+      // Geocode the birth place
+      const geoRes = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(profile.birth_place)}&format=json&limit=1`,
+        { headers: { "User-Agent": "AstroSeBy/1.0" } }
       );
-      if (resp.ok) {
-        const result: EdgeFunctionResult = await resp.json();
-        setChartData(edgeResultToChartData(result));
-        await fetchProfile();
-        toast.success("Harita güncellendi ✨");
-      } else {
-        const data = await resp.json();
-        toast.error(data.error || "Harita güncellenemedi");
+      const geoData = await geoRes.json();
+      
+      let lat = 41.0, lon = 29.0;
+      if (geoData?.length) {
+        lat = parseFloat(geoData[0].lat);
+        lon = parseFloat(geoData[0].lon);
       }
+
+      // Calculate locally
+      const result = calculateNatalChart(profile.date_of_birth, profile.birth_time, lat, lon);
+      setChartData(edgeResultToChartDataLocal(result));
+      await fetchProfile();
+      toast.success("Harita güncellendi ✨");
     } catch {
       toast.error("Harita güncellenemedi");
     } finally {

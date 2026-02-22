@@ -137,20 +137,25 @@ function placidusCusp(fraction: number, aboveHorizon: boolean, lstDeg: number, l
 }
 
 function calculatePlacidusHouses(lstDeg: number, latDeg: number, oblDeg: number, asc: number, mc: number): number[] {
-  const houses = new Array(12);
-  houses[0] = asc;
-  houses[9] = mc;
-  houses[6] = (mc + 180) % 360;
-  houses[3] = (asc + 180) % 360;
-  houses[10] = placidusCusp(1/3, true, lstDeg, latDeg, oblDeg, asc, mc);
-  houses[11] = placidusCusp(2/3, true, lstDeg, latDeg, oblDeg, asc, mc);
-  houses[1] = placidusCusp(1/3, false, lstDeg, latDeg, oblDeg, asc, mc);
-  houses[2] = placidusCusp(2/3, false, lstDeg, latDeg, oblDeg, asc, mc);
-  houses[4] = (houses[10] + 180) % 360;
-  houses[5] = (houses[11] + 180) % 360;
-  houses[7] = (houses[1] + 180) % 360;
-  houses[8] = (houses[2] + 180) % 360;
-  return houses;
+  const h2 = placidusCusp(1/3, false, lstDeg, latDeg, oblDeg, asc, mc);
+  const h3 = placidusCusp(2/3, false, lstDeg, latDeg, oblDeg, asc, mc);
+  const h11 = placidusCusp(1/3, true, lstDeg, latDeg, oblDeg, asc, mc);
+  const h12 = placidusCusp(2/3, true, lstDeg, latDeg, oblDeg, asc, mc);
+
+  return [
+    asc,           // House 1 (ASC)
+    h2,            // House 2
+    h3,            // House 3
+    (mc + 180) % 360, // House 4 (IC)
+    (h11 + 180) % 360, // House 5
+    (h12 + 180) % 360, // House 6
+    (asc + 180) % 360, // House 7 (DSC)
+    (h2 + 180) % 360,  // House 8
+    (h3 + 180) % 360,  // House 9
+    mc,            // House 10 (MC)
+    h11,           // House 11
+    h12,           // House 12
+  ];
 }
 
 function getHouse(longitude: number, houses: number[]): number {
