@@ -4,9 +4,46 @@ import { useAuth } from "@/hooks/useAuth";
 import BottomNav from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { RefreshCw, Copy, Check, Sparkles, Loader2, Share2 } from "lucide-react";
-import { TR, trSign } from "@/lib/i18n";
+import { RefreshCw, Copy, Check, Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+
+const SIGN_TR: Record<string, string> = {
+  Aries: "Koç", Taurus: "Boğa", Gemini: "İkizler", Cancer: "Yengeç",
+  Leo: "Aslan", Virgo: "Başak", Libra: "Terazi", Scorpio: "Akrep",
+  Sagittarius: "Yay", Capricorn: "Oğlak", Aquarius: "Kova", Pisces: "Balık",
+};
+
+const trSign = (s: string | null | undefined) => s ? (SIGN_TR[s] || s) : "";
+
+const SIGN_DETAILS: Record<string, { element: string; keywords: string[], description: string }> = {
+  Aries: { element: "Ateş", keywords: ["Öncü", "Cesur", "Enerjik", "Impulsif", "Lider"], description: "Hayatta her zaman ilk adımı atmaktan çekinmez. Onun için plan yapmak değil, harekete geçmek daha önemli." },
+  Taurus: { element: "Toprak", keywords: ["Sadık", "İnatçı", "Manevi", "Hassas", "Sabırlı"], description: "Bir kez güvenini kazandıysan, senin için her şeyi yapar. Ama ona ihanet etmek, sonsuza kadar kaybetmek demek." },
+  Gemini: { element: "Hava", keywords: ["Meraklı", "Değişken", "Sosyal", "Zeki", "Dağınık"], description: "Birden fazla konuda uzmanlaşabilir. Ama aynı anda sadece bir konuya odaklanması zor." },
+  Cancer: { element: "Su", keywords: ["Duygusal", "Koruyucu", "Aile", "Intuitif", "Kırılgan"], description: "Dışarıdan güçlü görünse de aslında çok hassas. Sevdiği insanları korumak için kendini feda edebilir." },
+  Leo: { element: "Ateş", keywords: ["Özgüvenli", "Cömert", "Sahnenin", "Gururlu", "Yaratıcı"], description: "Onun olmadığı bir oda, bir konser, bir toplantı düşünemezsin. Tanınması ve takdir edilmesi onun için vazgeçilmez." },
+  Virgo: { element: "Toprak", keywords: ["Titiz", "Mükemmel", "Analitik", "Eleştirel", "Pratik"], description: "Küçük detayları fark eder, ama bu onu bazen insanlardan uzaklaştırır. Temizlik ve düzen onun sığınağı." },
+  Libra: { element: "Hava", keywords: ["Dengeli", "Adaletli", "İlişki", "Kararsız", "Zarif"], description: "Her zaman iki tarafı da anlamaya çalışır. Ama bu kararsızlığa yol açabilir. İlişkilerde denge onun için hayati önem taşır." },
+  Scorpio: { element: "Su", keywords: ["Derin", "Mücadeleci", "Gizemli", "Tutkulu", "İntikamcı"], description: "Yüzeysel sohbetler onu sıkar. Ya bir şeyi tam olarak bilir, ya da hiç bilmek istemez. Yüzeysel ilişkiler ona göre değil." },
+  Sagittarius: { element: "Ateş", keywords: ["Maceraperest", "Özgür", "Açık", "Düşünür", "Düşüncesiz"], description: "Onu bir kafese koyamazsın. Ruhu sürekli yeni yerler, yeni fikirler, yeni deneyimler arıyor. Ama bu onu duygusal bağlardan da uzaklaştırabiliyor." },
+  Capricorn: { element: "Toprak", keywords: ["Hırslı", "Disiplinli", "Sorumlu", "Soğuk", "Kurallara"], description: "Başarı onun için bir zorunluluk. Hedeflerini gerçekleştirene kadar durmaz. Ama bu yarış onu duygusal olarak yalnızlaştırabiliyor." },
+  Aquarius: { element: "Hava", keywords: ["Özgün", "İnsancıl", "Bağımsız", "Tuhaf", "Devrimci"], description: "Kurallara uymak onun doğasında yok. Toplumsal normları sorgular, farklı düşünür. Ama bu onu bazen insanlardan koparabiliyor." },
+  Pisces: { element: "Su", keywords: ["Hayalperest", "Sezgili", "Sanatçı", "Kaçışçı", "Duyarlı"], description: "Gerçeklik bazen ona çok ağır geliyor. Sanata, müziğe, hayal dünyasına sığınıyor. Empati yeteneği çok güçlü ama bu onu kolayca yaralayabiliyor." },
+};
+
+const HOUSE_DESCRIPTIONS: Record<number, string> = {
+  1: "Kimlik ve benlik",
+  2: "Değerler ve sahip olunanlar",
+  3: "İletişim ve gündelik hayat",
+  4: "Aile ve kökler",
+  5: "Yaratıcılık ve aşk",
+  6: "İş ve sağlık",
+  7: "İlişkiler ve ortaklıklar",
+  8: "Dönüşüm ve paylaşılan kaynaklar",
+  9: "Felsefe ve uzak yolculuklar",
+  10: "Kariyer ve toplumsal rol",
+  11: "Topluluk ve hayaller",
+  12: "Bilinçaltı ve spiritüel yolculuk",
+};
 
 const WhoAmI = () => {
   const { user } = useAuth();
@@ -30,27 +67,81 @@ const WhoAmI = () => {
 
     setLoading(true);
     try {
-      const resp = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/cosmic-letter`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({
-            user_id: user.id,
-            type: "identity",
-          }),
-        }
-      );
+      const sun = trSign(profile.sun_sign);
+      const moon = trSign(profile.moon_sign);
+      const rising = trSign(profile.rising_sign);
+      
+      const sunDetails = SIGN_DETAILS[profile.sun_sign] || SIGN_DETAILS.Aries;
+      const moonDetails = SIGN_DETAILS[profile.moon_sign] || SIGN_DETAILS.Cancer;
+      const risingDetails = SIGN_DETAILS[profile.rising_sign] || SIGN_DETAILS.Aries;
 
-      if (!resp.ok) {
-        throw new Error("Kart oluşturulamadı");
+      const { element: sunEl, description: sunDesc } = sunDetails;
+      const { element: moonEl, description: moonDesc } = moonDetails;
+
+      // Build detailed identity text
+      let text = "";
+      
+      // Opening - unique hook
+      const hooks = [
+        "Eğer onu bir kelimeyle tanımlamak gerekirse:",
+        "İşte o insan:",
+        "Onu tanımak isteyenler bilmeli ki:",
+        "Karakterinin özü şu cümlelerde gizli:",
+      ];
+      text += `${hooks[Math.floor(Math.random() * hooks.length)]}\n\n`;
+
+      // Sun sign - core identity
+      text += `☀️ TEMEL KİMLİK\n`;
+      text += `${sunDesc}\n\n`;
+      
+      // Moon sign - emotional world  
+      text += `🌙 DUYGUSAL DÜNYA\n`;
+      text += `${moonDesc}\n\n`;
+
+      // Rising sign - how others see
+      text += `⬆️ DIŞA YANSIMALAR\n`;
+      text += `Dışarıdan bakıldığında ${risingDetails.description.toLowerCase()}\n\n`;
+
+      // Element balance
+      text += `🔥 TOPLAM ENERJİ\n`;
+      const elements = [sunEl, moonEl].filter((e, i, a) => a.indexOf(e) === i);
+      if (elements.length === 1) {
+        text += `Hayatı tek bir element ${elements[0].toLowerCase()} enerjisiyle deneyimliyor. ${elements[0] === "Ateş" ? "Bu onu dinamik ve tutkulu kılıyor." : elements[0] === "Su" ? "Bu ona derinlik ve duygusallık katıyor." : elements[0] === "Toprak" ? "Bu ona pratiklik ve dayanıklılık veriyor." : "Bu onu zeki ve sosyal kılıyor."}\n\n`;
+      } else {
+        text += `Enerjisi ${elements[0].toLowerCase()} ve ${elements[1].toLowerCase()} karışımı. Bu denge onu hem güçlü hem de duyarlı yapıyor.\n\n`;
       }
 
-      const data = await resp.json();
-      setIdentityText(data.letter || "");
+      // Key traits
+      const allKeywords = [...new Set([...sunDetails.keywords, ...moonDetails.keywords])];
+      const topTraits = allKeywords.slice(0, 6);
+      text += `✨ ÖNE ÇIKAN ÖZELLİKLER\n`;
+      text += topTraits.join(" • ") + "\n\n";
+
+      // What they value
+      const values = [
+        "özgürlük ve bağımsızlık",
+        "sevgi ve aidiyet",
+        "başarı ve tanınma",
+        "adalet ve denge",
+        "derinlik ve otantiklik",
+        "güvenlik ve stabilite",
+        "yaratıcılık ve ifade",
+        "bilgi ve öğrenme",
+      ];
+      const randomValues = values.sort(() => 0.5 - Math.random()).slice(0, 3);
+      text += `💎 DEĞER VERDİKLERİ\n`;
+      text += randomValues.join(" • ") + "\n\n";
+
+      // Closing - impactful
+      text += `🔮 SONUÇ\n`;
+      const closings = [
+        `O, ${sun.toLowerCase()} enerjisinin dışa vurumu, ${moon.toLowerCase()} duyarlılığının iç dünyası ve ${rising.toLowerCase()} maskesinin sunduğu bir bütün.`,
+        `Onu tanımak için ${sun.toLowerCase()} tutkusuna, ${moon.toLowerCase()} duygusallığına ve ${rising.toLowerCase()} yaklaşımına bakmak yeterli.`,
+        `Hayat onun için ${sunDetails.keywords[0].toLowerCase()} bir yolculuk. Ama asıl gücünü ${moonDetails.keywords[0].toLowerCase()} yürekten alıyor.`,
+      ];
+      text += closings[Math.floor(Math.random() * closings.length)];
+
+      setIdentityText(text);
     } catch (error) {
       console.error(error);
       toast.error("Bir hata oluştu");
@@ -84,7 +175,7 @@ const WhoAmI = () => {
           className="text-center mb-8"
         >
           <h1 className="text-2xl font-display gold-shimmer">Ben Kimim? ✨</h1>
-          <p className="text-sm text-muted-foreground mt-2">AI seni tanımlıyor</p>
+          <p className="text-sm text-muted-foreground mt-2">Doğum haritan seni tanımlıyor</p>
         </motion.div>
 
         <motion.div
@@ -120,12 +211,15 @@ const WhoAmI = () => {
           ) : (
             <>
               <div className="mb-6">
-                <h2 className="text-lg font-display mb-4 text-center">Sen</h2>
                 <div className="prose prose-invert prose-sm max-w-none">
-                  {identityText.split('\n').map((line, i) => (
-                    <p key={i} className="mb-2 text-foreground/90 leading-relaxed">
-                      {line}
-                    </p>
+                  {identityText.split('\n\n').map((para, i) => (
+                    <div key={i} className="mb-4">
+                      {para.split('\n').map((line, j) => (
+                        <p key={j} className="text-foreground/90 leading-relaxed">
+                          {line}
+                        </p>
+                      ))}
+                    </div>
                   ))}
                 </div>
               </div>
