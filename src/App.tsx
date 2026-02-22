@@ -34,7 +34,7 @@ const AppRoutes = () => (
     <Route path="/dreams" element={<ProtectedRoute><Dreams /></ProtectedRoute>} />
     <Route path="/mentor" element={<ProtectedRoute><Mentor /></ProtectedRoute>} />
     <Route path="/premium" element={<ProtectedRoute><Premium /></ProtectedRoute>} />
-    <Route path="/karmic" element={<ProtectedRoute><KarmicMatch /></ProtectedRoute>} />
+    <Route path="/karmic-match" element={<ProtectedRoute><KarmicMatch /></ProtectedRoute>} />
     <Route path="/chambers" element={<ProtectedRoute><SoulChambers /></ProtectedRoute>} />
     <Route path="/whoami" element={<ProtectedRoute><WhoAmI /></ProtectedRoute>} />
     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

@@ -6,7 +6,7 @@ import { TR } from "@/lib/i18n";
 const tabs = [
   { path: "/dashboard", icon: Home, label: TR.nav.home },
   { path: "/dreams", icon: BookOpen, label: TR.nav.dreams },
-  { path: "/karmic", icon: Heart, label: TR.nav.karmic },
+  { path: "/karmic-match", icon: Heart, label: TR.nav.karmic },
   { path: "/chambers", icon: Users, label: TR.nav.chambers },
   { path: "/whoami", icon: Share2, label: "Ben" },
   { path: "/mentor", icon: null, label: TR.nav.mentor, isMantar: true },
