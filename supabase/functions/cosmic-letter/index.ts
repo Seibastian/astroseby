@@ -5,26 +5,97 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const SIGN_TR: Record<string, string> = {
+  Aries: "Koç", Taurus: "Boğa", Gemini: "İkizler", Cancer: "Yengeç",
+  Leo: "Aslan", Virgo: "Başak", Libra: "Terazi", Scorpio: "Akrep",
+  Sagittarius: "Yay", Capricorn: "Oğlak", Aquarius: "Kova", Pisces: "Balık",
+};
+
+const trSign = (s: string | null | undefined) => s ? (SIGN_TR[s] || s) : "Bilinmiyor";
+
+async function callAI(systemPrompt: string, userMessage: string) {
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+  const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${LOVABLE_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "google/gemini-3-flash-preview",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userMessage },
+      ],
+      stream: false,
+    }),
+  });
+
+  if (!response.ok) {
+    if (response.status === 429) {
+      throw new Error("Biraz yoğunum, bir dakika sonra tekrar dene.");
+    }
+    if (response.status === 402) {
+      throw new Error("AI kredileri tükendi.");
+    }
+    const t = await response.text();
+    throw new Error(`AI hatası: ${t}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || "";
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { natal_summary, profile } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    const { type, user_id } = await req.json();
 
-    const SIGN_TR: Record<string, string> = {
-      Aries: "Koç", Taurus: "Boğa", Gemini: "İkizler", Cancer: "Yengeç",
-      Leo: "Aslan", Virgo: "Başak", Libra: "Terazi", Scorpio: "Akrep",
-      Sagittarius: "Yay", Capricorn: "Oğlak", Aquarius: "Kova", Pisces: "Balık",
-    };
-    const trSign = (s: string | null | undefined) => s ? (SIGN_TR[s] || s) : "Bilinmiyor";
+    // Get profile data
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+    const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    
+    const profileRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?user_id=eq.${user_id}&select=*`, {
+      headers: { "apikey": SUPABASE_SERVICE_KEY, "Authorization": `Bearer ${SUPABASE_SERVICE_KEY}` }
+    });
+    const profiles = await profileRes.json();
+    const profile = profiles?.[0];
 
-    const nickname = profile?.nickname || profile?.name || "Gezgin";
+    const nickname = profile?.nickname || profile?.name || "Dostum";
     const gender = profile?.gender || "";
     const profession = profile?.profession || "";
     const relationship = profile?.relationship_status || "";
 
+    if (type === "identity") {
+      const systemPrompt = `Sen bir karakter analistsin. Kullanıcıya doğum haritasından yola çıkarak kısa, net ve direkt bir kimlik tanımı yazacaksın.
+
+KURALLAR:
+- Burç isimleri KULLANMA (Koç, Boğa gibi HAYIR)
+- Sadece insanın karakterini, davranış kalıplarını, güçlü ve zayıf yönlerini anlat
+- 3-5 cümle MAX
+- Doğrudan, samimi, gerçekçi ton
+- Klişelerden kaçın
+- Okuyan kişi "evet bu benim" demeli
+- Paragraf paragraf yaz, maddeler HAYIR
+
+Veriler (arkaplanda kullan, doğrudan yazma):
+- Güneş enerjisi: ${trSign(profile?.sun_sign)}
+- Duygusal dünya: ${trSign(profile?.moon_sign)}
+- Dışarıya yansıyan: ${trSign(profile?.rising_sign)}
+${gender ? `- Cinsiyet: ${gender}` : ""}
+${profession ? `- Meslek: ${profession}` : ""}`;
+
+      const letter = await callAI(systemPrompt, `${nickname} için kısa bir kimlik tanımı yaz.`);
+
+      return new Response(JSON.stringify({ letter }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Default: cosmic letter
     let personalContext = "";
     if (gender) personalContext += `Cinsiyet: ${gender}. `;
     if (profession) personalContext += `Meslek: ${profession}. `;
@@ -47,15 +118,12 @@ KİŞİSEL BAĞLAM:
 ${personalContext}
 
 DOĞUM HARİTASI:
-Güneş: ${trSign(profile?.sun_sign)}, Ay: ${trSign(profile?.moon_sign)}, Yükselen: ${trSign(profile?.rising_sign)}
-
-Detaylı Pozisyonlar:
-${natal_summary || "Hesaplanmadı"}`;
+Güneş: ${trSign(profile?.sun_sign)}, Ay: ${trSign(profile?.moon_sign)}, Yükselen: ${trSign(profile?.rising_sign)}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${Deno.env.get("LOVABLE_API_KEY")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

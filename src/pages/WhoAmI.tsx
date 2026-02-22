@@ -1,20 +1,19 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import BottomNav from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Share2, Copy, Check, X, Sparkles, Star, Moon } from "lucide-react";
+import { RefreshCw, Copy, Check, Sparkles, Loader2, Share2 } from "lucide-react";
 import { TR, trSign } from "@/lib/i18n";
 import { toast } from "sonner";
 
 const WhoAmI = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
-  const [chartData, setChartData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [identityText, setIdentityText] = useState<string>("");
   const [copied, setCopied] = useState(false);
-  const [showCard, setShowCard] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -23,24 +22,45 @@ const WhoAmI = () => {
     });
   }, [user]);
 
-  const generateCardText = () => {
-    if (!profile) return "";
-    
-    const sun = trSign(profile.sun_sign);
-    const moon = trSign(profile.moon_sign);
-    const rising = trSign(profile.rising_sign);
-    
-    return `🔮 Ben Kimim?
+  const generateIdentity = async () => {
+    if (!profile || !profile.sun_sign) {
+      toast.error("Doğum haritan henüz hazır değil");
+      return;
+    }
 
-☀️ Güneş: ${sun}
-🌙 Ay: ${moon}
-⬆️ Yükselen: ${rising}
+    setLoading(true);
+    try {
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/cosmic-letter`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            user_id: user.id,
+            type: "identity",
+          }),
+        }
+      );
 
-Doğum haritam: astroseby.app/${user?.id?.slice(0,8)}`;
+      if (!resp.ok) {
+        throw new Error("Kart oluşturulamadı");
+      }
+
+      const data = await resp.json();
+      setIdentityText(data.letter || "");
+    } catch (error) {
+      console.error(error);
+      toast.error("Bir hata oluştu");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const copyToClipboard = async () => {
-    const text = generateCardText();
+    const text = `🔮 BEN KİMİM?\n\n${identityText}\n\n— astroseby`;
     await navigator.clipboard.writeText(text);
     setCopied(true);
     toast.success("Kopyalandı! 📋");
@@ -48,15 +68,6 @@ Doğum haritam: astroseby.app/${user?.id?.slice(0,8)}`;
   };
 
   if (!profile) return null;
-
-  const sun = trSign(profile.sun_sign);
-  const moon = trSign(profile.moon_sign);
-  const rising = trSign(profile.rising_sign);
-
-  const signEmojis: Record<string, string> = {
-    Aries: "♈", Taurus: "♉", Gemini: "♊", Cancer: "♋", Leo: "♌", Virgo: "♍",
-    Libra: "♎", Scorpio: "♏", Sagittarius: "♐", Capricorn: "♑", Aquarius: "♒", Pisces: "♓"
-  };
 
   return (
     <div className="min-h-screen pb-24 relative">
@@ -73,106 +84,77 @@ Doğum haritam: astroseby.app/${user?.id?.slice(0,8)}`;
           className="text-center mb-8"
         >
           <h1 className="text-2xl font-display gold-shimmer">Ben Kimim? ✨</h1>
-          <p className="text-sm text-muted-foreground mt-2">Doğum haritan ile tanış</p>
+          <p className="text-sm text-muted-foreground mt-2">AI seni tanımlıyor</p>
         </motion.div>
 
-        {!showCard ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="glass-card rounded-2xl p-6 text-center mb-6"
-          >
-            <div className="mb-6">
-              <Sparkles className="h-12 w-12 text-primary mx-auto mb-3" />
-              <h2 className="text-xl font-display">{profile.nickname || "Kozmik Yolcu"}</h2>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="glass-card rounded-2xl p-6 mb-6"
+        >
+          {!identityText ? (
+            <div className="text-center py-8">
+              <Sparkles className="h-12 w-12 text-primary mx-auto mb-4" />
+              <p className="text-muted-foreground mb-6">
+                Doğum haritan üzerinden<br />
+                sana özel bir kimlik kartı oluşturalım
+              </p>
+              <Button 
+                onClick={generateIdentity} 
+                disabled={loading}
+                className="font-display"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Oluşturuluyor...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Kimlik Kartı Oluştur
+                  </>
+                )}
+              </Button>
             </div>
-
-            <div className="space-y-4 mb-6">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
-                <div className="flex items-center gap-3">
-                  <Star className="h-5 w-5 text-yellow-500" />
-                  <span className="text-muted-foreground">Güneş</span>
+          ) : (
+            <>
+              <div className="mb-6">
+                <h2 className="text-lg font-display mb-4 text-center">Sen</h2>
+                <div className="prose prose-invert prose-sm max-w-none">
+                  {identityText.split('\n').map((line, i) => (
+                    <p key={i} className="mb-2 text-foreground/90 leading-relaxed">
+                      {line}
+                    </p>
+                  ))}
                 </div>
-                <span className="font-display text-lg">
-                  {signEmojis[profile.sun_sign]} {sun}
-                </span>
               </div>
 
-              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
-                <div className="flex items-center gap-3">
-                  <Moon className="h-5 w-5 text-blue-400" />
-                  <span className="text-muted-foreground">Ay</span>
-                </div>
-                <span className="font-display text-lg">
-                  {signEmojis[profile.moon_sign]} {moon}
-                </span>
+              <div className="flex gap-3">
+                <Button onClick={copyToClipboard} variant="outline" className="flex-1">
+                  {copied ? (
+                    <>
+                      <Check className="h-4 w-4 mr-2 text-green-500" />
+                      Kopyalandı
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Kopyala
+                    </>
+                  )}
+                </Button>
+                <Button onClick={generateIdentity} disabled={loading} variant="outline">
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4" />
+                  )}
+                </Button>
               </div>
-
-              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
-                <div className="flex items-center gap-3">
-                  <Sparkles className="h-5 w-5 text-purple-400" />
-                  <span className="text-muted-foreground">Yükselen</span>
-                </div>
-                <span className="font-display text-lg">
-                  {signEmojis[profile.rising_sign]} {rising}
-                </span>
-              </div>
-            </div>
-
-            <Button onClick={() => setShowCard(true)} className="w-full font-display">
-              <Share2 className="h-4 w-4 mr-2" />
-              Paylaşılabilir Kart Oluştur
-            </Button>
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="glass-card rounded-2xl p-6 text-center mb-6 border-2 border-primary/50"
-          >
-            <button 
-              onClick={() => setShowCard(false)}
-              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
-            <div className="mb-6 p-4 bg-gradient-to-br from-purple-900/50 to-blue-900/50 rounded-xl">
-              <Sparkles className="h-8 w-8 text-primary mx-auto mb-2" />
-              <h2 className="text-xl font-display">{profile.nickname || "Kozmik Yolcu"}</h2>
-              <p className="text-xs text-muted-foreground">astroseby</p>
-            </div>
-
-            <div className="space-y-3 mb-6 text-left">
-              <div className="flex justify-between py-2 border-b border-border/50">
-                <span className="text-muted-foreground">☀️ Güneş</span>
-                <span className="font-display">{sun}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-border/50">
-                <span className="text-muted-foreground">🌙 Ay</span>
-                <span className="font-display">{moon}</span>
-              </div>
-              <div className="flex justify-between py-2">
-                <span className="text-muted-foreground">⬆️ Yükselen</span>
-                <span className="font-display">{rising}</span>
-              </div>
-            </div>
-
-            <Button onClick={copyToClipboard} variant="outline" className="w-full">
-              {copied ? (
-                <>
-                  <Check className="h-4 w-4 mr-2 text-green-500" />
-                  Kopyalandı!
-                </>
-              ) : (
-                <>
-                  <Copy className="h-4 w-4 mr-2" />
-                  Kopyala
-                </>
-              )}
-            </Button>
-          </motion.div>
-        )}
+            </>
+          )}
+        </motion.div>
 
         <div className="text-center text-sm text-muted-foreground mt-8">
           <p>Bu kartı arkadaşlarınla paylaş</p>
