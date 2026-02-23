@@ -33,64 +33,150 @@ const ASPECT_ICONS: Record<string, string> = {
 };
 
 const ASPECT_DESCRIPTIONS: Record<string, string> = {
-  conjunction: "Bu iki enerji birbirine kenetlenmiş — sanki aynı motorun iki dişlisi gibi çalışıyorlar. Bazen farkında bile olmadan bu gücü kullanıyorsun. Bazen de birbirine o kadar yakınlar ki hangisinin ne yaptığını ayırt edemiyorsun. Ama bir şey var: bu kavuşum, seni senden alıyor veya sana bir şey katıyor — ikisi de aynı anda.",
+  conjunction: "İki enerji birbirine kenetlenmiş. Sanki aynı motorun dişlileri. Bazen farkında olmadan bu gücü kullanıyorsun.",
   
-  trine: "Üçgen, astrolojideki en şanslı açılardan biri. İki gezegen arasında pürüzsüz bir akış var — sanki nehir yatağını bulmuş gibi. Birinde fazla olan, diğerinde eksik olabilir ama birbirlerini tamamlıyorlar. Bu açı çalışırken, zorlamadan akıp gidiyor. Sanki yeteneklerini kullanıyormuşsun gibi hissediyorsun — ve belki de öylesin.",
+  trine: "Pürüzsüz bir akış var. Sanki nehir yatağını bulmuş. Zorlamadan akıp gidiyor. Bu açı çalışırken, yeteneklerini kullanıyormuşsun gibi hissedersin.",
   
-  sextile: "Altıgen, gizli bir fırsat penceresi. Bu açı çok güçlü değil ama potansiyel taşıyor — tıpkı tohumun toprağa düşmesi gibi, sadece biraz nem ve ışık gerek. Bu açının gücünü görmek için biraz çaba göstermen gerekebilir. Ama o fırsat orada, seni bekliyor.",
+  sextile: "Gizli bir fırsat penceresi. Potansiyel taşıyor ama biraz çaba gerek. O fırsat orada, seni bekliyor.",
   
-  square: "Kare, astrolojideki en zorlu açılardan biri. İki gezegen omuz omuza verip sana direnç gösteriyor — tıpkı bir kapıyı açmaya çalışırken diğer taraftan itilmesi gibi. Ama bekle, bu gerilim boşa değil. Bu açı seni harekete geçirir. Sıkıntı yaratır ama sıkıntıdan sonra büyüme gelir. Zorla büyümek istemezsen, bu açı seni zorlar.",
+  square: "Gerilim yaratır. Kapıyı açmaya çalışırken diğer taraftan itilmek gibi. Bu açı seni harekete geçirir. Zorla büyümek istemezsen, seni zorlar.",
   
-  opposition: "Karşıt açı, iki kutup arasında bir gerilim yaratır. Sanki iki farklı ses aynı anda şarkı söylemeye çalışıyor — bazen uyumlu, bazen kakofonik. Bu açı, başkalarını yansıtmanı sağlar. Senin göremediğin bir yönünü, karşındaki kişi veya durum sana gösterir. Bu bazen acıtır, bazen aydınlatır.",
+  opposition: "İki kutup arasında gerilim. İki farklı ses aynı anda şarkı söylüyor. Başkalarını yansıtmanı sağlar. Bazen acıtır, bazen aydınlatır.",
 };
 
 const PLANET_DESCRIPTIONS: Record<string, string> = {
-  Sun: "Yaşam enerjin, ego güneşin, varoluşun ışığı. İçindeki o yangın — o, güneşin ta kendisi.",
-  Moon: "Bilinçaltının okyanusu, duygularının derinliği. Suyun altında ne var, bilir misin? Bazen sen bile bilmezsin.",
-  Mercury: "Zihninin sesi, düşüncelerinin habercisi. Farkında olmadan binlerce düşünce geçiyor zihninden.",
-  Venus: "Kalbinin dili, değerlerinin aynası. Sevgi nasıl hissettiriyor, sorusu senin için önemli.",
-  Mars: "İçindeki savaşçı, dürtülerinin yakıtı. Bir şeyi istediğinde ne olur? Öne mi çıkarsın, yoksa geri mi çekilirsin?",
-  Jupiter: "Genişleyen rüzgârın, inancının ufku. Nereye kadar büyüyebilirsin, biliyor musun?",
-  Saturn: "Yapının kuralları, sınırlarının bekçisi. Zaman ne diyor, yaşlandıkça ne değişiyor?",
-  Uranus: "Ani değişimler, beklenmedik kıvılcımlar. Bir gün her şey farklı olabilir — hazır mısın?",
-  Neptune: "Rüyalarının okyanusu, sezgilerinin sisi. Gerçekle hayal arasındaki çizgi nerede?",
-  Pluto: "Dönüşümün efendisi, ölüm ve doğuşun döngüsü. Eski ben öldüğünde yeni ben doğar.",
-  Chiron: "İçindeki yara, ama aynı zamanda şifanın anahtarı. Acı çekmek bazen öğretir.",
-  Lilith: "Bastırılmış arzunun, yasaklanmış isteğin. Neden korkuyorsun o sesin duyulmasından?",
-  NorthNode: "Ruhunun gitmesi gereken yön, karmik çağrı. Geri kalmış bir hesap mı var?",
-  SouthNode: "Geçmişten gelen alışkanlıklar, kolay gelen ama bırakman gereken şeyler. Geçmişin sana ne söylüyor?",
+  Sun: "Yaşam enerjin, ego güneşin.",
+  Moon: "Bilinçaltının okyanusu, duygularının derinliği.",
+  Mercury: "Zihninin sesi, düşüncelerinin habercisi.",
+  Venus: "Kalbinin dili, değerlerinin aynası.",
+  Mars: "İçindeki savaşçı, dürtülerinin yakıtı.",
+  Jupiter: "Genişleyen rüzgârın, inancının ufku.",
+  Saturn: "Yapının kuralları, sınırlarının bekçisi.",
+  Uranus: "Ani değişimler, beklenmedik kıvılcımlar.",
+  Neptune: "Rüyalarının okyanusu, sezgilerinin sisi.",
+  Pluto: "Dönüşümün efendisi, ölüm ve doğuşun döngüsü.",
+  Chiron: "İçindeki yara, şifanın anahtarı.",
+  Lilith: "Bastırılmış arzunun yasaklanmış isteği.",
+  NorthNode: "Ruhunun gitmesi gereken yön, karmik çağrı.",
+  SouthNode: "Geçmişten gelen alışkanlıklar, kolay gelen şeyler.",
 };
 
-function getAspectDescription(type: string, p1: string, p2: string): string {
+const ASPECT_MESSAGES: Record<string, string> = {
+  conjunction: "Bu kavuşumun mesajı: Bir şeyi yaratma zamanı. İki güç birleşiyor — bunu kullan.",
+  trine: "Üçgenin mesajı: Rahatla, akışa bırak. Zaten yeteneklisin, zorlamana gerek yok.",
+  altıgen: "Altıgenin mesajı: Fırsat orada. Bir adım atsana.",
+  square: "Karenin mesajı: Rahatsızlık büyümenin işareti. Önce zorluk, sonra dönüşüm.",
+  opposition: "Karşıtın mesajı: Başkasında gördüğün kendindir. Yansıtmayı bırak.",
+};
+
+const PLANET_GLYPHS: Record<string, string> = {
+  Sun: "☉", Moon: "☽", Mercury: "☿", Venus: "♀", Mars: "♂",
+  Jupiter: "♃", Saturn: "♄", Uranus: "♅", Neptune: "♆", Pluto: "♇",
+  Chiron: "⚷", Lilith: "⚸", NorthNode: "☊", SouthNode: "☋",
+  Ascendant: "AC", MC: "MC",
+};
+
+const ASPECT_ANGLES: Record<string, number> = {
+  conjunction: 0,
+  trine: 120,
+  sextile: 60,
+  square: 90,
+  opposition: 180,
+};
+
+function getAspectDescription(type: string, p1: string, p2: string): { explanation: string; message: string } {
   const aspect = ASPECT_DESCRIPTIONS[type] || "";
-  const p1Desc = PLANET_DESCRIPTIONS[p1] || p1;
-  const p2Desc = PLANET_DESCRIPTIONS[p2] || p2;
+  const message = ASPECT_MESSAGES[type] || "Bu açı senin için bir şey fısıldıyor.";
   
-  const combinations: Record<string, string> = {
-    "Sun-Moon": "Güneş ve Ay arasındaki bu bağ, senin iç dünyan ile dış dünyan arasındaki köprüdür. Bazen kendinle barışık olursun, bazen de içindeki çatışma seni yorar. Bu açı, kim olduğunu ve nasıl hissettiğini doğrudan etkiler.",
-    "Moon-Sun": "Güneş ve Ay arasındaki bu bağ, senin iç dünyan ile dış dünyan arasındaki köprüdür. Bazen kendinle barışık olursun, bazen de içindeki çatışma seni yorar. Bu açı, kim olduğunu ve nasıl hissettiğini doğrudan etkiler.",
-    "Sun-Mars": "Güneş ve Mars birlikte çalıştığında, enerjin yüksek olur. Bir şeyi istediğinde peşine düşersin. Ama dikkat: öfke de bu enerjinin bir parçası. Yapıcı mı yıkıcı mı kullanırsın, senin elinde.",
-    "Mars-Sun": "Güneş ve Mars birlikte çalıştığında, enerjin yüksek olur. Bir şeyi istediğinde peşine düşersin. Ama dikkat: öfke de bu enerjinin bir parçası. Yapıcı mı yıkıcı mı kullanırsın, senin elinde.",
-    "Venus-Mars": "Venüs ve Mars arasındaki çekim, tutku ile sevgi arasındaki dansı temsil eder. Sevdiğin şeyi istemek — ve istediğin şeyi sevmek. Bu dengeyi bulmak, belki de en büyük öğrenmelerinden biri.",
-    "Mars-Venus": "Venüs ve Mars arasındaki çekim, tutku ile sevgi arasındaki dansı temsil eder. Sevdiğin şeyi istemek — ve istediğin şeyi sevmek. Bu dengeyi bulmak, belki de en büyük öğrenmelerinden biri.",
-    "Sun-Saturn": "Güneş ve Satürn arasındaki gerilim, ego ile yapı arasındaki savaşı gösterir. Bir yanda özgürlük, diğer yanda sorumluluk. Belki de en zor dersin: kurallarla yaşamayı öğrenmek.",
-    "Saturn-Sun": "Güneş ve Satürn arasındaki gerilim, ego ile yapı arasındaki savaşı gösterir. Bir yanda özgürlük, diğer yanda sorumluluk. Belki de en zor dersin: kurallarla yaşamayı öğrenmek.",
-    "Moon-Venus": "Ay ve Venüs birlikteyken, duyguların yumuşak ve şefkatli olur. Sevgiye açıksın, bağ kurmak istiyorsun. Ama dikkat: duygusal ihtiyaçların mı yoksa gerçek sevgi mi, bunu ayırt edebilir misin?",
-    "Venus-Moon": "Ay ve Venüs birlikteyken, duyguların yumuşak ve şefkatli olur. Sevgiye açıksın, bağ kurmak istiyorsun. Ama dikkat: duygusal ihtiyaçların mı yoksa gerçek sevgi mi, bunu ayırt edebilir misin?",
-    "Mercury-Jupiter": "Merkür ve Jüpiter bir araya geldiğinde, düşüncelerin genişler. Bir fikir bulutları dolaşırken, sen onu yakalayıp somutlaştırabilirsin. Bu açı, öğretmen ve öğrenci arasındaki köprüdür.",
-    "Jupiter-Mercury": "Merkür ve Jüpiter bir araya geldiğinde, düşüncelerin genişler. Bir fikir bulutları dolaşırken, sen onu yakalayıp somutlaştırabilirsin. Bu açı, öğretmen ve öğrenci arasındaki köprüdür.",
-    "Sun-Jupiter": "Güneş ve Jüpiter bir arada olduğunda, yaşam enerjin genişler. Sanki kanatların var ve uçuyormuşsun gibi hissediyorsun. Şans senin yanında mı, yoksa sen mi şansı yaratıyorsun?",
-    "Jupiter-Sun": "Güneş ve Jüpiter bir arada olduğunda, yaşam enerjin genişler. Sanki kanatların var ve uçuyormuşsun gibi hissediyorsun. Şans senin yanında mı, yoksa sen mi şansı yaratıyorsun?",
-    "Pluto-Sun": "Plüton ve Güneş arasındaki bu bağ, derin bir dönüşümü işaret eder. Kim olduğunu sorguladığın anlar, belki de en önemli anlardır. Eski ben ölür, yenisi doğar. Bu acıtır ama kaçılmaz.",
-    "Sun-Pluto": "Plüton ve Güneş arasındaki bu bağ, derin bir dönüşümü işaret eder. Kim olduğunu sorguladığın anlar, belki de en önemli anlardır. Eski ben ölür, yenisi doğar. Bu acıtır ama kaçılmaz.",
-    "Pluto-Moon": "Plüton ve Ay arasındaki bu bağ, bilinçaltında derin bir şeyler döngüyor. Bastırılmış duygular, çözülmemiş yaralar. Bunları görmezden gelmek işe yaramıyor. Yüzleşme zamanı mı?",
-    "Moon-Pluto": "Plüton ve Ay arasındaki bu bağ, bilinçaltında derin bir şeyler döngüyor. Bastırılmış duygular, çözülmemiş yaralar. Bunları görmezden gelmek işe yaramıyor. Yüzleşme zamanı mı?",
-    "Uranus-Moon": "Uranüs ve Ay arasındaki bu bağ, duygularında ani değişimler yaratır. Bazen her şey normalken, ansızın bir şey kıvılcımlanır. Bu beklenmedik duygusal patlamalar, seni şaşırtıyor mu?",
-    "Moon-Uranus": "Uranüs ve Ay arasındaki bu bağ, duygularında ani değişimler yaratır. Bazen her şey normalken, ansızın bir şey kıvılcımlanır. Bu beklenmedik duygusal patlamalar, seni şaşırtıyor mu?",
-    "Neptune-Moon": "Neptün ve Ay birlikteyken, gerçek ile hayal arasındaki çizgi bulanıklaşır. Rüyaların gerçek mi, gerçek bir rüya mı? Bu açı, sezgilerini dinlemek ister — ama bazen sezgi aldatıcı olabilir.",
-    "Moon-Neptune": "Neptün ve Ay birlikteyken, gerçek ile hayal arasındaki çizgi bulanıklaşır. Rüyaların gerçek mi, gerçek bir rüya mı? Bu açı, sezgilerini dinlemek ister — ama bazen sezgi aldatıcı olabilir.",
-    "Ascendant-Planets": "Yükseleninle bir gezegen arasındaki bu bağ, dış dünyaya nasıl göründüğünü etkiler. İnsanlar seni ilk gördüklerinde ne görüyor? Aslında kim olduğun mu, yoksa görünen kim mi?",
-    "MC-Planets": "Kariyer eviyle bir gezegen arasındaki bu bağ, hayat yolunda nereye gittiğini gösterir. Kariyerinde bir dönüm noktası mı var? Yoksa yolunda mı ilerliyorsun?",
+  const combinations: Record<string, { explanation: string; message: string }> = {
+    "Sun-Moon": { 
+      explanation: "Güneş ve Ay arasındaki köprü. İç dünyan ile dış dünyan arasındaki denge.", 
+      message: "Kendinle barışık olma zamanı. İç çatışman var — ama bu senin parçan." 
+    },
+    "Moon-Sun": { 
+      explanation: "Güneş ve Ay arasındaki köprü. İç dünyan ile dış dünyan arasındaki denge.", 
+      message: "Kendinle barışık olma zamanı. İç çatışman var — ama bu senin parçan." 
+    },
+    "Sun-Mars": { 
+      explanation: "Enerjin yüksek. Bir şeyi istediğinde peşine düşersin.", 
+      message: "Öfke de bu enerjinin parçası. Yapıcı mı yıkıcı mı kullanırsın, senin elinde." 
+    },
+    "Mars-Sun": { 
+      explanation: "Enerjin yüksek. Bir şeyi istediğinde peşine düşersin.", 
+      message: "Öfke de bu enerjinin parçası. Yapıcı mı yıkıcı mı kullanırsın, senin elinde." 
+    },
+    "Venus-Mars": { 
+      explanation: "Tutku ile sevgi arasındaki dans.", 
+      message: "Sevdiğin şeyi istemek. Bu dengeyi bulmak senin öğrenmen." 
+    },
+    "Mars-Venus": { 
+      explanation: "Tutku ile sevgi arasındaki dans.", 
+      message: "Sevdiğin şeyi istemek. Bu dengeyi bulmak senin öğrenmen." 
+    },
+    "Sun-Saturn": { 
+      explanation: "Ego ile yapı arasındaki gerilim.", 
+      message: "Kurallarla yaşamayı öğrenme zamanı. Özgürlük ve sorumluluk dengesini bul." 
+    },
+    "Saturn-Sun": { 
+      explanation: "Ego ile yapı arasındaki gerilim.", 
+      message: "Kurallarla yaşamayı öğrenme zamanı. Özgürlük ve sorumluluk dengesini bul." 
+    },
+    "Moon-Venus": { 
+      explanation: "Duyguların yumuşak ve şefkatli.", 
+      message: "Sevgiye açıksın. Duygusal ihtiyaç mı gerçek sevgi mi, bunu ayırt et." 
+    },
+    "Venus-Moon": { 
+      explanation: "Duyguların yumuşak ve şefkatli.", 
+      message: "Sevgiye açıksın. Duygusal ihtiyaç mı gerçek sevgi mi, bunu ayırt et." 
+    },
+    "Mercury-Jupiter": { 
+      explanation: "Düşüncelerin genişliyor.", 
+      message: "Fikrini yakala ve somutlaştır. Bu senin öğretmenlik yolun." 
+    },
+    "Jupiter-Mercury": { 
+      explanation: "Düşüncelerin genişliyor.", 
+      message: "Fikrini yakala ve somutlaştır. Bu senin öğretmenlik yolun." 
+    },
+    "Sun-Jupiter": { 
+      explanation: "Yaşam enerjin genişliyor.", 
+      message: "Kanatların var, uçuyormuşsun gibi hissettiriyor. Şans senin yanında." 
+    },
+    "Jupiter-Sun": { 
+      explanation: "Yaşam enerjin genişliyor.", 
+      message: "Kanatların var, uçuyormuşsun gibi hissettiriyor. Şans senin yanında." 
+    },
+    "Pluto-Sun": { 
+      explanation: "Derin dönüşüm. Kim olduğunu sorgulama anları.", 
+      message: "Eski ben ölür, yenisi doğar. Bu acıtır ama kaçılmaz." 
+    },
+    "Sun-Pluto": { 
+      explanation: "Derin dönüşüm. Kim olduğunu sorgulama anları.", 
+      message: "Eski ben ölür, yenisi doğar. Bu acıtır ama kaçılmaz." 
+    },
+    "Pluto-Moon": { 
+      explanation: "Bilinçaltında derin şeyler dönüyor.", 
+      message: "Bastırılmış duygular, çözülmemiş yaralar. Yüzleşme zamanı." 
+    },
+    "Moon-Pluto": { 
+      explanation: "Bilinçaltında derin şeyler dönüyor.", 
+      message: "Bastırılmış duygular, çözülmemiş yaralar. Yüzleşme zamanı." 
+    },
+    "Uranus-Moon": { 
+      explanation: "Duygularında ani değişimler.", 
+      message: "Beklenmedik duygusal patlamalar. Bu seni şaşırtıyor — ama bu senin özgürlüğün." 
+    },
+    "Moon-Uranus": { 
+      explanation: "Duygularında ani değişimler.", 
+      message: "Beklenmedik duygusal patlamalar. Bu seni şaşırtıyor — ama bu senin özgürlüğün." 
+    },
+    "Neptune-Moon": { 
+      explanation: "Gerçek ile hayal arasındaki çizgi bulanık.", 
+      message: "Sezgilerini dinle. Ama bazen sezgi aldatıcı olabilir." 
+    },
+    "Moon-Neptune": { 
+      explanation: "Gerçek ile hayal arasındaki çizgi bulanık.", 
+      message: "Sezgilerini dinle. Ama bazen sezgi aldatıcı olabilir." 
+    },
   };
   
   const key = `${p1}-${p2}`;
@@ -99,7 +185,36 @@ function getAspectDescription(type: string, p1: string, p2: string): string {
   if (combinations[key]) return combinations[key];
   if (combinations[reverseKey]) return combinations[reverseKey];
   
-  return `${aspect} ${p1Desc.toLowerCase()} ve ${p2Desc.toLowerCase()} arasındaki bu açı, ${p1} ve ${p2}'nin birlikte çalışma biçimini gösterir. ${aspect}`;
+  return { explanation: `${trPlanet(p1)} ve ${trPlanet(p2)} birlikte çalışıyor.`, message: ASPECT_MESSAGES[type] || "Bu açı senin için bir şey fısıldıyor." };
+}
+
+function AspectVisual({ p1Angle, p2Angle, type }: { p1Angle: number; p2Angle: number; type: string }) {
+  const size = 80;
+  const center = size / 2;
+  const radius = 28;
+  
+  const getPoint = (angle: number) => ({
+    x: center + radius * Math.cos((angle - 90) * Math.PI / 180),
+    y: center + radius * Math.sin((angle - 90) * Math.PI / 180),
+  });
+  
+  const p1 = getPoint(p1Angle);
+  const p2 = getPoint(p2Angle);
+  
+  const midAngle = ((p1Angle + p2Angle) / 2 + 360) % 360;
+  const labelPoint = getPoint(midAngle);
+  
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="mx-auto">
+      <circle cx={center} cy={center} r={radius} fill="none" stroke="hsl(270, 30%, 30%)" strokeWidth="1" strokeDasharray="4 2" />
+      <circle cx={p1.x} cy={p1.y} r={6} fill="hsl(45, 80%, 60%)" />
+      <circle cx={p2.x} cy={p2.y} r={6} fill="hsl(200, 80%, 60%)" />
+      <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="hsl(270, 50%, 50%)" strokeWidth="2" strokeLinecap="round" />
+      <text x={labelPoint.x} y={labelPoint.y} textAnchor="middle" dominantBaseline="middle" fontSize="16" fill="hsl(270, 60%, 70%)">
+        {ASPECT_ANGLES[type] || "?"}°
+      </text>
+    </svg>
+  );
 }
 
 const AspectFeed = ({ data }: Props) => {
@@ -166,31 +281,43 @@ const AspectFeed = ({ data }: Props) => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-sm p-5 rounded-2xl glass-card max-h-[80vh] overflow-y-auto"
+              className="w-full max-w-sm p-4 rounded-2xl glass-card max-h-[70vh] overflow-y-auto"
             >
-              <div className="flex items-center gap-3 mb-4">
-                <span className={`text-2xl ${ASPECT_COLORS[selectedAspect.type]}`}>
+              {/* Visual */}
+              <AspectVisual 
+                p1Angle={data?.planets.find(p => p.name === selectedAspect.p1Name)?.longitude || 0}
+                p2Angle={data?.planets.find(p => p.name === selectedAspect.p2Name)?.longitude || 0}
+                type={selectedAspect.type}
+              />
+              
+              <div className="flex items-center gap-2 mb-3 mt-2">
+                <span className={`text-xl ${ASPECT_COLORS[selectedAspect.type]}`}>
                   {ASPECT_ICONS[selectedAspect.type]}
                 </span>
                 <div>
-                  <h4 className="font-display text-lg text-foreground">
+                  <h4 className="font-display text-sm text-foreground">
                     {trPlanet(selectedAspect.p1Name)} ↔ {trPlanet(selectedAspect.p2Name)}
                   </h4>
-                  <p className={`text-sm ${ASPECT_COLORS[selectedAspect.type]}`}>
+                  <p className={`text-xs ${ASPECT_COLORS[selectedAspect.type]}`}>
                     {ASPECT_LABELS[selectedAspect.type]} · {selectedAspect.orb}°
                   </p>
                 </div>
               </div>
               
-              <div className="space-y-3">
-                <p className="text-sm text-foreground leading-relaxed">
-                  {getAspectDescription(selectedAspect.type, selectedAspect.p1Name, selectedAspect.p2Name)}
+              <div className="space-y-2">
+                <p className="text-xs text-foreground leading-relaxed">
+                  {getAspectDescription(selectedAspect.type, selectedAspect.p1Name, selectedAspect.p2Name).explanation}
                 </p>
+                <div className="pt-2 border-t border-border/30">
+                  <p className="text-xs text-primary font-medium">
+                    ✦ {getAspectDescription(selectedAspect.type, selectedAspect.p1Name, selectedAspect.p2Name).message}
+                  </p>
+                </div>
               </div>
 
               <button
                 onClick={() => setSelectedAspect(null)}
-                className="w-full mt-4 py-2 px-4 rounded-lg bg-primary/20 text-primary text-sm font-medium hover:bg-primary/30 transition-colors"
+                className="w-full mt-3 py-2 px-4 rounded-lg bg-primary/20 text-primary text-xs font-medium hover:bg-primary/30 transition-colors"
               >
                 Kapat
               </button>
