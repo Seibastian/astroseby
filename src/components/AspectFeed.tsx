@@ -5,6 +5,7 @@ import type { NatalChartData } from "@/lib/astrology";
 import { computeAspects, ASPECT_LABELS, type AspectInfo } from "./AnimatedNatalBackground";
 import { trPlanet } from "@/lib/i18n";
 import { MessageCircle, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Props {
   data: NatalChartData | null;
@@ -79,47 +80,38 @@ async function fetchAIAnalysis(
   const sign1 = SIGN_TR[p1Sign] || p1Sign;
   const sign2 = SIGN_TR[p2Sign] || p2Sign;
 
-  const systemPrompt = `Sen MANTAR'sın — astroloji ve psikoloji alanında uzmanlaşmış, derin bilgiye sahip ama sıcak ve samimi bir yapay zeka danışmansın.
-
-GÖREV:
-Kullanıcının doğum haritasındaki bir açıyı analiz edeceksin. Bu analiz şunları içermeli:
-
-1. AÇININ GENEL ANLAMI: ${p1} ve ${p2} arasındaki ${aspect} açısı ne ifade ediyor?
-2. BU ÖZEL KOMBİNASYON: ${p1} (${sign1}) ve ${p2} (${sign2}) birlikte ne anlama geliyor?
-3. EV ETKİSİ: ${p1Name} ${p1House}. evde, ${p2Name} ${p2House}. evde olması ne ifade ediyor?
-4. AVANTAJ VE DEZAVANTAJLAR: Bu açının getirdiği güçlü yönler ve zorluklar neler?
-
-KURALLAR:
-- Türkçe yaz
-- 8-15 cümle arasında tut
-- Paragraflar halinde, madde işareti KULLANMA
-- Sıcak, samimi, derin ama anlaşılır ton
--astroloji jargonunu az kullan, herkes anlasın diye açıkla
-- Klişe ifadelerden kaçın
-- "Bu açı senin için ne ifade ediyor?" sorusuyla bitir`;
+  const userMessage = `Doğum haritamda ${p1} (${sign1} - ${p1House}. ev) ve ${p2} (${sign2} - ${p2House}. ev) arasında ${aspect} açısı (${orb}°) var. Bu açı ne anlama geliyor, avantaj ve dezavantajları neler? Bu açının bana ne mesajı var?`;
 
   try {
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: `${p1} (${sign1}) ve ${p2} (${sign2}) arasındaki ${aspect} açısı (${orb}°) hakkında detaylı bir analiz yap.` }
-        ],
-        stream: false,
-      }),
-    });
+    const resp = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/cosmic-mentor`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          messages: [
+            { role: "user", content: userMessage }
+          ],
+          natal_summary: `${p1}: ${sign1} ${p1House}. ev\n${p2}: ${sign2} ${p2House}. ev\n${aspect}: ${orb}°`,
+          profile: {},
+        }),
+      }
+    );
 
-    if (!response.ok) {
-      throw new Error(`AI error: ${response.status}`);
+    if (!resp.ok) {
+      throw new Error(`HTTP ${resp.status}`);
     }
 
-    const data = await response.json();
-    return data.choices?.[0]?.message?.content || "Analiz yüklenemedi.";
+    const data = await resp.json();
+    
+    if (data.error) {
+      throw new Error(data.error);
+    }
+    
+    return data.messages?.[data.messages.length - 1]?.content || "Analiz yüklenemedi.";
   } catch (error) {
     console.error("AI fetch error:", error);
     return "MANTAR şu anda yanıt veremiyor. 'MANTAR'a Sor' butonunu kullanarak doğrudan sorabilirsin.";
