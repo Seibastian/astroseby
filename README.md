@@ -201,45 +201,6 @@ Rüyada farkındalık. Bilinçli rüya görme teknikleri ile geliştirilebilir.
 
 ---
 
-## 🎯 Hedef: Ego'yu Sarsmadan Farkındalık
-
-### Psikolojik Arka Plan
-
-**Ego ve Savunma Mekanizmaları**
-
-Freud'a göre ego, bilinçdışının baskısıyla sürekli savaş halindedir. Tehditleri savuşturmak için:
-- Bastırma (Repression)
-- İnkâr (Denial)
-- Yansıtma (Projection)
-- Yerine koyma (Displacement)
-- Rasyonalizasyon (Rationalization)
-
-AstraCastra:
-1. **Ego'yu tehdit etmez** - Yavaş, kademeli açılma
-2. **Ayna tutar** - Zorlamadan farkındalık
-3. **Kabul eder** - Yargılamadan dinleme
-4. **Seçim bırakır** - Zorunlu değil
-
-### Tempolu Yaklaşım
-
-1. **Yavaş ve Sabırlı**
-   - Ani şoklar yerine, kademeli açılma
-   - "Bu sen misin?" sorusu, "Sen şusun!" demek yerine
-
-2. **Ayna Tutmak**
-   - Kullanıcıya kendini yansıtır, ama zorlamaz
-   - "Bak, bu da var" der, "Bu kötü" demez
-
-3. **Kutsal Rahatsızlık**
-   - Jung'un "numinosum" kavramı - tanrısal/kozmik rahatsızlık
-   - Kişiyi huzursuz eden ama büyüten deneyimler
-
-4. **Seçim Özgürlüğü**
-   - Hiçbir şey zorunlu değil
-   - "İstersen bakma, istediğinde geri gel" yaklaşımı
-
----
-
 ## 🤝 Sosyal Alanlar: Organik İletişim
 
 ### Vizyon
@@ -312,36 +273,6 @@ Fikirleri, teknik bilgi ve tavsiyeleri, destekleri için teşekkür ederiz:
 - **Barış Parlan**
 - **Reşat Volkan Günel**
 - **Dilberan Bostancı**
-
----
-
-## 📈 Gelişim Yol Haritası
-
-### Aşama 1: Temel (Şimdi)
-- [x] Doğum haritası hesaplama
-- [x] "Ben Kimim?" kartı
-- [x] Temel profil yönetimi
-- [x] Burç salonları
-- [ ] Rüya kayıt sistemi (geliştirilecek)
-
-### Aşama 2: Derinleşme (3-6 ay)
-- [ ] Transit astroloji entegrasyonu
-- [ ] Kronolojik rüya analizi
-- [ ] Arketip analizi
-- [ ] Kişisel gelişim raporları
-- [ ] AI-MANTAR bellek sistemi
-
-### Aşama 3: Topluluk (6-12 ay)
-- [ ] Tam eşleştirme sistemi
-- [ ] Mesajlaşma
-- [ ] Grup etkinlikleri
-- [ ] Forum ve blog
-- [ ] Ruh ailesi salonları
-
-### Aşama 4: Genişleme (12+ ay)
-- [ ] API açma
-- [ ] Multi-dil desteği
-- [ ] Özel AI modeli eğitimi
 
 ---
 
