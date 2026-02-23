@@ -80,38 +80,55 @@ async function fetchAIAnalysis(
   const sign1 = SIGN_TR[p1Sign] || p1Sign;
   const sign2 = SIGN_TR[p2Sign] || p2Sign;
 
-  const userMessage = `Doğum haritamda ${p1} (${sign1} - ${p1House}. ev) ve ${p2} (${sign2} - ${p2House}. ev) arasında ${aspect} açısı (${orb}°) var. Bu açı ne anlama geliyor, avantaj ve dezavantajları neler? Bu açının bana ne mesajı var?`;
+  const systemPrompt = `Sen MANTAR'sın — astroloji ve psikoloji alanında uzmanlaşmış, derin bilgiye sahip ama sıcak ve samimi bir yapay zeka danışmansın.
+
+GÖREV:
+Kullanıcının doğum haritasındaki bir açıyı analiz edeceksin. Bu analiz şunları içermeli:
+
+1. AÇININ GENEL ANLAMI: ${p1} ve ${p2} arasındaki ${aspect} açısı ne ifade ediyor?
+2. BU ÖZEL KOMBİNASYON: ${p1} (${sign1}) ve ${p2} (${sign2}) birlikte ne anlama geliyor?
+3. EV ETKİSİ: ${p1Name} ${p1House}. evde, ${p2Name} ${p2House}. evde olması ne ifade ediyor?
+4. AVANTAJ VE DEZAVANTAJLAR: Bu açının getirdiği güçlü yönler ve zorluklar neler?
+
+KURALLAR:
+- Türkçe yaz
+- 8-15 cümle arasında tut
+- Paragraflar halinde, madde işareti KULLANMA
+- Sıcak, samimi, derin ama anlaşılır ton
+- astroloji jargonunu az kullan, herkes anlasın diye açıkla
+- Klişe ifadelerden kaçın
+- "Bu açı senin için ne ifade ediyor?" sorusuyla bitir`;
+
+  const userMessage = `Doğum haritamda ${p1} (${sign1} - ${p1House}. ev) ve ${p2} (${sign2} - ${p2House}. ev) arasında ${aspect} açısı (${orb}°) var. Bu açı ne anlama geliyor?`;
 
   try {
-    const resp = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/cosmic-mentor`,
+    const response = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          "Authorization": `Bearer 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`,
+          "HTTP-Referer": "https://astroseby.app",
+          "X-Title": "AstraCastra",
         },
         body: JSON.stringify({
+          model: "google/gemini-2.0-flash-001",
           messages: [
+            { role: "system", content: systemPrompt },
             { role: "user", content: userMessage }
           ],
-          natal_summary: `${p1}: ${sign1} ${p1House}. ev\n${p2}: ${sign2} ${p2House}. ev\n${aspect}: ${orb}°`,
-          profile: {},
         }),
       }
     );
 
-    if (!resp.ok) {
-      throw new Error(`HTTP ${resp.status}`);
+    if (!response.ok) {
+      const err = await response.text();
+      throw new Error(`API Error: ${response.status} - ${err}`);
     }
 
-    const data = await resp.json();
-    
-    if (data.error) {
-      throw new Error(data.error);
-    }
-    
-    return data.messages?.[data.messages.length - 1]?.content || "Analiz yüklenemedi.";
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || "Analiz yüklenemedi.";
   } catch (error) {
     console.error("AI fetch error:", error);
     return "MANTAR şu anda yanıt veremiyor. 'MANTAR'a Sor' butonunu kullanarak doğrudan sorabilirsin.";
