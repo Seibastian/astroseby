@@ -5,13 +5,15 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    if (!GOOGLE_API_KEY) throw new Error("GOOGLE_API_KEY is not configured");
+
     const { messages, natal_summary, profile } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const SIGN_TR: Record<string, string> = {
       Aries: "Koç", Taurus: "Boğa", Gemini: "İkizler", Cancer: "Yengeç",
@@ -59,47 +61,45 @@ YANITLAMA KURALLARI:
 4. Aynı yapıyı iki kez kullanma.
 5. Markdown kullanabilirsin ama sadece *italik* ve **kalın** için.`;
 
-    const aiMessages = [
-      { role: "system", content: systemPrompt },
+    const contents = [
+      { role: "user", parts: [{ text: systemPrompt }] },
       ...messages.map((m: { role: string; content: string }) => ({
-        role: m.role,
-        content: m.content,
+        role: m.role === "assistant" ? "model" : "user",
+        parts: [{ text: m.content }],
       })),
     ];
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: aiMessages,
-        stream: true,
-      }),
-    });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents,
+          generationConfig: {
+            temperature: 0.9,
+            maxOutputTokens: 500,
+            topP: 0.95,
+            topK: 40,
+          },
+        }),
+      }
+    );
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Biraz yoğunum şu an, bir dakika sonra tekrar dene." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "AI kredileri tükendi." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
       const t = await response.text();
-      console.error("AI gateway error:", response.status, t);
+      console.error("Google AI error:", response.status, t);
       return new Response(JSON.stringify({ error: "Mantar yanıt veremedi" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    return new Response(response.body, {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Bir hata oluştu.";
+
+    return new Response(JSON.stringify({ text }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
     console.error("cosmic-mentor error:", e);

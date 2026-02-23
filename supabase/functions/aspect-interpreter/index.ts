@@ -28,24 +28,28 @@ const PLANET_TR: Record<string, string> = {
 };
 
 async function callAI(systemPrompt: string, userMessage: string) {
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+  const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
+  if (!GOOGLE_API_KEY) throw new Error("GOOGLE_API_KEY is not configured");
 
-  const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "google/gemini-3-flash-preview",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userMessage },
-      ],
-      stream: false,
-    }),
-  });
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          { role: "user", parts: [{ text: systemPrompt }] },
+          { role: "model", parts: [{ text: userMessage }] },
+        ],
+        generationConfig: {
+          temperature: 0.9,
+          maxOutputTokens: 1000,
+          topP: 0.95,
+          topK: 40,
+        },
+      }),
+    }
+  );
 
   if (!response.ok) {
     const text = await response.text();
@@ -53,7 +57,7 @@ async function callAI(systemPrompt: string, userMessage: string) {
   }
 
   const data = await response.json();
-  return data.choices?.[0]?.message?.content || "";
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 }
 
 serve(async (req) => {

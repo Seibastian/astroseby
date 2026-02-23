@@ -1,0 +1,43 @@
+name: Deploy Edge Functions
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'supabase/functions/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: supabase/setup-cli@v1
+        with:
+          supabase-token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          project-ref: nyauiqglwkxrxkkvjvxr
+      
+      - name: Deploy cosmic-mentor
+        run: supabase functions deploy cosmic-mentor --project-ref nyauiqglwkxrxkkvjvxr
+        
+      - name: Deploy aspect-interpreter
+        run: supabase functions deploy aspect-interpreter --project-ref nyauiqglwkxrxkkvjvxr
+        
+      - name: Deploy cosmic-letter
+        run: supabase functions deploy cosmic-letter --project-ref nyauiqglwkxrxkkvjvxr
+        
+      - name: Deploy cosmic-synthesis
+        run: supabase functions deploy cosmic-synthesis --project-ref nyauiqglwkxrxkkvjvxr
+        
+      - name: Deploy karmic-analysis
+        run: supabase functions deploy karmic-analysis --project-ref nyauiqglwkxrxkkvjvxr
+        
+      - name: Deploy karmic-match
+        run: supabase functions deploy karmic-match --project-ref nyauiqglwkxrxkkvjvxr
+        
+      - name: Deploy calculate-natal-chart
+        run: supabase functions deploy calculate-natal-chart --project-ref nyauiqglwkxrxkkvjvxr
