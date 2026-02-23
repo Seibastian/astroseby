@@ -55,22 +55,30 @@ async function fetchAIAnalysis(
   p2Name: string, p2Sign: string, p2House: number,
   aspectType: string, orb: number
 ) {
-  const { data, error } = await supabase.functions.invoke("aspect-interpreter", {
-    body: {
-      p1Name,
-      p1Sign,
-      p1House,
-      p2Name,
-      p2Sign,
-      p2House,
-      aspectType,
-      orb,
-      transits: []
+  try {
+    const { data, error } = await supabase.functions.invoke("aspect-interpreter", {
+      body: {
+        p1Name,
+        p1Sign,
+        p1House,
+        p2Name,
+        p2Sign,
+        p2House,
+        aspectType,
+        orb,
+        transits: []
+      }
+    });
+    
+    if (error) {
+      console.error("Edge function error:", error);
+      return "MANTAR şu anda müsait değil. Lütfen daha sonra tekrar dene veya 'MANTAR'a Sor' butonunu kullan.";
     }
-  });
-  
-  if (error) throw error;
-  return data?.analysis || "Analiz yüklenirken bir hata oluştu.";
+    return data?.analysis || "Analiz yüklenirken bir hata oluştu.";
+  } catch (err) {
+    console.error("AI analysis error:", err);
+    return "Bağlantı sorunu oluştu. Lütfen tekrar dene.";
+  }
 }
 
 function AspectVisual({ p1Angle, p2Angle, type }: { p1Angle: number; p2Angle: number; type: string }) {
@@ -159,7 +167,7 @@ const AspectFeed = ({ data }: Props) => {
       }
     } catch (error) {
       console.error("AI analysis error:", error);
-      setAiAnalysis("Şu anda analiz yapamıyorum. Lütfen tekrar dene.");
+      setAiAnalysis("MANTAR şu anda yanıt veremiyor. 'MANTAR'a Sor' butonunu kullanarak doğrudan sorabilirsin.");
     } finally {
       setLoading(false);
     }
