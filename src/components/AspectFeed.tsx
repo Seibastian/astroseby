@@ -5,7 +5,6 @@ import type { NatalChartData } from "@/lib/astrology";
 import { computeAspects, ASPECT_LABELS, type AspectInfo } from "./AnimatedNatalBackground";
 import { trPlanet } from "@/lib/i18n";
 import { MessageCircle, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 
 interface Props {
   data: NatalChartData | null;
@@ -50,34 +49,80 @@ const PLANET_GLYPHS: Record<string, string> = {
   Ascendant: "AC", MC: "MC",
 };
 
+const SIGN_TR: Record<string, string> = {
+  Aries: "Koç", Taurus: "Boğa", Gemini: "İkizler", Cancer: "Yengeç",
+  Leo: "Aslan", Virgo: "Başak", Libra: "Terazi", Scorpio: "Akrep",
+  Sagittarius: "Yay", Capricorn: "Oğlak", Aquarius: "Kova", Pisces: "Balık",
+};
+
+const ASPECT_TR: Record<string, string> = {
+  conjunction: "Kavuşum", trine: "Üçgen", sextile: "Altıgen",
+  square: "Kare", opposition: "Karşıt",
+};
+
+const PLANET_TR: Record<string, string> = {
+  Sun: "Güneş", Moon: "Ay", Mercury: "Merkür", Venus: "Venüs",
+  Mars: "Mars", Jupiter: "Jüpiter", Saturn: "Satürn", Uranus: "Uranüs",
+  Neptune: "Neptün", Pluto: "Plüton", Chiron: "Şiron", Lilith: "Lilith",
+  NorthNode: "Kuzey Düğümü", SouthNode: "Güney Düğümü",
+  Ascendant: "Yükselen", MC: "MC",
+};
+
 async function fetchAIAnalysis(
   p1Name: string, p1Sign: string, p1House: number,
   p2Name: string, p2Sign: string, p2House: number,
   aspectType: string, orb: number
-) {
+): Promise<string> {
+  const p1 = PLANET_TR[p1Name] || p1Name;
+  const p2 = PLANET_TR[p2Name] || p2Name;
+  const aspect = ASPECT_TR[aspectType] || aspectType;
+  const sign1 = SIGN_TR[p1Sign] || p1Sign;
+  const sign2 = SIGN_TR[p2Sign] || p2Sign;
+
+  const systemPrompt = `Sen MANTAR'sın — astroloji ve psikoloji alanında uzmanlaşmış, derin bilgiye sahip ama sıcak ve samimi bir yapay zeka danışmansın.
+
+GÖREV:
+Kullanıcının doğum haritasındaki bir açıyı analiz edeceksin. Bu analiz şunları içermeli:
+
+1. AÇININ GENEL ANLAMI: ${p1} ve ${p2} arasındaki ${aspect} açısı ne ifade ediyor?
+2. BU ÖZEL KOMBİNASYON: ${p1} (${sign1}) ve ${p2} (${sign2}) birlikte ne anlama geliyor?
+3. EV ETKİSİ: ${p1Name} ${p1House}. evde, ${p2Name} ${p2House}. evde olması ne ifade ediyor?
+4. AVANTAJ VE DEZAVANTAJLAR: Bu açının getirdiği güçlü yönler ve zorluklar neler?
+
+KURALLAR:
+- Türkçe yaz
+- 8-15 cümle arasında tut
+- Paragraflar halinde, madde işareti KULLANMA
+- Sıcak, samimi, derin ama anlaşılır ton
+-astroloji jargonunu az kullan, herkes anlasın diye açıkla
+- Klişe ifadelerden kaçın
+- "Bu açı senin için ne ifade ediyor?" sorusuyla bitir`;
+
   try {
-    const { data, error } = await supabase.functions.invoke("aspect-interpreter", {
-      body: {
-        p1Name,
-        p1Sign,
-        p1House,
-        p2Name,
-        p2Sign,
-        p2House,
-        aspectType,
-        orb,
-        transits: []
-      }
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-3-flash-preview",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `${p1} (${sign1}) ve ${p2} (${sign2}) arasındaki ${aspect} açısı (${orb}°) hakkında detaylı bir analiz yap.` }
+        ],
+        stream: false,
+      }),
     });
-    
-    if (error) {
-      console.error("Edge function error:", error);
-      return "MANTAR şu anda müsait değil. Lütfen daha sonra tekrar dene veya 'MANTAR'a Sor' butonunu kullan.";
+
+    if (!response.ok) {
+      throw new Error(`AI error: ${response.status}`);
     }
-    return data?.analysis || "Analiz yüklenirken bir hata oluştu.";
-  } catch (err) {
-    console.error("AI analysis error:", err);
-    return "Bağlantı sorunu oluştu. Lütfen tekrar dene.";
+
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || "Analiz yüklenemedi.";
+  } catch (error) {
+    console.error("AI fetch error:", error);
+    return "MANTAR şu anda yanıt veremiyor. 'MANTAR'a Sor' butonunu kullanarak doğrudan sorabilirsin.";
   }
 }
 
