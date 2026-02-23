@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import BottomNav from "@/components/BottomNav";
@@ -41,12 +42,28 @@ const MentorMessage = ({ content, isLatest }: { content: string; isLatest: boole
 
 const Mentor = () => {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   const [profile, setProfile] = useState<any>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [chartData, setChartData] = useState<NatalChartData | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const initialMessageSent = useRef(false);
+
+  // Handle initial message from URL
+  useEffect(() => {
+    if (initialMessageSent.current) return;
+    const msg = searchParams.get("message");
+    if (msg && user) {
+      initialMessageSent.current = true;
+      setInput(decodeURIComponent(msg));
+      setTimeout(() => {
+        const sendBtn = document.getElementById("mantar-send-btn");
+        if (sendBtn) sendBtn.click();
+      }, 100);
+    }
+  }, [searchParams, user]);
 
   useEffect(() => {
     if (!user) return;
@@ -242,6 +259,7 @@ const Mentor = () => {
             />
             <Button
               size="icon"
+              id="mantar-send-btn"
               onClick={sendMessage}
               disabled={loading || !input.trim()}
               className="shrink-0 rounded-lg"
