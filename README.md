@@ -305,6 +305,16 @@ Her burç, belirli arketiplerin yoğunlaşmasıdır:
 
 ---
 
+## 💐 Teşekkürler
+
+Fikirleri, teknik bilgi ve tavsiyeleri, destekleri için teşekkür ederiz:
+
+- **Barış Parlan**
+- **Reşat Volkan Günel**
+- **Dilberan Bostancı**
+
+---
+
 ## 📈 Gelişim Yol Haritası
 
 ### Aşama 1: Temel (Şimdi)
