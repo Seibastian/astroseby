@@ -417,6 +417,192 @@ Gelecekte eklenecek premium içerikler:
 
 ---
 
+## 📋 Yapılacaklar / Roadmap
+
+### Kısa Vadede (1-3 ay)
+- [ ] Rüya analizi geliştirme
+  - [ ] Toplu rüya analizi
+  - [ ] Rüya motifleri takibi
+  - [ ] AI yorum kalitesi artırma
+- [ ] "Ben Kimim?" kartı iyileştirmesi
+  - [ ] Daha detaylı prompt
+  - [ ] Farklı format seçenekleri
+- [ ] PWA yapısı
+  - [ ] Service worker
+  - [ ] Offline destek
+  - [ ] Mobil app olarak yükleme
+- [ ] Push bildirimleri
+- [ ] Sosyal paylaşım optimizasyonu
+
+### Orta Vadede (3-6 ay)
+- [ ] Tam kullanıcı eşleştirme sistemi
+  - [ ] Beğeni/kaçınma sistemi
+  - [ ] Mesajlaşma
+  - [ ] Profil ziyaretleri
+- [ ] Ruh ailesi salonları
+  - [ ] Burç dışında kriterler (Ay, yükselen, element)
+  - [ ] Topluluk özellikleri
+- [ ] MANTAR AI kişiselleştirme
+  - [ ] Uzun konuşma belleği
+  - [ ] Kullanıcı tercihleri öğrenme
+  - [ ] Kişisel asistan özellikleri
+- [ ] Premium içerikler
+  - [ ] Detaylı PDF raporları
+  - [ ] Transit analizleri
+  - [ ] Günlük/haftalık yorumlar
+
+### Uzun Vadede (6-12 ay)
+- [ ] Kendi AI modelini eğitme
+  - [ ] Özel astroloji verileri
+  - [ ] Rüya sembolizmi veritabanı
+  - [ ] Kişisel gelişim promptları
+- [ ] Topluluk özellikleri
+  - [ ] Forum
+  - [ ] Blog yazarları
+  - [ ] Uzman astrolojiciler
+- [ ] API açma
+  - [ ] Diğer uygulamalar için astroloji hizmeti
+- [ ] Uluslararasılaştırma
+  - [ ] English dil desteği
+  - [ ] Diğer diller
+
+---
+
+## 🔌 AI Entegrasyonu
+
+### Mevcut Durum
+AI, Lovable'ın gateway'i üzerinden Google Gemini 3 Flash kullanıyor. Bu:
+- Kolay kurulum sağlıyor
+- Bedava (sınırlı)
+- Ama Lovable'a bağımlılık oluşturuyor
+
+### Değiştirmek İstersen
+
+**1. OpenAI (GPT-4):**
+```typescript
+const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    model: "gpt-4",
+    messages: aiMessages,
+  }),
+});
+```
+
+**2. Anthropic (Claude):**
+```typescript
+const response = await fetch("https://api.anthropic.com/v1/messages", {
+  method: "POST",
+  headers: {
+    "x-api-key": Deno.env.get("ANTHROPIC_API_KEY")!,
+    "anthropic-version": "2023-06-01",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    model: "claude-3-opus-20240229",
+    max_tokens: 1024,
+    messages: aiMessages,
+  }),
+});
+```
+
+---
+
+## 🛠️ Kurulum (Geliştirme İçin)
+
+```bash
+# Repo'yu klonla
+git clone https://github.com/Seibastian/astroseby.git
+cd astroseby
+
+# Bağımlılıkları yükle
+npm install
+
+# Geliştirme sunucusu başlat
+npm run dev
+
+# Build yap
+npm run build
+```
+
+### Environment Variables
+```env
+VITE_SUPABASE_URL=https://xxx.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=eyJxxx
+```
+
+---
+
+## 🔐 Güvenlik
+
+- Tüm kullanıcı verileri Supabase tarafından şifreleniyor
+- Authentication Supabase Auth ile yönetiliyor
+- Row Level Security (RLS) aktif
+- API key'ler environment variable'larda saklanıyor
+
+---
+
+## 📊 Veritabanı Şeması
+
+### profiles
+| Alan | Tip | Açıklama |
+|------|-----|----------|
+| user_id | uuid | Kullanıcı ID |
+| name | text | İsim |
+| nickname | text | Takma ad |
+| email | text | E-posta |
+| gender | text | Cinsiyet |
+| profession | text | Meslek |
+| relationship_status | text | İlişki durumu |
+| date_of_birth | date | Doğum tarihi |
+| birth_time | time | Doğum saati |
+| birth_place | text | Doğum yeri |
+| sun_sign | text | Güneş burcu |
+| moon_sign | text | Ay burcu |
+| rising_sign | text | Yükselen burcu |
+
+### dreams
+| Alan | Tip | Açıklama |
+|------|-----|----------|
+| id | uuid | Rüya ID |
+| user_id | uuid | Kullanıcı ID |
+| title | text | Rüya başlığı |
+| content | text | Rüya detayı |
+| category | text | Kategori |
+| created_at | timestamp | Oluşturulma tarihi |
+
+### syntheses
+| Alan | Tip | Açıklama |
+|------|-----|----------|
+| id | uuid | Sentez ID |
+| user_id | uuid | Kullanıcı ID |
+| content | text | AI yorumu |
+| dream_id | uuid | İlişkili rüya |
+
+---
+
+## 🤝 Katkıda Bulunma
+
+1. Fork'la
+2. Branch oluştur (`git checkout -b ozellik/ozellik-adi`)
+3. Değişiklikleri commit et (`git commit -m 'Özellik eklendi'`)
+4. Push et (`git push origin ozellik/ozellik-adi`)
+5. Pull Request aç
+
+---
+
+## 📧 İletişim
+
+Sorular, öneriler ve iş birlikleri için:
+- **E-posta:** hello@astroseby.app
+- **Sosyal Medya:** @AstroRuya
+
+---
+
 ## 💌 Son Söz
 
 *"Kozmos, bizim için bir aynadır. Yıldızlar, içimizdeki yıldızları yansıtır. Rüyalar, bilinçaltımızın fısıltılarıdır. Bu iki dünyayı birleştirerek, insanlığın en kadim sorusuna cevap arıyoruz: 'Kimim ben ve nereden geliyorum?'"*
