@@ -37,14 +37,6 @@ const PLANET_GLYPHS: Record<string, string> = {
   Vertex: "Vx",
 };
 
-const ASPECT_COLORS: Record<string, string> = {
-  conjunction: "#fbbf24",
-  sextile: "#2dd4bf",
-  square: "#f87171",
-  trine: "#60a5fa",
-  opposition: "#fb923c",
-};
-
 const MantarSprite = ({ x, y, delay }: { x: number; y: number; delay: number }) => (
   <motion.g
     initial={{ opacity: 0, scale: 0 }}
