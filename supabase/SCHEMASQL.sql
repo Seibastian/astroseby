@@ -56,6 +56,8 @@ CREATE TABLE public.dreams (
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   content TEXT NOT NULL,
+  mood TEXT,
+  tags TEXT[],
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
