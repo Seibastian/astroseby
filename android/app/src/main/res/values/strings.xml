@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Mantar / AstraCastra</string>
+    <string name="title_activity_main">Mantar / AstraCastra</string>
+    <string name="package_name">com.astroseby.mantar</string>
+    <string name="custom_url_scheme">com.astroseby.mantar</string>
+</resources>
