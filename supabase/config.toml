@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.cosmic-letter]
 verify_jwt = false
+
+[functions.aspect-interpreter]
+verify_jwt = false

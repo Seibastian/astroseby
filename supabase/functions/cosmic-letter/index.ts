@@ -14,28 +14,27 @@ const SIGN_TR: Record<string, string> = {
 const trSign = (s: string | null | undefined) => s ? (SIGN_TR[s] || s) : "Bilinmiyor";
 
 async function callAI(systemPrompt: string, userMessage: string) {
-  const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
-  if (!GOOGLE_API_KEY) throw new Error("GOOGLE_API_KEY is not configured");
+  const OPENROUTER_API_KEY = Deno.env.get("OPENROUTER_API_KEY");
+  if (!OPENROUTER_API_KEY) throw new Error("OPENROUTER_API_KEY is not configured");
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [
-          { role: "user", parts: [{ text: systemPrompt }] },
-          { role: "model", parts: [{ text: userMessage }] },
-        ],
-        generationConfig: {
-          temperature: 0.9,
-          maxOutputTokens: 1000,
-          topP: 0.95,
-          topK: 40,
-        },
-      }),
-    }
-  );
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+      "Content-Type": "application/json",
+      "HTTP-Referer": "https://astroseby.com",
+      "X-Title": "AstraCastra",
+    },
+    body: JSON.stringify({
+model: "google/gemini-3-flash-preview",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userMessage },
+      ],
+      max_tokens: 1000,
+      temperature: 0.9,
+    }),
+  });
 
   if (!response.ok) {
     const t = await response.text();
@@ -43,7 +42,7 @@ async function callAI(systemPrompt: string, userMessage: string) {
   }
 
   const data = await response.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  return data.choices?.[0]?.message?.content || "";
 }
 
 serve(async (req) => {
@@ -118,42 +117,39 @@ ${personalContext}
 DOĞUM HARİTASI:
 Güneş: ${trSign(profile?.sun_sign)}, Ay: ${trSign(profile?.moon_sign)}, Yükselen: ${trSign(profile?.rising_sign)}`;
 
-    const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
-    if (!GOOGLE_API_KEY) throw new Error("GOOGLE_API_KEY is not configured");
+    const OPENROUTER_API_KEY = Deno.env.get("OPENROUTER_API_KEY");
+    if (!OPENROUTER_API_KEY) throw new Error("OPENROUTER_API_KEY is not configured");
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            { role: "user", parts: [{ text: systemPrompt }] },
-            { role: "model", parts: [{ text: `${nickname} için kişisel kozmik mektup yaz.` }] },
-          ],
-          generationConfig: {
-            temperature: 0.9,
-            maxOutputTokens: 2000,
-            topP: 0.95,
-            topK: 40,
-          },
-        }),
-      }
-    );
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://astroseby.com",
+        "X-Title": "AstraCastra",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-3-flash-preview",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `${nickname} için kişisel kozmik mektup yaz.` },
+        ],
+        max_tokens: 2000,
+        temperature: 0.9,
+        stream: true,
+      }),
+    });
 
     if (!response.ok) {
       const t = await response.text();
-      console.error("Google AI error:", response.status, t);
+      console.error("OpenRouter error:", response.status, t);
       return new Response(JSON.stringify({ error: "Mektup oluşturulamadı" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-    return new Response(JSON.stringify({ text }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    return new Response(response.body, {
+      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {
     console.error("cosmic-letter error:", e);

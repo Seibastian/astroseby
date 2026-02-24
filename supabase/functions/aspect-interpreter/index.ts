@@ -28,36 +28,35 @@ const PLANET_TR: Record<string, string> = {
 };
 
 async function callAI(systemPrompt: string, userMessage: string) {
-  const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
-  if (!GOOGLE_API_KEY) throw new Error("GOOGLE_API_KEY is not configured");
+  const OPENROUTER_API_KEY = Deno.env.get("OPENROUTER_API_KEY");
+  if (!OPENROUTER_API_KEY) throw new Error("OPENROUTER_API_KEY is not configured");
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [
-          { role: "user", parts: [{ text: systemPrompt }] },
-          { role: "model", parts: [{ text: userMessage }] },
-        ],
-        generationConfig: {
-          temperature: 0.9,
-          maxOutputTokens: 1000,
-          topP: 0.95,
-          topK: 40,
-        },
-      }),
-    }
-  );
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+      "Content-Type": "application/json",
+      "HTTP-Referer": "https://astroseby.com",
+      "X-Title": "AstraCastra",
+    },
+    body: JSON.stringify({
+      model: "google/gemini-3-flash-preview",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userMessage },
+      ],
+      max_tokens: 1000,
+      temperature: 0.9,
+      stream: true,
+    }),
+  });
 
   if (!response.ok) {
     const text = await response.text();
     throw new Error(`AI error: ${text}`);
   }
 
-  const data = await response.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  return response;
 }
 
 serve(async (req) => {
@@ -82,32 +81,32 @@ serve(async (req) => {
       }
     }
 
-    const systemPrompt = `Sen MANTAR'sın — astroloji ve psikoloji alanında uzmanlaşmış, derin bilgiye sahip ama sıcak ve samimi bir yapay zeka danışmansın.
+    const systemPrompt = `Sen MANTAR'sın — astroloji ve rüya yorumcusu, sıcak ve bilge bir dostsun.
 
-GÖREV:
-Kullanıcının doğum haritasındaki bir açıyı analiz edeceksin. Bu analiz şunları içermeli:
+GÖREV: Kısa ve öz bir açıklama yap.
 
-1. AÇININ GENEL ANLAMI: ${p1} ve ${p2} arasındaki ${aspect} açısı ne ifade ediyor?
-2. BU ÖZEL KOMBİNASYON: ${p1} (${sign1}) ve ${p2} (${sign2}) birlikte ne anlama geliyor?
-3. EV ETKİSİ: ${p1Name} ${p1House}. evde, ${p2Name} ${p2House}. evde olması ne ifade ediyor?
-4. AVANTAJ VE DEZAVANTAJLAR: Bu açının getirdiği güçlü yönler ve zorluklar neler?
-5. GÜNÜN ENERJİSİ: ${transitInfo}
+ŞABLON:
+"[Gezegen1] ([burç]) ve [Gezegen2] ([burç]) arasındaki [açı] açısı şu anlama geliyor: [2-3 cümle]. Bu enerji hayatında [1 cümle] etkisi yaratıyor."
 
 KURALLAR:
 - Türkçe yaz
-- 8-15 cümle arasında tut
-- Paragraflar halinde, madde işareti KULLANMA
-- Sıcak, samimi, derin ama anlaşılır ton
--astroloji jargonunu az kullan, herkes anlasın diye açıkla
-- Klişe ifadelerden kaçın
-- "Bu açı senin için ne ifade ediyor?" sorusuyla bitir`;
+- Maksimum 4-6 cümle
+- Paragraf halinde, madde işareti YASAK
+- Teknik jargonu cümlenin içine yedir, ayrı açıklama YAPMA
+- Doğal, akıcı, şiirsel dil
+- "Peki bu senin için ne anlama geliyor?" sorusuyla bitir`;
 
     const userMessage = `Doğum haritamdaki ${p1} (${sign1}) ve ${p2} (${sign2}) arasındaki ${aspect} açısı (${orb}°) hakkında detaylı bir analiz yap.`;
 
-    const analysis = await callAI(systemPrompt, userMessage);
+    const aiResponse = await callAI(systemPrompt, userMessage);
 
-    return new Response(JSON.stringify({ analysis }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    if (!aiResponse.ok) {
+      const t = await aiResponse.text();
+      throw new Error(`AI error: ${t}`);
+    }
+
+    return new Response(aiResponse.body, {
+      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
 
   } catch (error) {
