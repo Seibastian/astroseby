@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { Plus, Sparkles, X, BookOpen, Loader2, Mic, Layers, Moon, Heart, Wind, Flame, Eye, Ghost, Home, Car, Phone, Tree, Sun, Star } from "lucide-react";
+import { Plus, Sparkles, X, BookOpen, Loader2, Mic, Layers, Moon, Heart, Wind, Flame, Eye, Ghost, Home, Car, Phone, TreeDeciduous, Sun, Star } from "lucide-react";
 import { format } from "date-fns";
 import { TR } from "@/lib/i18n";
 
@@ -49,7 +49,7 @@ const dreamSymbols = [
   { id: "ev", label: "Ev", icon: Home, color: "bg-amber-600/20 text-amber-400" },
   { id: "araba", label: "Araba", icon: Car, color: "bg-zinc-500/20 text-zinc-400" },
   { id: "telefon", label: "Telefon", icon: Phone, color: "bg-emerald-500/20 text-emerald-400" },
-  { id: "agac", label: "Ağaç", icon: Tree, color: "bg-green-600/20 text-green-400" },
+  { id: "agac", label: "Ağaç", icon: TreeDeciduous, color: "bg-green-600/20 text-green-400" },
   { id: "gunes", label: "Güneş", icon: Sun, color: "bg-yellow-500/20 text-yellow-400" },
   { id: "kalp", label: "Kalp", icon: Heart, color: "bg-rose-500/20 text-rose-400" },
 ];
