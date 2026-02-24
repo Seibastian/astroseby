@@ -83,23 +83,53 @@ async function fetchAIAnalysis(
 
   try {
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDvPUJlNmBsXed5dUQA0dD3F_aJk-Jagr4",
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/aspect-interpreter`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: userMessage }] }],
-          systemInstruction: {
-            parts: [{ text: `Sen MANTAR'sın — astroloji ve psikoloji alanında uzmanlaşmış, derin bilgiye sahip ama sıcak ve samimi bir yapay zeka danışmansın. Türkçe yaz. 8-15 cümle. Paragraflar halinde. Sıcak ve samimi ton.` }]
-          }
+          p1Name, p1Sign, p1House,
+          p2Name, p2Sign, p2House,
+          aspectType, orb
         })
       }
     );
 
     if (!response.ok) throw new Error(`API Error: ${response.status}`);
 
-    const data = await response.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Analiz yüklenemedi.";
+    const reader = response.body?.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let fullText = "";
+
+    if (reader) {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        
+        let newlineIndex;
+        while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
+          const line = buffer.slice(0, newlineIndex);
+          buffer = buffer.slice(newlineIndex + 1);
+          if (line.startsWith("data: ")) {
+            const jsonStr = line.slice(6).trim();
+            if (jsonStr === "[DONE]") break;
+            try {
+              const parsed = JSON.parse(jsonStr);
+              const content = parsed.choices?.[0]?.delta?.content;
+              if (content) {
+                fullText += content;
+              }
+            } catch {}
+          }
+        }
+      }
+    }
+
+    return fullText || "Analiz yüklenemedi.";
   } catch (error) {
     console.error("AI error:", error);
     return "MANTAR şu anda yanıt veremiyor.";
