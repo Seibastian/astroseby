@@ -7,7 +7,7 @@
 
 ## Baskın Enerji: 5. Ev Ağırlığı
 
-**5. Ev (Yaratıcılık, Aşk, Öz-İfade):** 
+**5. Ev (Yaratıcılık, Aşk, Öz.-İfade):** 
 - Güneş, Merkür, Plüton → 5. evde
 - Bu senin "sahne"n — yaratıcı çıktın, kendini gösterme arzun var
 - Pluto 5. evde = yaratıcılıkta dönüşüm, "ölüp yeniden doğma" temaları
