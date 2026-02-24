@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import SporeField from "@/components/SporeField";
 import { motion } from "framer-motion";
-import { Mail, Lock, Star } from "lucide-react";
+import { Mail, Lock } from "lucide-react";
 import { TR } from "@/lib/i18n";
+import mantarLogo from "@/assets/mantar-avatar.png";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -57,9 +58,9 @@ const Auth = () => {
         transition={{ duration: 0.6 }}
         className="w-full max-w-sm glass-card rounded-2xl p-8 relative z-10"
       >
-        <div className="text-center mb-8">
-          <Star className="h-10 w-10 text-primary mx-auto mb-3" />
-          <h1 className="text-2xl font-display gold-shimmer">{TR.auth.title}</h1>
+<div className="text-center mb-8">
+          <img src={mantarLogo} alt="Mantar" className="h-24 w-24 mx-auto mb-3 rounded-full object-cover" />
+          <h1 className="text-2xl font-display gold-shimmer">Mantar / AstraCastra</h1>
           <p className="text-sm text-muted-foreground mt-1">{TR.auth.subtitle}</p>
         </div>
 
