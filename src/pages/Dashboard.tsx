@@ -105,7 +105,10 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [showAllPlanets, setShowAllPlanets] = useState(false);
+const [showAllPlanets, setShowAllPlanets] = useState(false);
+  const [selectedPlanet, setSelectedPlanet] = useState<{name: string, sign: string, house: number, dms: string} | null>(null);
+  const [planetInterpreting, setPlanetInterpreting] = useState(false);
+  const [planetInterpretation, setPlanetInterpretation] = useState("");
   const [chartData, setChartData] = useState<NatalChartData | null>(null);
   const [chartLoading, setChartLoading] = useState(false);
   const [letterOpen, setLetterOpen] = useState(false);
@@ -191,7 +194,65 @@ const Dashboard = () => {
     { label: trPlanet("Rising"), sign: trSign(profile.rising_sign), emoji: TR.signEmojis[profile.rising_sign] || "⬆" },
   ];
 
-  const allPlanets = chartData?.planets || [];
+const allPlanets = chartData?.planets || [];
+
+  const interpretPlanet = async (planet: {name: string, sign: string, house: number, dms: string}) => {
+    setSelectedPlanet(planet);
+    setPlanetInterpreting(true);
+    setPlanetInterpretation("");
+    
+    try {
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/aspect-interpreter`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            p1: planet.name,
+            sign1: planet.sign,
+            p2: "House",
+            sign2: `${planet.house}`,
+            aspect: "in",
+            orb: 0,
+          }),
+        }
+      );
+      
+      if (!resp.ok) throw new Error("Analiz başarısız");
+      
+      const reader = resp.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullText = "";
+      
+      while (reader) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split("\n");
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const data = line.slice(6);
+            if (data === "[DONE]") break;
+            try {
+              const parsed = JSON.parse(data);
+              const content = parsed.choices?.[0]?.delta?.content;
+              if (content) {
+                fullText += content;
+                setPlanetInterpretation(fullText);
+              }
+            } catch {}
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setPlanetInterpreting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen pb-32 relative theme-home">
@@ -299,7 +360,7 @@ const Dashboard = () => {
                 {TR.dashboard.planetaryPositions}
                 {showAllPlanets ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
               </button>
-              {showAllPlanets && (
+{showAllPlanets && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
@@ -308,7 +369,8 @@ const Dashboard = () => {
                   {allPlanets.map((planet) => (
                     <div
                       key={planet.name}
-                      className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/20"
+                      onClick={() => interpretPlanet(planet)}
+                      className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/20 hover:bg-primary/10 cursor-pointer transition-colors"
                     >
                       <span className="text-muted-foreground font-medium">
                         {planet.symbol || ""} {trPlanet(planet.name)}
@@ -318,6 +380,29 @@ const Dashboard = () => {
                       </span>
                     </div>
                   ))}
+                  
+                  {/* Planet Interpretation Modal */}
+                  {selectedPlanet && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-3 p-3 rounded-lg bg-muted/40 border border-primary/20"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-sm font-display text-primary">
+                          {selectedPlanet.symbol} {trPlanet(selectedPlanet.name)} {trSign(selectedPlanet.sign)}
+                        </p>
+                        <button onClick={() => { setSelectedPlanet(null); setPlanetInterpretation(""); }} className="text-muted-foreground hover:text-foreground">
+                          ✕
+                        </button>
+                      </div>
+                      {planetInterpreting ? (
+                        <p className="text-xs text-muted-foreground animate-pulse">Analiz ediliyor...</p>
+                      ) : (
+                        <p className="text-sm text-foreground whitespace-pre-wrap">{planetInterpretation}</p>
+                      )}
+                    </motion.div>
+                  )}
                   {chartData && (
                     <div className="mt-3 pt-2 border-t border-border/30">
                       <p className="text-xs text-primary font-display mb-1">{TR.dashboard.houseCusps}</p>
