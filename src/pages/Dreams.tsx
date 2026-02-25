@@ -227,7 +227,7 @@ const Dreams = () => {
   };
 
   const analyzeCollective = async () => {
-    if (!user || selectedDreams.size === 0 || selectedDreams.size < 5) return;
+    if (!user || selectedDreams.size === 0) return;
     setCollectiveAnalyzing(true);
     setStreamingText("");
     setCollectiveReport("");
@@ -351,26 +351,25 @@ const Dreams = () => {
             </Button>
             {selectMode && selectedDreams.size > 0 && (
               <div className="flex-1">
-                {selectedDreams.size < 5 ? (
-                  <p className="text-xs text-muted-foreground bg-muted/30 rounded-lg px-3 py-2">
-                    🌱 Toplu analiz için en az <span className="text-primary font-bold">{5 - selectedDreams.size}</span> rüya daha kaydet. 
+                {selectedDreams.size < 5 && (
+                  <p className="text-xs text-muted-foreground bg-muted/30 rounded-lg px-3 py-2 mb-2">
+                    🌱 Daha tutarlı bir analiz için en az 5 rüya önerilir. 
                     {dreams.length >= 20 && " 20+ rüya ile bilinçaltı haritanı tam olarak görebilirsin!"}
                   </p>
-                ) : (
-                  <Button
-                    size="sm"
-                    onClick={analyzeCollective}
-                    disabled={collectiveAnalyzing}
-                    className="font-display text-xs"
-                  >
-                    {collectiveAnalyzing ? (
-                      <Loader2 className="h-3 w-3 animate-spin mr-1" />
-                    ) : (
-                      <Sparkles className="h-3 w-3 mr-1" />
-                    )}
-                    Bilinçaltı Haritası Çıkar ({selectedDreams.size})
-                  </Button>
                 )}
+                <Button
+                  size="sm"
+                  onClick={analyzeCollective}
+                  disabled={collectiveAnalyzing}
+                  className="font-display text-xs"
+                >
+                  {collectiveAnalyzing ? (
+                    <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                  ) : (
+                    <Sparkles className="h-3 w-3 mr-1" />
+                  )}
+                  Bilinçaltı Haritası Çıkar ({selectedDreams.size})
+                </Button>
               </div>
             )}
           </div>
