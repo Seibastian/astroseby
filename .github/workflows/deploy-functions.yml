@@ -16,9 +16,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Deploy cosmic-synthesis
+      - name: Setup CLI
         uses: supabase/setup-cli@v1
         with:
           supabase-token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           project-ref: nyauiqglwkxrxkkvjvxr
-        run: supabase functions deploy cosmic-synthesis --project-ref nyauiqglwkxrxkkvjvxr
+      
+      - name: Deploy
+        run: supabase functions deploy cosmic-synthesis
