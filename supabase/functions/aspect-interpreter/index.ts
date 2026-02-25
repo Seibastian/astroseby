@@ -93,8 +93,7 @@ KURALLAR:
 - Maksimum 4-6 cümle
 - Paragraf halinde, madde işareti YASAK
 - Teknik jargonu cümlenin içine yedir, ayrı açıklama YAPMA
-- Doğal, akıcı, şiirsel dil
-- "Peki bu senin için ne anlama geliyor?" sorusuyla bitir`;
+- Doğal, akıcı, şiirsel dil`;
 
     const userMessage = `Doğum haritamdaki ${p1} (${sign1}) ve ${p2} (${sign2}) arasındaki ${aspect} açısı (${orb}°) hakkında detaylı bir analiz yap.`;
 

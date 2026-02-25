@@ -45,7 +45,6 @@ Kişi B: ${profile_b?.name || "Gizemli Ruh"} — Güneş: ${trSign(profile_b?.su
 
 TARZIN:
 - Şablon veya liste KULLANMA. Akan, organik paragraflar yaz.
-- "Neden bir araya geldiniz" sorusunu toprağın altındaki köklerin buluşması olarak anlat.
 - "Karmik görev"i miseliumun bilgi taşıma süreci olarak betimle.
 - "Potansiyel gelecek"i filizlenme ve yeni mantarların doğuşu olarak yaz.
 - Klişelerden kaçın. Somut, hissedilen, organik metaforlar kullan.
