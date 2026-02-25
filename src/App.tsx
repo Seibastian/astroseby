@@ -17,6 +17,7 @@ import NotFound from "./pages/NotFound";
 import WhoAmI from "./pages/WhoAmI";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import Synastry from "./pages/Synastry";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const AppRoutes = () => (
     <Route path="/whoami" element={<ProtectedRoute><WhoAmI /></ProtectedRoute>} />
     <Route path="/privacy" element={<Privacy />} />
     <Route path="/terms" element={<Terms />} />
+    <Route path="/synastry" element={<ProtectedRoute><Synastry /></ProtectedRoute>} />
     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
