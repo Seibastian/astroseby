@@ -15,12 +15,12 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup CLI
         uses: supabase/setup-cli@v1
         with:
           supabase-token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           project-ref: nyauiqglwkxrxkkvjvxr
-      
+
       - name: Deploy
         run: supabase functions deploy cosmic-synthesis
