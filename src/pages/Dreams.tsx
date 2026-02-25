@@ -227,7 +227,7 @@ const Dreams = () => {
   };
 
   const analyzeCollective = async () => {
-    if (!user || selectedDreams.size === 0) return;
+    if (!user || selectedDreams.size === 0 || selectedDreams.size < 5) return;
     setCollectiveAnalyzing(true);
     setStreamingText("");
     setCollectiveReport("");
@@ -334,31 +334,44 @@ const Dreams = () => {
           <div className="flex gap-2 mb-4">
             <Button
               size="sm"
-              variant={selectMode ? "default" : "outline"}
+              variant="outline"
               onClick={() => {
                 setSelectMode(!selectMode);
-                setSelectedDreams(new Set());
+                if (!selectMode) {
+                  setSelectedDreams(new Set(dreams.map(d => d.id)));
+                } else {
+                  setSelectedDreams(new Set());
+                }
                 setCollectiveReport("");
               }}
               className="font-display text-xs"
             >
               <Layers className="h-3 w-3 mr-1" />
-              {selectMode ? "İptal" : "Çoklu Seç"}
+              {selectMode ? "İptal" : "Tümünü Seç"}
             </Button>
             {selectMode && selectedDreams.size > 0 && (
-              <Button
-                size="sm"
-                onClick={analyzeCollective}
-                disabled={collectiveAnalyzing}
-                className="font-display text-xs"
-              >
-                {collectiveAnalyzing ? (
-                  <Loader2 className="h-3 w-3 animate-spin mr-1" />
+              <div className="flex-1">
+                {selectedDreams.size < 5 ? (
+                  <p className="text-xs text-muted-foreground bg-muted/30 rounded-lg px-3 py-2">
+                    🌱 Toplu analiz için en az <span className="text-primary font-bold">{5 - selectedDreams.size}</span> rüya daha kaydet. 
+                    {dreams.length >= 20 && " 20+ rüya ile bilinçaltı haritanı tam olarak görebilirsin!"}
+                  </p>
                 ) : (
-                  <Sparkles className="h-3 w-3 mr-1" />
+                  <Button
+                    size="sm"
+                    onClick={analyzeCollective}
+                    disabled={collectiveAnalyzing}
+                    className="font-display text-xs"
+                  >
+                    {collectiveAnalyzing ? (
+                      <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                    ) : (
+                      <Sparkles className="h-3 w-3 mr-1" />
+                    )}
+                    Bilinçaltı Haritası Çıkar ({selectedDreams.size})
+                  </Button>
                 )}
-                Analiz Et ({selectedDreams.size})
-              </Button>
+              </div>
             )}
           </div>
         )}
