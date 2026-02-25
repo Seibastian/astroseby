@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.aspect-interpreter]
 verify_jwt = false
+
+[functions.planet-interpreter]
+verify_jwt = false

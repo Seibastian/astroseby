@@ -203,7 +203,7 @@ const allPlanets = chartData?.planets || [];
     
     try {
       const resp = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/aspect-interpreter`,
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/planet-interpreter`,
         {
           method: "POST",
           headers: {
@@ -211,12 +211,10 @@ const allPlanets = chartData?.planets || [];
             Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
           body: JSON.stringify({
-            p1: planet.name,
-            sign1: planet.sign,
-            p2: "House",
-            sign2: `${planet.house}`,
-            aspect: "in",
-            orb: 0,
+            planet: planet.name,
+            sign: planet.sign,
+            house: planet.house,
+            degree: planet.dms,
           }),
         }
       );
