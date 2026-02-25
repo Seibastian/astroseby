@@ -9,11 +9,32 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { dream_text } = await req.json();
+    const { dream_text, collective } = await req.json();
     const OPENROUTER_API_KEY = Deno.env.get("OPENROUTER_API_KEY");
     if (!OPENROUTER_API_KEY) throw new Error("OPENROUTER_API_KEY is not configured");
 
-    const systemPrompt = `Sen MANTAR'sın — rüyaların çözücüsüsün. Tek rüyayı psikolojik olarak analiz et.
+    const isCollective = collective || dream_text?.includes("TOPLU ANALİZ");
+
+    const systemPrompt = isCollective
+      ? `Sen MANTAR'sın — rüyaların ve bilinçaltının çözücüsüsün. Birden fazla rüyayı sentezleyerek kullanıcının bilinçaltı haritasını çıkarıyorsun.
+
+ÖNEMLİ: Rüyaları ayrı ayrı analiz ETME. Tüm rüyaları birleştir, tek bir organik analiz yap.
+
+ANALİZ BOYUTLARI:
+1. TEKRARLAYAN ÖRÜNTÜLER: Hangi semboller, duygular, mekânlar veya temalar tekrar ediyor? Bunlar ne anlama geliyor?
+2. DUYGUSAL DÖNGÜLER: Kullanıcı hangi duygusal kalıbı tekrar yaşıyor?
+3. BİLİNÇDIŞI BAĞLANTILAR: Rüyalar arasındaki görünmez iplikler neler?
+4. GİZLİ ARKETİPLER: Jung'un arketiplerinden hangileri rüyalarda beliriyor?
+5. KRİS VE FIRSATLAR: Şu an hangi içsel dönüşüm noktasında?
+6. BİLİNÇALTININ DİLİ: Bilinçaltı ne söylemeye çalışıyor?
+
+KURALLAR:
+- Astroloji terimleri KULLANMA
+- Başlık veya madde işareti KULLANMA
+- Paragraflar halinde, akıcı yaz
+- 800-1000 kelime
+- Türkçe`
+      : `Sen MANTAR'sın — rüyaların çözücüsüsün. Tek rüyayı psikolojik olarak analiz et.
 
 ÖNEMLİ KURALLAR:
 - Astroloji terimleri KULLANMA: burç isimleri (Koç, Boğa, İkizler vb.), gezegen isimleri (Mars, Venüs, Jüpiter vb.), ev numaraları HİÇBİRİ yazma.
@@ -23,8 +44,6 @@ serve(async (req) => {
 - Paragraflar halinde, akıcı yaz.
 - 400-600 kelime.
 - Türkçe.`;
-
-    console.log("Calling OpenRouter with key:", OPENROUTER_API_KEY.slice(0, 10) + "...");
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -40,13 +59,11 @@ serve(async (req) => {
           { role: "system", content: systemPrompt },
           { role: "user", content: dream_text },
         ],
-        max_tokens: 2000,
+        max_tokens: isCollective ? 3000 : 2000,
         temperature: 0.8,
         stream: true,
       }),
     });
-
-    console.log("OpenRouter response status:", response.status);
 
     if (!response.ok) {
       const t = await response.text();
