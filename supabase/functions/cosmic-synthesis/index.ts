@@ -22,8 +22,7 @@ serve(async (req) => {
 - Başlık veya madde işareti KULLANMA.
 - Paragraflar halinde, akıcı yaz.
 - 400-600 kelime.
-- Türkçe.
-- Sonunda düşündürücü bir soru sor.`;
+- Türkçe.`;
 
     console.log("Calling OpenRouter with key:", OPENROUTER_API_KEY.slice(0, 10) + "...");
 
