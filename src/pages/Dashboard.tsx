@@ -380,29 +380,6 @@ const allPlanets = chartData?.planets || [];
                       </span>
                     </div>
                   ))}
-                  
-                  {/* Planet Interpretation Modal */}
-                  {selectedPlanet && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="mt-3 p-3 rounded-lg bg-muted/40 border border-primary/20"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="text-sm font-display text-primary">
-                          {selectedPlanet.symbol} {trPlanet(selectedPlanet.name)} {trSign(selectedPlanet.sign)}
-                        </p>
-                        <button onClick={() => { setSelectedPlanet(null); setPlanetInterpretation(""); }} className="text-muted-foreground hover:text-foreground">
-                          ✕
-                        </button>
-                      </div>
-                      {planetInterpreting ? (
-                        <p className="text-xs text-muted-foreground animate-pulse">Analiz ediliyor...</p>
-                      ) : (
-                        <p className="text-sm text-foreground whitespace-pre-wrap">{planetInterpretation}</p>
-                      )}
-                    </motion.div>
-                  )}
                   {chartData && (
                     <div className="mt-3 pt-2 border-t border-border/30">
                       <p className="text-xs text-primary font-display mb-1">{TR.dashboard.houseCusps}</p>
@@ -422,12 +399,43 @@ const allPlanets = chartData?.planets || [];
                         })}
                       </div>
                     </div>
-                  )}
+)}
                 </motion.div>
               )}
             </div>
           )}
         </motion.div>
+
+        {/* Planet Interpretation Modal */}
+        {selectedPlanet && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={() => { setSelectedPlanet(null); setPlanetInterpretation(""); }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="glass-card rounded-2xl p-6 max-w-sm w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-lg font-display text-primary">
+                  {selectedPlanet.symbol} {trPlanet(selectedPlanet.name)} {trSign(selectedPlanet.sign)}
+                </p>
+                <button onClick={() => { setSelectedPlanet(null); setPlanetInterpretation(""); }} className="text-muted-foreground hover:text-foreground text-xl">
+                  ✕
+                </button>
+              </div>
+              {planetInterpreting ? (
+                <p className="text-sm text-muted-foreground animate-pulse">Analiz ediliyor...</p>
+              ) : (
+                <p className="text-sm text-foreground whitespace-pre-wrap">{planetInterpretation}</p>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
 
         {/* Aspect Feed */}
         <motion.div
