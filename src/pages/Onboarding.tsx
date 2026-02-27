@@ -79,7 +79,7 @@ const Onboarding = () => {
         }
       ).catch(console.error);
 
-      navigate("/dashboard");
+      navigate("/guide");
     } catch (error: any) {
       toast.error(error.message);
     } finally {

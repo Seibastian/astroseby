@@ -18,6 +18,7 @@ import WhoAmI from "./pages/WhoAmI";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Synastry from "./pages/Synastry";
+import OnboardingGuide from "./pages/OnboardingGuide";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const AppRoutes = () => (
     <Route path="/auth" element={<Auth />} />
     <Route path="/" element={<Navigate to="/dashboard" replace />} />
     <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+    <Route path="/guide" element={<ProtectedRoute><OnboardingGuide /></ProtectedRoute>} />
     <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
     <Route path="/dreams" element={<ProtectedRoute><Dreams /></ProtectedRoute>} />
     <Route path="/mentor" element={<ProtectedRoute><Mentor /></ProtectedRoute>} />
