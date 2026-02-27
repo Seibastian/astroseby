@@ -4,14 +4,14 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { TR } from "@/lib/i18n";
 
 const tabs = [
-  { path: "/dashboard", icon: Home, label: TR.nav.home },
-  { path: "/dreams", icon: BookOpen, label: TR.nav.dreams },
-  { path: "/synastry", icon: Sparkles, label: "İlişki" },
-  { path: "/premium", icon: Crown, label: "VIP" },
-  { path: "/karmic-match", icon: Heart, label: TR.nav.karmic },
   { path: "/chambers", icon: Users, label: TR.nav.chambers },
   { path: "/whoami", icon: Share2, label: "Ben" },
+  { path: "/synastry", icon: Sparkles, label: "İlişki" },
+  { path: "/dreams", icon: BookOpen, label: TR.nav.dreams },
+  { path: "/dashboard", icon: Home, label: TR.nav.home },
   { path: "/mentor", icon: null, label: TR.nav.mentor, isMantar: true },
+  { path: "/premium", icon: Crown, label: "VIP" },
+  { path: "/karmic-match", icon: Heart, label: TR.nav.karmic },
   { path: "/profile", icon: User, label: TR.nav.profile },
 ];
 
@@ -22,15 +22,16 @@ const BottomNav = () => {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-border">
       <div className="flex items-center justify-around h-14 max-w-lg mx-auto">
-        {tabs.map((tab) => {
+{tabs.map((tab, index) => {
           const isActive = location.pathname === tab.path;
+          const isCenter = index === 4; // Home in center
           return (
             <button
               key={tab.path}
               onClick={() => navigate(tab.path)}
               className={`flex flex-col items-center gap-0.5 px-2 py-1 transition-colors ${
                 isActive ? "text-primary" : "text-muted-foreground"
-              }`}
+              } ${isCenter ? "scale-110" : ""}`}
             >
               {tab.isMantar ? (
                 <img
