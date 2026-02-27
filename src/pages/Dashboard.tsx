@@ -112,6 +112,7 @@ const [showAllPlanets, setShowAllPlanets] = useState(false);
   const [chartData, setChartData] = useState<NatalChartData | null>(null);
   const [chartLoading, setChartLoading] = useState(false);
   const [letterOpen, setLetterOpen] = useState(false);
+  const [savedLetter, setSavedLetter] = useState("");
 
   const fetchProfile = useCallback(async () => {
     if (!user) return;
@@ -120,10 +121,11 @@ const [showAllPlanets, setShowAllPlanets] = useState(false);
       .select("*")
       .eq("user_id", user.id)
       .single();
-    if (data && !data.onboarding_completed) {
+if (data && !data.onboarding_completed) {
       navigate("/onboarding");
     } else {
       setProfile(data);
+      setSavedLetter(data?.natal_letter_content || "");
     }
   }, [user, navigate]);
 
@@ -274,12 +276,20 @@ const allPlanets = chartData?.planets || [];
           </p>
         </motion.div>
 
-        {/* Cosmic Letter CTA */}
+{/* Cosmic Letter CTA */}
         <motion.button
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          onClick={() => setLetterOpen(true)}
+          onClick={() => {
+            if (profile?.natal_letter_used && savedLetter) {
+              setLetterOpen(true);
+            } else if (!profile?.natal_letter_used) {
+              setLetterOpen(true);
+            } else {
+              navigate("/premium");
+            }
+          }}
           className="w-full mb-6 p-4 rounded-2xl text-left flex items-center gap-4 transition-all hover:scale-[1.01]"
           style={{
             background: "linear-gradient(135deg, hsla(270, 40%, 18%, 0.8), hsla(260, 50%, 12%, 0.9))",
@@ -294,7 +304,9 @@ const allPlanets = chartData?.planets || [];
           </div>
           <div>
             <p className="font-display text-sm text-foreground">{TR.dashboard.cosmicLetter}</p>
-            <p className="text-xs text-muted-foreground">{TR.dashboard.cosmicLetterDesc}</p>
+            <p className="text-xs text-muted-foreground">
+              {profile?.natal_letter_used ? "Mektubun hazır" : TR.dashboard.cosmicLetterDesc}
+            </p>
           </div>
         </motion.button>
 
@@ -496,12 +508,16 @@ const allPlanets = chartData?.planets || [];
         </div>
       </div>
 
-      {/* Cosmic Letter Modal */}
+{/* Cosmic Letter Modal */}
       <CosmicLetterModal
         open={letterOpen}
         onClose={() => setLetterOpen(false)}
         profile={profile}
         natalSummary={chartData ? buildNatalSummary(chartData) : ""}
+        savedLetter={savedLetter}
+        onLetterSaved={(content) => {
+          setSavedLetter(content);
+        }}
       />
 
       <AdBanner />

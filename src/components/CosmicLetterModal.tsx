@@ -1,9 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Loader2 } from "lucide-react";
 import { useTypewriter } from "@/hooks/useTypewriter";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  profile: any;
+  natalSummary: string;
+  savedLetter?: string;
+  onLetterSaved?: (content: string) => void;
+}
 
 interface Props {
   open: boolean;
@@ -21,10 +32,18 @@ const LetterContent = ({ content }: { content: string }) => {
   );
 };
 
-const CosmicLetterModal = ({ open, onClose, profile, natalSummary }: Props) => {
+const CosmicLetterModal = ({ open, onClose, profile, natalSummary, savedLetter, onLetterSaved }: Props) => {
+  const { user } = useAuth();
   const [letter, setLetter] = useState("");
   const [loading, setLoading] = useState(false);
   const [generated, setGenerated] = useState(false);
+
+  useEffect(() => {
+    if (open && savedLetter && !letter) {
+      setLetter(savedLetter);
+      setGenerated(true);
+    }
+  }, [open, savedLetter]);
 
   const generateLetter = async () => {
     setLoading(true);
@@ -91,8 +110,20 @@ const CosmicLetterModal = ({ open, onClose, profile, natalSummary }: Props) => {
             break;
           }
         }
-      }
+}
       setGenerated(true);
+      
+      // Save to database
+      if (user && text) {
+        await supabase.from("profiles").update({
+          natal_letter_used: true,
+          natal_letter_content: text,
+        }).eq("user_id", user.id);
+        
+        if (onLetterSaved) {
+          onLetterSaved(text);
+        }
+      }
     } catch (error: any) {
       toast.error(error.message);
     } finally {
