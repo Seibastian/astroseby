@@ -5,12 +5,14 @@ import BottomNav from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
-import { LogOut, User, CalendarDays, MapPin, Star, Moon, Sparkles, Save, Briefcase, Heart, Edit2 } from "lucide-react";
+import { LogOut, User, CalendarDays, MapPin, Star, Moon, Sparkles, Save, Briefcase, Heart, Edit2, HelpCircle } from "lucide-react";
 import { TR, trSign } from "@/lib/i18n";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ nickname: "", gender: "", profession: "", relationship_status: "" });
@@ -187,7 +189,11 @@ const Profile = () => {
               </div>
             </div>
           )}
-        </div>
+</div>
+
+        <Button variant="outline" onClick={() => navigate("/guide")} className="w-full mb-3">
+          <HelpCircle className="h-4 w-4 mr-2" /> Uygulama Rehberi
+        </Button>
 
         <Button variant="outline" onClick={signOut} className="w-full">
           <LogOut className="h-4 w-4 mr-2" /> {TR.profile.signOut}
