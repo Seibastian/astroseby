@@ -40,7 +40,7 @@ const Onboarding = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const handleFinish = async () => {
+const handleFinish = async () => {
     if (!user) return;
     setLoading(true);
     try {
@@ -60,6 +60,9 @@ const Onboarding = () => {
         .eq("user_id", user.id);
 
       if (error) throw error;
+
+      // Wait a bit to ensure save completes
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       // Calculate real planetary positions in the background
       fetch(
