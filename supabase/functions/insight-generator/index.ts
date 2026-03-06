@@ -4,6 +4,7 @@ import * as Astronomy from "https://esm.sh/astronomy-engine@2.1.19";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
 const ZODIAC_SIGNS = [
@@ -59,20 +60,16 @@ function calculateNodes(date: Date) {
   return { north: (mean + corr + 180) % 360, south: (mean + corr) % 360 };
 }
 
-function calculateNatalChart(dateOfBirth: string, birthTime: string | null, lat: number, lon: number) {
-  let hour = 12, minute = 0;
-  if (birthTime) {
-    const parts = birthTime.split(":");
-    hour = parseInt(parts[0], 10);
-    minute = parseInt(parts[1], 10);
-  }
+function parseTimeParts(timeStr?: string | null) {
+  if (!timeStr) return { hour: 12, minute: 0 };
+  const parts = timeStr.split(":").map((p) => parseInt(p, 10));
+  return { hour: isNaN(parts[0]) ? 12 : parts[0], minute: isNaN(parts[1]) ? 0 : parts[1] ?? 0 };
+}
 
-  const utcOffset = 3;
-  const birthDateTime = new Date(dateOfBirth);
-  const year = birthDateTime.getUTCFullYear();
-  const month = birthDateTime.getUTCMonth();
-  const day = birthDateTime.getUTCDate();
-  const utcDate = new Date(Date.UTC(year, month, day, hour, minute, 0) - utcOffset * 3600000);
+function calculateNatalChart(dateOfBirth: string, birthTime: string | null, lat: number, lon: number) {
+  const { hour, minute } = parseTimeParts(birthTime);
+  const birthDate = new Date(`${dateOfBirth}T00:00:00Z`);
+  const utcDate = new Date(Date.UTC(birthDate.getUTCFullYear(), birthDate.getUTCMonth(), birthDate.getUTCDate(), hour, minute, 0));
 
   const bodies = [
     { name: "Sun", body: Astronomy.Body.Sun },
@@ -87,9 +84,7 @@ function calculateNatalChart(dateOfBirth: string, birthTime: string | null, lat:
     { name: "Pluto", body: Astronomy.Body.Pluto },
   ];
 
-  const houses = Array.from({ length: 12 }, (_, i) => i * 30);
   const nodes = calculateNodes(utcDate);
-
   const planets = bodies.map(({ name, body }) => {
     const eclLon = getEclipticLongitude(body, utcDate);
     const sign = longitudeToSign(eclLon);
@@ -98,7 +93,7 @@ function calculateNatalChart(dateOfBirth: string, birthTime: string | null, lat:
       name: trPlanet(name),
       sign: trSign(sign),
       degree: Math.round(degInSign * 100) / 100,
-      house: Math.floor(eclLon / 30) + 1,
+      house: Math.floor(((eclLon % 360) + 360) % 360 / 30) + 1,
     };
   });
 
@@ -107,21 +102,21 @@ function calculateNatalChart(dateOfBirth: string, birthTime: string | null, lat:
     name: trPlanet("Chiron"),
     sign: trSign(longitudeToSign(chironLon)),
     degree: Math.round(((chironLon % 360) + 360) % 360 % 30 * 100) / 100,
-    house: Math.floor(chironLon / 30) + 1,
+    house: Math.floor(((chironLon % 360) + 360) % 360 / 30) + 1,
   });
 
   planets.push({
     name: "Kuzey Düğüm",
     sign: trSign(longitudeToSign(nodes.north)),
     degree: Math.round(((nodes.north % 360) + 360) % 360 % 30 * 100) / 100,
-    house: Math.floor(nodes.north / 30) + 1,
+    house: Math.floor(((nodes.north % 360) + 360) % 360 / 30) + 1,
   });
 
   planets.push({
     name: "Güney Düğüm",
     sign: trSign(longitudeToSign(nodes.south)),
     degree: Math.round(((nodes.south % 360) + 360) % 360 % 30 * 100) / 100,
-    house: Math.floor(nodes.south / 30) + 1,
+    house: Math.floor(((nodes.south % 360) + 360) % 360 / 30) + 1,
   });
 
   return planets;
@@ -141,16 +136,21 @@ const formatNatalChart = async (profile: any): Promise<string> => {
 
   let lat = 41.0, lon = 29.0;
   try {
+    const q = encodeURIComponent(profile.birth_place);
     const geoResp = await fetch(
-      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(profile.birth_place)}&format=json&limit=1`,
+      `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`,
       { headers: { "User-Agent": "AstraCastra/1.0" } }
     );
-    const geoData = await geoResp.json();
-    if (geoData?.[0]) {
-      lat = parseFloat(geoData[0].lat);
-      lon = parseFloat(geoData[0].lon);
+    if (geoResp.ok) {
+      const geoData = await geoResp.json();
+      if (geoData?.[0]) {
+        lat = parseFloat(geoData[0].lat);
+        lon = parseFloat(geoData[0].lon);
+      }
     }
-  } catch {}
+  } catch (err) {
+    console.error("Geocoding error:", err);
+  }
 
   const planets = calculateNatalChart(profile.date_of_birth, profile.birth_time, lat, lon);
 
@@ -180,20 +180,30 @@ ANA ENERJİLER:
   return chartText;
 };
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+console.info("insight-generator function started");
+
+Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: corsHeaders });
+  }
 
   try {
+    const contentType = req.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      return new Response(JSON.stringify({ error: "Beklenen içerik tipi: application/json" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { prompt, natalChart, profile } = await req.json();
     const OPENROUTER_API_KEY = Deno.env.get("OPENROUTER_API_KEY");
     if (!OPENROUTER_API_KEY) throw new Error("OPENROUTER_API_KEY is not configured");
 
     let natalChartInfo = natalChart;
-
     if (!natalChartInfo && profile) {
       natalChartInfo = await formatNatalChart(profile);
     }
-
     if (!natalChartInfo) {
       natalChartInfo = "Doğum haritası bilgisi bulunamadı.";
     }
@@ -221,7 +231,7 @@ Yukarıdaki doğum haritasını ve şimdiki transitleri detaylı şekilde analiz
         "X-Title": "AstraCastra",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.0-flash-exp",
+        model: "google/gemini-1.5-flash-8b",
         messages: [
           { role: "system", content: "Sen MANTAR'sın — astrolojik analiz uzmanısın ve yaşam koçusun. Kullanıcının doğum haritasını ve güncel transitlerini analiz ederek derin, kişisel ve şiirsel yorumlar yapıyorsun. Her analizde gezegenlerin hangi evlerde ve burçlarda olduğuna dikkat et. Paragraflar halinde, akıcı ve anlaşılır yaz. Başlık veya madde işareti kullanma. Türkçe. Ego ile çalışmayı teşvik et." },
           { role: "user", content: enhancedPrompt },
@@ -233,7 +243,8 @@ Yukarıdaki doğum haritasını ve şimdiki transitleri detaylı şekilde analiz
     });
 
     if (!response.ok) {
-      return new Response(JSON.stringify({ error: "Analiz başarısız" }), {
+      const text = await response.text().catch(() => "OpenRouter hata");
+      return new Response(JSON.stringify({ error: "Analiz başarısız", detail: text }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -242,8 +253,10 @@ Yukarıdaki doğum haritasını ve şimdiki transitleri detaylı şekilde analiz
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Bilinmeyen hata" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    const msg = e instanceof Error ? e.message : "Bilinmeyen hata";
+    return new Response(JSON.stringify({ error: msg }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
