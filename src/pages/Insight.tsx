@@ -4,7 +4,7 @@ import SporeField from "@/components/SporeField";
 import BottomNav from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Lock, Sparkles, Briefcase, Heart, MapPin, Star, Calendar, Eye, Sun, Moon, Loader2 } from "lucide-react";
+import { Lock, Sparkles, Briefcase, Heart, MapPin, Star, Calendar, Eye, Sun, Moon, Loader2, CreditCard } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -88,6 +88,8 @@ const Insight = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isPremium, setIsPremium] = useState(false);
+  const [keşifLifetime, setKeşifLifetime] = useState(false);
+  const [keşifUses, setKeşifUses] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
   const [report, setReport] = useState("");
@@ -101,17 +103,33 @@ const Insight = () => {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("*")
+        .select("*, keşif_lifetime, keşif_uses")
         .eq("user_id", user.id)
         .single();
       setProfile(data);
       setIsPremium(data?.is_premium || false);
+      setKeşifLifetime(data?.keşif_lifetime || false);
+      setKeşifUses(data?.keşif_uses || {});
       setLoading(false);
     };
     checkPremiumAndProfile();
   }, [user]);
 
+  const canAccess = isPremium || keşifLifetime;
+
   const getNatalChartText = async (): Promise<string> => {
+    if (!user || !profile) return;
+    
+    if (!canAccess) {
+      toast.error("Bu özellik için Premium satın almalısın");
+      navigate("/premium");
+      return;
+    }
+    
+    setSelectedInsight(insight);
+    setAnalyzing(true);
+    setStreamingText("");
+    setShowResult(true);
     if (!profile?.date_of_birth || !profile?.birth_place) {
       return `Temel Bilgiler:
 - İsim: ${profile?.name || "Kullanıcı"}
@@ -166,6 +184,13 @@ ANA ENERJİLER:
 
   const analyze = async (insight: typeof insights[0]) => {
     if (!user || !profile) return;
+    
+    if (!canAccess) {
+      toast.error("Bu özellik için Premium satın almalısın");
+      navigate("/premium");
+      return;
+    }
+    
     setSelectedInsight(insight);
     setAnalyzing(true);
     setStreamingText("");
@@ -227,6 +252,32 @@ ANA ENERJİLER:
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!canAccess) {
+    return (
+      <div className="min-h-screen pb-24 relative">
+        <SporeField />
+        <div className="relative z-10 px-4 pt-8 max-w-lg mx-auto">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center"
+          >
+            <Lock className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <h1 className="text-2xl font-display text-foreground mb-2">Keşif Premium</h1>
+            <p className="text-muted-foreground mb-6">
+              Bu özelliklere erişmek için Premium satın almalısın.
+            </p>
+            <Button onClick={() => navigate("/premium")} className="w-full">
+              <CreditCard className="h-4 w-4 mr-2" />
+              Premium Satın Al
+            </Button>
+          </motion.div>
+        </div>
+        <BottomNav />
       </div>
     );
   }
