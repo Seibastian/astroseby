@@ -2,12 +2,11 @@ import SporeField from "@/components/SporeField";
 import BottomNav from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Crown, Sparkles, Shield, Infinity, Moon, Star, Eye, Heart, Zap, Calendar, FileText, Users, Lock, Unlock, Check, Compass, MessageCircle, Home } from "lucide-react";
+import { Crown, Sparkles, Shield, Infinity, Moon, Star, Eye, Heart, Zap, Calendar, FileText, Users, Lock, Unlock, Check } from "lucide-react";
 import { TR } from "@/lib/i18n";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
 
 const benefits = [
   { id: "unlimited_ai", icon: Infinity, title: "Sınırsız Mantar Sentezi", desc: "Rüya analizlerinde günlük sınır yok", feature: "unlimitedDreams" },
@@ -25,7 +24,6 @@ const benefits = [
 
 const Premium = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [isPremium, setIsPremium] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -81,42 +79,6 @@ const Premium = () => {
             {isPremium ? "🎉 Premium üesisin!" : "Tam deneyimin kilidini aç"}
           </p>
         </motion.div>
-
-        {/* Quick Access */}
-        <div className="mb-6">
-          <h2 className="text-sm font-display text-muted-foreground mb-3">Hızlı Erişim</h2>
-          <div className="grid grid-cols-3 gap-3">
-            <motion.button
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              onClick={() => navigate("/insight")}
-              className="glass-card rounded-xl p-4 flex flex-col items-center gap-2 hover:border-primary/50"
-            >
-              <Compass className="h-6 w-6 text-primary" />
-              <span className="text-xs font-medium">Keşif</span>
-            </motion.button>
-            <motion.button
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              onClick={() => navigate("/synastry")}
-              className="glass-card rounded-xl p-4 flex flex-col items-center gap-2 hover:border-primary/50"
-            >
-              <Heart className="h-6 w-6 text-primary" />
-              <span className="text-xs font-medium">İlişki</span>
-            </motion.button>
-            <motion.button
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              onClick={() => navigate("/chambers")}
-              className="glass-card rounded-xl p-4 flex flex-col items-center gap-2 hover:border-primary/50"
-            >
-              <Home className="h-6 w-6 text-primary" />
-              <span className="text-xs font-medium">Salonlar</span>
-            </motion.button>
-          </div>
-        </div>
 
         {/* Premium Status Toggle (for testing) */}
         <div className="glass-card rounded-xl p-4 mb-6">

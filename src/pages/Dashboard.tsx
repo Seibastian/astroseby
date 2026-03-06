@@ -11,7 +11,7 @@ import CosmicLetterModal from "@/components/CosmicLetterModal";
 import AspectFeed from "@/components/AspectFeed";
 import MantarAvatar from "@/components/MantarAvatar";
 import { motion } from "framer-motion";
-import { BookOpen, Crown, Star, RefreshCw, Sparkles, ChevronDown, ChevronUp, Loader2, ScrollText, Heart, MessageCircle, User } from "lucide-react";
+import { BookOpen, Crown, Star, RefreshCw, Sparkles, ChevronDown, ChevronUp, Loader2, ScrollText, Heart, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { TR, trSign, trPlanet } from "@/lib/i18n";
 import type { NatalChartData, PlanetPosition } from "@/lib/astrology";
@@ -266,24 +266,14 @@ const allPlanets = chartData?.planets || [];
       <AmbientAudio />
       <div className="relative z-10 px-4 pt-8 max-w-lg mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-sm text-muted-foreground">{TR.dashboard.welcome}</p>
-              <h1 className="text-2xl font-display text-foreground">
-                {profile.nickname || profile.name || TR.dashboard.stargazer}{" "}
-                <span className="text-primary">{TR.signEmojis[profile.sun_sign] || "✨"}</span>
-              </h1>
-              <p className="text-sm text-primary mt-1">
-                {trSign(profile.sun_sign)} {trPlanet("Sun")}
-              </p>
-            </div>
-            <button
-              onClick={() => navigate("/profile")}
-              className="p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
-            >
-              <User className="h-5 w-5 text-primary" />
-            </button>
-          </div>
+          <p className="text-sm text-muted-foreground">{TR.dashboard.welcome}</p>
+          <h1 className="text-2xl font-display text-foreground">
+            {profile.nickname || profile.name || TR.dashboard.stargazer}{" "}
+            <span className="text-primary">{TR.signEmojis[profile.sun_sign] || "✨"}</span>
+          </h1>
+          <p className="text-sm text-primary mt-1">
+            {trSign(profile.sun_sign)} {trPlanet("Sun")}
+          </p>
         </motion.div>
 
 {/* Cosmic Letter CTA */}
