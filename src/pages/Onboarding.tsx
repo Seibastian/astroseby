@@ -38,6 +38,12 @@ const Onboarding = () => {
   const [data, setData] = useState({ name: "", date_of_birth: "", birth_time: "", birth_place: "" });
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/auth");
+    }
+  }, [user, navigate]);
   const navigate = useNavigate();
 
 const handleFinish = async () => {

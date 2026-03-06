@@ -1,4 +1,4 @@
-import { Home, BookOpen, User, Heart, Users, Share2, Crown, Sparkles } from "lucide-react";
+import { Home, BookOpen, User, Heart, Users, Share2, Crown, Sparkles, Compass } from "lucide-react";
 import mantarImg from "@/assets/mantar-avatar.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import { TR } from "@/lib/i18n";
@@ -7,6 +7,7 @@ const tabs = [
   { path: "/chambers", icon: Users, label: TR.nav.chambers },
   { path: "/whoami", icon: Share2, label: "Ben" },
   { path: "/synastry", icon: Sparkles, label: "İlişki" },
+  { path: "/insight", icon: Compass, label: "Keşif" },
   { path: "/dreams", icon: BookOpen, label: TR.nav.dreams },
   { path: "/dashboard", icon: Home, label: TR.nav.home },
   { path: "/mentor", icon: null, label: TR.nav.mentor, isMantar: true },
@@ -24,7 +25,7 @@ const BottomNav = () => {
       <div className="flex items-center justify-around h-14 max-w-lg mx-auto">
 {tabs.map((tab, index) => {
           const isActive = location.pathname === tab.path;
-          const isCenter = index === 4; // Home in center
+          const isCenter = index === 5; // Home in center
           return (
             <button
               key={tab.path}
