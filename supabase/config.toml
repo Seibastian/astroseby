@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.synastry-analysis]
 verify_jwt = false
+
+[functions.insight-generator]
+verify_jwt = false
