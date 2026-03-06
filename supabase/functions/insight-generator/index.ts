@@ -231,7 +231,7 @@ Yukarıdaki doğum haritasını ve şimdiki transitleri detaylı şekilde analiz
         "X-Title": "AstraCastra",
       },
       body: JSON.stringify({
-        model: "google/gemini-1.5-flash-8b",
+        model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: "Sen MANTAR'sın — astrolojik analiz uzmanısın ve yaşam koçusun. Kullanıcının doğum haritasını ve güncel transitlerini analiz ederek derin, kişisel ve şiirsel yorumlar yapıyorsun. Her analizde gezegenlerin hangi evlerde ve burçlarda olduğuna dikkat et. Paragraflar halinde, akıcı ve anlaşılır yaz. Başlık veya madde işareti kullanma. Türkçe. Ego ile çalışmayı teşvik et." },
           { role: "user", content: enhancedPrompt },
