@@ -2,51 +2,32 @@ import SporeField from "@/components/SporeField";
 import BottomNav from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Crown, Sparkles, Shield, Infinity, Moon, Star, Eye, Heart, Zap, Calendar, FileText, Users, Lock, Unlock, Check, Compass, User, MessageCircle, CreditCard } from "lucide-react";
-import { TR } from "@/lib/i18n";
+import { Crown, Sparkles, Shield, CreditCard, Check, Lock, Unlock, ArrowRight, Heart, Compass } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-const keşifFeatures = [
-  { id: "career", title: "Kariyer Yolum", price: 98.99 },
-  { id: "relationship", title: "İlişkisel Öngörü", price: 98.99 },
-  { id: "city", title: "İdeal Şehir", price: 98.99 },
-  { id: "karmic", title: "Karmik Borçlar", price: 98.99 },
-  { id: "lineage", title: "Yıldız Soyu", price: 98.99 },
-  { id: "monthly_1", title: "1 Aylık Öngörü", price: 98.99 },
-  { id: "monthly_6", title: "6 Aylık Öngörü", price: 98.99 },
-  { id: "monthly_12", title: "12 Aylık Öngörü", price: 98.99 },
-  { id: "shadow", title: "Gölge", price: 98.99 },
-  { id: "light", title: "Işık", price: 98.99 },
-];
-
 const LIFETIME_PRICE = 1776;
-const SINASTRY_SINGLE_PRICE = 89.99;
+const MONTHLY_PRICE = 149.99;
 
 const Premium = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [isPremium, setIsPremium] = useState(false);
   const [keşifLifetime, setKeşifLifetime] = useState(false);
-  const [keşifUses, setKeşifUses] = useState<Record<string, number>>({});
   const [sinastrySingle, setSinastrySingle] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     const checkPremium = async () => {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("is_premium, keşif_lifetime, keşif_uses, sinastry_single_use")
+        .select("is_premium, keşif_lifetime, sinastry_single_use")
         .eq("user_id", user.id)
         .single();
       setIsPremium(data?.is_premium || false);
       setKeşifLifetime(data?.keşif_lifetime || false);
-      setKeşifUses(data?.keşif_uses || {});
       setSinastrySingle(data?.sinastry_single_use || false);
       setLoading(false);
     };
@@ -61,60 +42,27 @@ const Premium = () => {
       .update({ is_premium: newValue })
       .eq("user_id", user.id);
     setIsPremium(newValue);
-  };
-
-  const handleSinglePurchase = async (featureId: string, price: number) => {
-    if (!user) return;
-    
-    setProcessing(true);
-    
-    const currentUses = keşifUses[featureId] || 0;
-    const newUses = { ...keşifUses, [featureId]: currentUses + 1 };
-    
-    await supabase
-      .from("profiles")
-      .update({ keşif_uses: newUses })
-      .eq("user_id", user.id);
-    
-    setKeşifUses(newUses);
-    setProcessing(false);
-    toast.success(`${price} TL karşılığında satın alındı!`);
+    toast.success(newValue ? "Premium aktif!" : "Premium kapatıldı");
   };
 
   const handleLifetimePurchase = async () => {
     if (!user) return;
-    setProcessing(true);
     await supabase
       .from("profiles")
       .update({ keşif_lifetime: true })
       .eq("user_id", user.id);
     setKeşifLifetime(true);
-    setProcessing(false);
-    toast.success(`${LIFETIME_PRICE} TL karşılığında ömür boyu üyelik satın alındı!`);
+    toast.success(`${LIFETIME_PRICE} TL Keşif Lifetime satın alındı!`);
   };
 
   const handleSinastryPurchase = async () => {
     if (!user) return;
-    setProcessing(true);
     await supabase
       .from("profiles")
       .update({ sinastry_single_use: true })
       .eq("user_id", user.id);
     setSinastrySingle(true);
-    setProcessing(false);
-    toast.success(`${SINASTRY_SINGLE_PRICE} TL karşılığında Sinastri satın alındı!`);
-  };
-
-  const canAccessKeşif = isPremium || keşifLifetime;
-  const canAccessBen = true; // Ben Kimim is free
-  const canAccessSinastry = isPremium || sinastrySingle;
-
-  const handleNavigation = (path: string, hasAccess: boolean) => {
-    if (hasAccess) {
-      navigate(path);
-    } else {
-      toast.error("Bu özellik için Premium satın almalısın");
-    }
+    toast.success("Sinastri tek seferlik satın alındı!");
   };
 
   if (loading) {
@@ -129,166 +77,177 @@ const Premium = () => {
     <div className="min-h-screen pb-24 relative">
       <SporeField />
       <div className="relative z-10 px-4 pt-8 max-w-lg mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
-          <div className="relative inline-block">
-            <Crown className={`h-12 w-12 mx-auto mb-3 ${isPremium ? "text-gold" : "text-muted-foreground"}`} />
+        
+        {/* Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-6"
+        >
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-amber-500/30 to-yellow-500/20 mb-4">
+            <Crown className="h-8 w-8 text-amber-400" />
           </div>
-          <h1 className="text-3xl font-display gold-shimmer">Premium</h1>
-          <p className="text-muted-foreground mt-2">
-            {isPremium ? "Premium üyesin!" : "Tam deneyimin kilidini aç"}
+          <h1 className="text-2xl font-display text-foreground">Premium</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            AstraCastra'nın tüm gücünü keşfet
           </p>
         </motion.div>
 
-        {/* Premium Toggle (Test) */}
-        <div className="glass-card rounded-xl p-4 mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {isPremium ? <Unlock className="h-5 w-5 text-green-500" /> : <Lock className="h-5 w-5 text-muted-foreground" />}
-              <div>
-                <p className="font-display text-sm">{isPremium ? "Premium Aktif" : "Premium Değil"}</p>
-                <p className="text-xs text-muted-foreground">Test modu</p>
-              </div>
-            </div>
-            <Button variant={isPremium ? "destructive" : "default"} size="sm" onClick={togglePremium}>
-              {isPremium ? "Kapat" : "Aç"}
-            </Button>
+        {/* Test Toggle */}
+        <div className="flex items-center justify-between bg-card/50 rounded-xl p-3 mb-6">
+          <div className="flex items-center gap-3">
+            {isPremium ? (
+              <Unlock className="h-5 w-5 text-green-500" />
+            ) : (
+              <Lock className="h-5 w-5 text-muted-foreground" />
+            )}
+            <span className="text-sm">Premium Durumu</span>
           </div>
+          <Button 
+            size="sm" 
+            variant={isPremium ? "destructive" : "default"}
+            onClick={togglePremium}
+          >
+            {isPremium ? "Kapat" : "Aç"}
+          </Button>
         </div>
 
-        {/* Quick Access */}
-        <div className="mb-6">
-          <h2 className="text-sm font-display text-muted-foreground mb-3">Premium İçerikler</h2>
-          <div className="grid grid-cols-2 gap-3">
-            <motion.button
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              onClick={() => handleNavigation("/insight", canAccessKeşif)}
-              disabled={processing}
-              className={`glass-card rounded-xl p-4 flex flex-col items-center gap-2 ${canAccessKeşif ? "hover:border-primary/50" : "opacity-60"}`}
-            >
-              <Compass className="h-6 w-6 text-primary" />
-              <span className="text-xs font-medium">Keşif</span>
-              {!canAccessKeşif && <Lock className="h-3 w-3 text-muted-foreground" />}
-            </motion.button>
-            <motion.button
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              onClick={() => handleNavigation("/synastry", canAccessSinastry)}
-              disabled={processing}
-              className={`glass-card rounded-xl p-4 flex flex-col items-center gap-2 ${canAccessSinastry ? "hover:border-primary/50" : "opacity-60"}`}
-            >
-              <Heart className="h-6 w-6 text-primary" />
-              <span className="text-xs font-medium">Sinastri</span>
-              {!canAccessSinastry && <Lock className="h-3 w-3 text-muted-foreground" />}
-            </motion.button>
-          </div>
+        {/* Subscription Options */}
+        <div className="space-y-3 mb-6">
+          <h2 className="text-sm font-medium text-muted-foreground mb-3">Abonelik</h2>
+          
+          {/* Monthly */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className={`p-4 rounded-2xl border transition-all ${
+              isPremium 
+                ? "border-green-500/50 bg-green-500/10" 
+                : "border-border bg-card"
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-medium">Aylık Premium</h3>
+                <p className="text-xs text-muted-foreground">Tüm özellikler</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xl font-display text-primary">₺{MONTHLY_PRICE}</p>
+                <p className="text-xs text-muted-foreground">/ay</p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Lifetime */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            className={`p-4 rounded-2xl border transition-all ${
+              keşifLifetime 
+                ? "border-green-500/50 bg-green-500/10" 
+                : "border-amber-500/30 bg-amber-500/5"
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-medium">Keşif Ömür Boyu</h3>
+                  {keşifLifetime && <Check className="h-4 w-4 text-green-500" />}
+                </div>
+                <p className="text-xs text-muted-foreground">10 keşif aracı</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xl font-display text-amber-400">₺{LIFETIME_PRICE}</p>
+                <Button 
+                  size="sm" 
+                  variant={keşifLifetime ? "outline" : "default"}
+                  className="mt-1"
+                  onClick={handleLifetimePurchase}
+                  disabled={keşifLifetime}
+                >
+                  {keşifLifetime ? "Sahipsin" : "Al"}
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Sinastry Single */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className={`p-4 rounded-2xl border transition-all ${
+              sinastrySingle 
+                ? "border-green-500/50 bg-green-500/10" 
+                : "border-border bg-card"
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-medium">Sinastri</h3>
+                  {sinastrySingle && <Check className="h-4 w-4 text-green-500" />}
+                </div>
+                <p className="text-xs text-muted-foreground">Tek seferlik</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xl font-display text-primary">₺89.99</p>
+                <Button 
+                  size="sm" 
+                  variant={sinastrySingle ? "outline" : "default"}
+                  className="mt-1"
+                  onClick={handleSinastryPurchase}
+                  disabled={sinastrySingle}
+                >
+                  {sinastrySingle ? "Sahipsin" : "Al"}
+                </Button>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
-        {/* Keşif Lifetime Purchase */}
-        {!keşifLifetime && !isPremium && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="glass-card rounded-2xl p-6 mb-6 border-2 border-gold/30"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <Crown className="h-8 w-8 text-gold" />
-              <div>
-                <h3 className="font-display text-lg text-gold">Keşif Ömür Boyu</h3>
-                <p className="text-xs text-muted-foreground">10 keşif aracı + gelecek eklemeler</p>
-              </div>
-            </div>
-            <p className="text-2xl font-display text-gold mb-4">₺{LIFETIME_PRICE}</p>
-            <Button 
-              className="w-full bg-gold/20 hover:bg-gold/30 text-gold border border-gold/30" 
-              onClick={handleLifetimePurchase}
-              disabled={processing}
+        {/* Premium Benefits */}
+        <div className="space-y-3">
+          <h2 className="text-sm font-medium text-muted-foreground">Neler Dahil?</h2>
+          
+          {[
+            { icon: Compass, title: "Keşif", desc: "10 astroloji aracı" },
+            { icon: Heart, title: "Sinastri", desc: "İlişki uyumu" },
+            { icon: Crown, title: "VIP", desc: "Özel içerikler" },
+            { icon: Shield, title: "Reklamsız", desc: "Kesintisiz deneyim" },
+          ].map((item, i) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + i * 0.05 }}
+              className="flex items-center gap-4 p-3 rounded-xl bg-card/50"
             >
-              <CreditCard className="h-4 w-4 mr-2" />
-              Ömür Boyu Satın Al
-            </Button>
-          </motion.div>
-        )}
-
-        {/* Keşif Tek Seferlik Satın Almalar */}
-        {!keşifLifetime && !isPremium && keşifFeatures.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-sm font-display text-muted-foreground mb-3">Keşif Tek Seferlik</h2>
-            <div className="space-y-2">
-              {keşifFeatures.map((feature, i) => {
-                const used = keşifUses[feature.id] || 0;
-                return (
-                  <motion.div
-                    key={feature.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.03 }}
-                    className="glass-card rounded-xl p-3 flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Compass className="h-5 w-5 text-primary" />
-                      <span className="text-sm font-medium">{feature.title}</span>
-                      {used > 0 && <Check className="h-4 w-4 text-green-500" />}
-                    </div>
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => handleSinglePurchase(feature.id, feature.price)}
-                      disabled={processing}
-                    >
-                      ₺{feature.price}
-                    </Button>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Sinastri Tek Seferlik */}
-        {!isPremium && !sinastrySingle && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="glass-card rounded-2xl p-6 mb-6"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <Heart className="h-8 w-8 text-primary" />
-              <div>
-                <h3 className="font-display text-lg">Sinastri Tek Seferlik</h3>
-                <p className="text-xs text-muted-foreground">Bir kişiyle detaylı uyum analizi</p>
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <item.icon className="h-5 w-5 text-primary" />
               </div>
-            </div>
-            <p className="text-2xl font-display text-primary mb-4">₺{SINASTRY_SINGLE_PRICE}</p>
-            <Button 
-              className="w-full" 
-              onClick={handleSinastryPurchase}
-              disabled={processing}
-            >
-              <CreditCard className="h-4 w-4 mr-2" />
-              Satın Al
-            </Button>
-          </motion.div>
-        )}
+              <div>
+                <h3 className="font-medium text-sm">{item.title}</h3>
+                <p className="text-xs text-muted-foreground">{item.desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
 
-        {/* Premium Benefits (for non-premium) */}
+        {/* CTA */}
         {!isPremium && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="glass-card rounded-2xl p-6 text-center border-2 border-primary/30"
+            transition={{ delay: 0.5 }}
+            className="mt-6 p-4 rounded-2xl bg-gradient-to-r from-primary/20 to-amber-500/10 border border-primary/20"
           >
-            <p className="text-3xl font-display text-primary mb-1">₺149.99</p>
-            <p className="text-xs text-muted-foreground mb-4">/ ay</p>
-            <Button className="w-full font-display text-lg py-6 bg-gradient-to-r from-primary to-gold hover:opacity-90">
-              Premium Abonelik ✨
+            <Button className="w-full" size="lg">
+              <CreditCard className="h-4 w-4 mr-2" />
+              Premium Ol
+              <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
-            <p className="text-xs text-muted-foreground mt-3 flex items-center justify-center gap-2">
-              <Shield className="h-3 w-3" />
-              İstediğin zaman iptal et. 7 günlük ücretsiz deneme.
-            </p>
           </motion.div>
         )}
       </div>
