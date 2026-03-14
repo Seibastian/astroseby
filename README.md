@@ -10,7 +10,7 @@
 
 *Bu proje, insanın kendini tanıma yolculuğunda bir pusula olmak için doğdu.*
 
-### Şimdi ne yapıyoruz?
+### Vizyonumuz
 
 Şu an sadece **natal harita** çalışıyor — doğum anındaki gökyüzünün fotoğrafı. Ama bu sadece başlangıç. Gelecekte transitler, progresyonlar, solar return ve daha birçok astroloji modeli entegre edilecek. Tek bir harita değil, kozmik zamanın tüm katmanları.
 
@@ -314,7 +314,7 @@ Gelecekte eklenecek premium içerikler:
 
 ## 🔗 Linkler
 
-- **Web:** astroseby.app
+- **Web:** astrocastra.pages.dev
 - **GitHub:** github.com/Seibastian/astroseby
 - **Destek:** support@astroseby.app
 
@@ -558,4 +558,4 @@ Sorular, öneriler ve iş birlikleri için:
 
 ---
 
-*Son güncelleme: Şubat 2026 | AstraCastra v1.0*
+*Son güncelleme: Mart 2026 | AstraCastra v1.0*
