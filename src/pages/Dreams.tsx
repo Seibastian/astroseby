@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import SporeField from "@/components/SporeField";
@@ -73,6 +73,7 @@ const Dreams = () => {
   const [collectiveReport, setCollectiveReport] = useState("");
   const [viewMode, setViewMode] = useState<"all" | "analyzed" | "unanalyzed">("all");
   const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = React.useRef<any>(null);
 
   const startVoiceInput = () => {
     if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
@@ -80,8 +81,13 @@ const Dreams = () => {
       return;
     }
 
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
+    recognitionRef.current = recognition;
     
     recognition.lang = "tr-TR";
     recognition.continuous = false;
@@ -90,16 +96,18 @@ const Dreams = () => {
     setIsRecording(true);
     toast.info("Dinliyorum... Konuş");
 
+    let finalTranscript = "";
+
     recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      setContent((prev) => {
-        const lastWord = prev.split(" ").slice(-1)[0];
-        if (lastWord && transcript.toLowerCase().startsWith(lastWord.toLowerCase())) {
-          return prev;
-        }
-        return prev + " " + transcript;
-      });
-      toast.success("Metin eklendi!");
+      finalTranscript = event.results[0][0].transcript;
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+      if (finalTranscript) {
+        setContent((prev) => prev + " " + finalTranscript);
+        toast.success("Metin eklendi!");
+      }
     };
 
     recognition.onerror = (event: any) => {
@@ -109,10 +117,6 @@ const Dreams = () => {
       } else {
         toast.error("Ses tanıma hatası");
       }
-    };
-
-    recognition.onend = () => {
-      setIsRecording(false);
     };
 
     recognition.start();
