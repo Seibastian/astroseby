@@ -2,7 +2,7 @@ import SporeField from "@/components/SporeField";
 import BottomNav from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Crown, Sparkles, Shield, CreditCard, Check, Lock, Unlock, ArrowRight, Heart, Compass } from "lucide-react";
+import { Crown, Sparkles, Shield, CreditCard, Check, Lock, Unlock, ArrowRight, Heart, Compass, Briefcase, MapPin, Star, Calendar, Eye, Sun, Moon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,11 +10,27 @@ import { toast } from "sonner";
 
 const LIFETIME_PRICE = 1776;
 const MONTHLY_PRICE = 149.99;
+const SINGLE_PRICE = 98.99;
+const SINASTRY_PRICE = 89.99;
+
+const keşifFeatures = [
+  { id: "career", title: "Kariyer Yolum", icon: Briefcase },
+  { id: "relationship", title: "İlişkisel Öngörü", icon: Heart },
+  { id: "city", title: "İdeal Şehir", icon: MapPin },
+  { id: "karmic", title: "Karmik Borçlar", icon: Star },
+  { id: "lineage", title: "Yıldız Soyu", icon: Star },
+  { id: "monthly_1", title: "1 Aylık Öngörü", icon: Calendar },
+  { id: "monthly_6", title: "6 Aylık Öngörü", icon: Calendar },
+  { id: "monthly_12", title: "12 Aylık Öngörü", icon: Calendar },
+  { id: "shadow", title: "Gölge", icon: Moon },
+  { id: "light", title: "Işık", icon: Sun },
+];
 
 const Premium = () => {
   const { user } = useAuth();
   const [isPremium, setIsPremium] = useState(false);
   const [keşifLifetime, setKeşifLifetime] = useState(false);
+  const [keşifUses, setKeşifUses] = useState<Record<string, number>>({});
   const [sinastrySingle, setSinastrySingle] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -23,11 +39,12 @@ const Premium = () => {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("is_premium, keşif_lifetime, sinastry_single_use")
+        .select("is_premium, keşif_lifetime, keşif_uses, sinastry_single_use")
         .eq("user_id", user.id)
         .single();
       setIsPremium(data?.is_premium || false);
       setKeşifLifetime(data?.keşif_lifetime || false);
+      setKeşifUses(data?.keşif_uses || {});
       setSinastrySingle(data?.sinastry_single_use || false);
       setLoading(false);
     };
@@ -63,6 +80,18 @@ const Premium = () => {
       .eq("user_id", user.id);
     setSinastrySingle(true);
     toast.success("Sinastri tek seferlik satın alındı!");
+  };
+
+  const handleSinglePurchase = async (featureId: string) => {
+    if (!user) return;
+    const currentUses = keşifUses[featureId] || 0;
+    const newUses = { ...keşifUses, [featureId]: currentUses + 1 };
+    await supabase
+      .from("profiles")
+      .update({ keşif_uses: newUses })
+      .eq("user_id", user.id);
+    setKeşifUses(newUses);
+    toast.success(`${SINGLE_PRICE} TL satın alındı!`);
   };
 
   if (loading) {
@@ -204,8 +233,43 @@ const Premium = () => {
                 </Button>
               </div>
             </div>
-          </motion.div>
+            </motion.div>
         </div>
+
+        {/* Keşif Tek Seferlik */}
+        {!keşifLifetime && !isPremium && (
+          <div className="space-y-3 mb-6">
+            <h2 className="text-sm font-medium text-muted-foreground">Keşif Tek Seferlik</h2>
+            
+            <div className="grid grid-cols-2 gap-2">
+              {keşifFeatures.map((feature, i) => {
+                const used = keşifUses[feature.id] || 0;
+                const Icon = feature.icon;
+                return (
+                  <motion.button
+                    key={feature.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 + i * 0.03 }}
+                    onClick={() => handleSinglePurchase(feature.id)}
+                    className={`p-3 rounded-xl border transition-all flex items-center gap-2 ${
+                      used > 0
+                        ? "border-green-500/30 bg-green-500/5"
+                        : "border-border bg-card hover:border-primary/50"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4 text-primary shrink-0" />
+                    <div className="flex-1 text-left">
+                      <p className="text-xs font-medium truncate">{feature.title}</p>
+                      {used > 0 && <p className="text-[10px] text-green-500">Kullanıldı</p>}
+                    </div>
+                    <span className="text-xs font-medium">₺{SINGLE_PRICE}</span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Premium Benefits */}
         <div className="space-y-3">
