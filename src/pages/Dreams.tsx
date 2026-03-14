@@ -72,6 +72,48 @@ const Dreams = () => {
   const [collectiveAnalyzing, setCollectiveAnalyzing] = useState(false);
   const [collectiveReport, setCollectiveReport] = useState("");
   const [viewMode, setViewMode] = useState<"all" | "analyzed" | "unanalyzed">("all");
+  const [isRecording, setIsRecording] = useState(false);
+
+  const startVoiceInput = () => {
+    if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
+      toast.error("Tarayıcın sesle yazmayı desteklemiyor");
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    recognition.lang = "tr-TR";
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    setIsRecording(true);
+    toast.info("Dinliyorum... Konuş");
+
+    recognition.onresult = (event: any) => {
+      let transcript = "";
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setContent((prev) => prev + " " + transcript);
+      toast.success("Metin eklendi!");
+    };
+
+    recognition.onerror = (event: any) => {
+      setIsRecording(false);
+      if (event.error === "no-speech") {
+        toast.info("Bir şey duymadım, tekrar dene");
+      } else {
+        toast.error("Ses tanıma hatası");
+      }
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+    };
+
+    recognition.start();
+  };
 
   const fetchDreams = async () => {
     if (!user) return;
@@ -457,11 +499,11 @@ const Dreams = () => {
                   className="bg-muted/50 border-border min-h-[120px] mb-3 pr-12"
                 />
                 <button
-                  className="absolute right-3 top-3 p-1.5 rounded-full bg-muted/50 hover:bg-primary/20 transition-colors"
+                  className={`absolute right-3 top-3 p-1.5 rounded-full transition-colors ${isRecording ? "bg-red-500 animate-pulse" : "bg-muted/50 hover:bg-primary/20"}`}
                   title={TR.dreams.voiceInput}
-                  onClick={() => toast.info("Sesle yazma özelliği yakında!")}
+                  onClick={startVoiceInput}
                 >
-                  <Mic className="h-4 w-4 text-primary" />
+                  <Mic className={`h-4 w-4 ${isRecording ? "text-white" : "text-primary"}`} />
                 </button>
               </div>
               <Button onClick={addDream} disabled={saving || !title.trim() || !content.trim()} className="w-full font-display">
