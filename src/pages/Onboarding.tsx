@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -37,14 +37,23 @@ const Onboarding = () => {
   const [step, setStep] = useState(0);
   const [data, setData] = useState({ name: "", date_of_birth: "", birth_time: "", birth_place: "" });
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user) {
       navigate("/auth");
     }
-  }, [user, navigate]);
-  const navigate = useNavigate();
+  }, [user, authLoading, navigate]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-primary">Yükleniyor...</div>
+      </div>
+    );
+  }
 
 const handleFinish = async () => {
     if (!user) return;

@@ -7,20 +7,13 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
-interface Props {
+interface CosmicLetterProps {
   open: boolean;
   onClose: () => void;
   profile: any;
   natalSummary: string;
   savedLetter?: string;
   onLetterSaved?: (content: string) => void;
-}
-
-interface Props {
-  open: boolean;
-  onClose: () => void;
-  profile: any;
-  natalSummary: string;
 }
 
 const LetterContent = ({ content }: { content: string }) => {
@@ -32,7 +25,7 @@ const LetterContent = ({ content }: { content: string }) => {
   );
 };
 
-const CosmicLetterModal = ({ open, onClose, profile, natalSummary, savedLetter, onLetterSaved }: Props) => {
+const CosmicLetterModal = ({ open, onClose, profile, natalSummary, savedLetter, onLetterSaved }: CosmicLetterProps) => {
   const { user } = useAuth();
   const [letter, setLetter] = useState("");
   const [loading, setLoading] = useState(false);

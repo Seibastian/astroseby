@@ -102,6 +102,8 @@ const Dreams = () => {
       user_id: user.id,
       title: title.trim(),
       content: content.trim(),
+      mood: selectedMood || null,
+      tags: selectedSymbols.length > 0 ? selectedSymbols : null,
     });
     if (error) {
       toast.error(error.message);

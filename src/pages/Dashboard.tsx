@@ -10,6 +10,7 @@ import AnimatedNatalBackground from "@/components/AnimatedNatalBackground";
 import CosmicLetterModal from "@/components/CosmicLetterModal";
 import AspectFeed from "@/components/AspectFeed";
 import MantarAvatar from "@/components/MantarAvatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import { BookOpen, Crown, Star, RefreshCw, Sparkles, ChevronDown, ChevronUp, Loader2, ScrollText, Heart, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
@@ -101,9 +102,10 @@ function buildNatalSummary(data: NatalChartData): string {
 }
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 const [showAllPlanets, setShowAllPlanets] = useState(false);
   const [selectedPlanet, setSelectedPlanet] = useState<{name: string, sign: string, house: number, dms: string} | null>(null);
@@ -114,19 +116,24 @@ const [showAllPlanets, setShowAllPlanets] = useState(false);
   const [letterOpen, setLetterOpen] = useState(false);
   const [savedLetter, setSavedLetter] = useState("");
 
-  const fetchProfile = useCallback(async () => {
+const fetchProfile = useCallback(async () => {
     if (!user) return;
+    setLoading(true);
     const { data } = await supabase
       .from("profiles")
       .select("*")
       .eq("user_id", user.id)
       .single();
-if (data && !data.onboarding_completed) {
+    
+    if (!data) {
+      navigate("/onboarding");
+    } else if (!data.onboarding_completed) {
       navigate("/onboarding");
     } else {
       setProfile(data);
       setSavedLetter(data?.natal_letter_content || "");
     }
+    setLoading(false);
   }, [user, navigate]);
 
   const fetchChart = useCallback(async (prof: any) => {
@@ -187,6 +194,48 @@ if (data && !data.onboarding_completed) {
       setRefreshing(false);
     }
   };
+
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen pb-32 relative theme-home">
+        <div className="fixed inset-0 z-0 pointer-events-none"
+          style={{
+            background: "radial-gradient(ellipse at 30% 20%, hsla(270, 50%, 20%, 0.15) 0%, transparent 60%), radial-gradient(ellipse at 70% 80%, hsla(260, 60%, 15%, 0.2) 0%, transparent 50%)",
+          }}
+        />
+        <div className="relative z-10 px-4 pt-8 max-w-lg mx-auto">
+          <div className="mb-6">
+            <Skeleton className="h-4 w-32 mb-2" />
+            <Skeleton className="h-8 w-48 mb-2" />
+            <Skeleton className="h-4 w-24" />
+          </div>
+          
+          <Skeleton className="h-24 w-full rounded-2xl mb-6" />
+          
+          <div className="glass-card rounded-2xl p-6 mb-6">
+            <Skeleton className="h-6 w-32 mb-4" />
+            <Skeleton className="h-64 w-64 rounded-full mx-auto mb-6" />
+            <div className="grid grid-cols-3 gap-3">
+              {[1, 2, 3].map(i => (
+                <Skeleton key={i} className="h-16 rounded-lg" />
+              ))}
+            </div>
+          </div>
+          
+          <Skeleton className="h-48 w-full rounded-2xl mb-6" />
+          
+          <Skeleton className="h-20 w-full rounded-2xl mb-6" />
+          
+          <div className="grid grid-cols-3 gap-3">
+            {[1, 2, 3].map(i => (
+              <Skeleton key={i} className="h-24 rounded-xl" />
+            ))}
+          </div>
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
 
   if (!profile) return null;
 
