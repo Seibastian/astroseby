@@ -85,17 +85,20 @@ const Dreams = () => {
     
     recognition.lang = "tr-TR";
     recognition.continuous = false;
-    recognition.interimResults = true;
+    recognition.interimResults = false;
 
     setIsRecording(true);
     toast.info("Dinliyorum... Konuş");
 
     recognition.onresult = (event: any) => {
-      let transcript = "";
-      for (let i = 0; i < event.results.length; i++) {
-        transcript += event.results[i][0].transcript;
-      }
-      setContent((prev) => prev + " " + transcript);
+      const transcript = event.results[0][0].transcript;
+      setContent((prev) => {
+        const lastWord = prev.split(" ").slice(-1)[0];
+        if (lastWord && transcript.toLowerCase().startsWith(lastWord.toLowerCase())) {
+          return prev;
+        }
+        return prev + " " + transcript;
+      });
       toast.success("Metin eklendi!");
     };
 
