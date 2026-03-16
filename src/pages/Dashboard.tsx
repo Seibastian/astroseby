@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
+import FloatingCards from "@/components/FloatingCards";
 import AdBanner from "@/components/AdBanner";
 import AmbientAudio from "@/components/AmbientAudio";
 import NatalChartWheel from "@/components/NatalChartWheel";
@@ -554,6 +555,11 @@ const allPlanets = chartData?.planets || [];
             <Crown className="h-6 w-6 text-gold mb-2 mx-auto" />
             <p className="font-display text-xs text-foreground">{TR.dashboard.premium}</p>
           </motion.button>
+        </div>
+
+        {/* Floating Cards - Bottom Quick Access */}
+        <div className="mt-6 pb-24">
+          <FloatingCards />
         </div>
       </div>
 
