@@ -4,79 +4,219 @@ import { motion, AnimatePresence } from "framer-motion";
 import mantarImg from "@/assets/mantar-avatar.png";
 
 const COLORS = {
-  insight: "#f97316",    
-  edu: "#8b5cf6",         
-  meditation: "#06b6d4",  
-  dreams: "#a855f7",     
-  karmic: "#ec4899",     
-  synastry: "#3b82f6",   
-  chambers: "#22c55e",    
-  whoami: "#eab308",     
-  premium: "#7c3aed",     
+  insight: "#f97316",
+  edu: "#8b5cf6",
+  meditation: "#06b6d4",
+  dreams: "#a855f7",
+  karmic: "#ec4899",
+  synastry: "#3b82f6",
+  chambers: "#22c55e",
+  whoami: "#eab308",
+  premium: "#7c3aed",
+  profile: "#64748b",
 };
 
-// Daha detaylı, ezoterik ikonlar
+// Detaylı, alengirli ezoterik ikonlar
 const NavIcon = ({ path, color }: { path: string; color: string }) => {
-  const strokeColor = color;
-  
   return (
-    <svg viewBox="0 0 28 28" fill="none" stroke={strokeColor} strokeWidth="1.2" className="w-6 h-6">
-      {/* Keşif - Astrolojik pusula */}
+    <svg viewBox="0 0 48 48" fill="none" className="w-5 h-5">
+      {/* Keşif - Kozmik Pusula - Çok detaylı */}
       {path === "/insight" && (
-        <>
-          <circle cx="14" cy="14" r="11" />
-          <circle cx="14" cy="14" r="7" strokeDasharray="2 2" />
-          <path d="M14 3v4M14 21v4M3 14h4M21 14h4" />
-          <circle cx="14" cy="14" r="2.5" fill={strokeColor} stroke="none" />
-          <circle cx="14" cy="5" r="1.5" fill={strokeColor} stroke="none" />
-        </>
+        <g>
+          <circle cx="24" cy="24" r="20" stroke={color} strokeWidth="1.5" />
+          <circle cx="24" cy="24" r="14" stroke={color} strokeWidth="0.8" strokeDasharray="2 2" />
+          <circle cx="24" cy="24" r="8" stroke={color} strokeWidth="1" />
+          {/* Yıldızlar */}
+          <circle cx="24" cy="6" r="2" fill={color} />
+          <circle cx="24" cy="42" r="2" fill={color} />
+          <circle cx="6" cy="24" r="2" fill={color} />
+          <circle cx="42" cy="24" r="2" fill={color} />
+          {/* Çapraz çizgiler */}
+          <path d="M24 8v6M24 34v6M8 24h6M34 24h6" stroke={color} strokeWidth="1" strokeLinecap="round" />
+          {/* Merkez nokta */}
+          <circle cx="24" cy="24" r="4" fill={color} />
+          <circle cx="24" cy="24" r="2" fill="#0a0a1a" />
+        </g>
       )}
-      
+
       {/* Eğitim - Piramit/Bilgelik */}
       {path === "/edu" && (
-        <>
-          <path d="M14 4L4 12l10 6 10-6L14 4z" />
-          <path d="M4 18l10 5 10-5" />
-          <path d="M4 14l10 5 10-5" />
-          <circle cx="14" cy="12" r="2" fill={strokeColor} stroke="none" />
-        </>
+        <g>
+          <path d="M24 6L6 22l18 11 18-11L24 6z" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
+          <path d="M6 33l18 11 18-11" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
+          <path d="M6 22l18 11 18-11" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
+          {/* Gölge efekti */}
+          <path d="M24 17v20" stroke={color} strokeWidth="0.8" strokeDasharray="2 2" opacity="0.5" />
+          {/* Parlama */}
+          <circle cx="24" cy="14" r="3" fill={color} opacity="0.6" />
+        </g>
       )}
-      
-      {/* Rezonans - Meditasyon/Zihin */}
+
+      {/* Meditasyon - Zihin/Bilinç */}
       {path === "/meditation" && (
-        <>
-          <circle cx="14" cy="14" r="10" />
-          <circle cx="14" cy="14" r="6" strokeDasharray="3 3" />
-          <path d="M14 8v4l3 3" />
-          <circle cx="14" cy="14" r="2" fill={strokeColor} stroke="none" />
-          <path d="M10 6c1-1 2.5-1 4-1s3 0 4 1" strokeLinecap="round" />
-        </>
+        <g>
+          <circle cx="24" cy="24" r="18" stroke={color} strokeWidth="1.5" />
+          <circle cx="24" cy="24" r="12" stroke={color} strokeWidth="1" />
+          <circle cx="24" cy="24" r="6" stroke={color} strokeWidth="0.8" strokeDasharray="3 3" />
+          {/* Işınlar */}
+          <path d="M24 6v4M24 38v4M6 24h4M38 24h4" stroke={color} strokeWidth="1" strokeLinecap="round" />
+          {/* Merkez */}
+          <circle cx="24" cy="24" r="3" fill={color} />
+          <motion.circle cx="24" cy="24" r="5" stroke={color} strokeWidth="0.5" fill="none" 
+            animate={{ scale: [1, 1.3, 1], opacity: [0.8, 0.3, 0.8] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </g>
       )}
-      
-      {/* Rüyalar - Ay/Düş */}
+
+      {/* Rüyalar - Ay/Yıldızlar */}
       {path === "/dreams" && (
-        <>
-          <path d="M21 12.5c0 5-4 9-7 9.5-3-.5-7-4.5-7-9.5a7 7 0 0 1 14 0Z" />
-          <path d="M10 9l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
-          <circle cx="9" cy="8" r="0.8" fill={strokeColor} stroke="none" />
-          <circle cx="19" cy="10" r="0.6" fill={strokeColor} stroke="none" />
-        </>
+        <g>
+          {/* Ay */}
+          <path d="M36 10c0 10-8 18-18 18-10 0-18-8-18-18 0 10 8 18 18 18 2 0 4-0.5 6-1" stroke={color} strokeWidth="1.5" fill="none" />
+          <path d="M36 10c0 10-8 18-18 18-10 0-18-8-18-18 0 10 8 18 18 18 2 0 4-0.5 6-1" stroke={color} strokeWidth="3" fill={`${color}20`} />
+          {/* Yıldızlar */}
+          <motion.path d="M10 8l1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3z" fill={color}
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+          <motion.path d="M38 36l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2z" fill={color}
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+          />
+          <circle cx="8" cy="30" r="1.5" fill={color} opacity="0.7" />
+          <circle cx="40" cy="14" r="1" fill={color} opacity="0.7" />
+        </g>
       )}
-      
+
+      {/* Karmik - Kalp/Bağlantı */}
+      {path === "/karmic-match" && (
+        <g>
+          <path d="M38 12c0 12-10 20-22 20-6 0-12-4-16-10-4-6-4-14 4-20 8-6 18-6 26 0 8-6 10 8 8 10" stroke={color} strokeWidth="1.5" fill="none" strokeLinejoin="round" />
+          {/* İç detay */}
+          <path d="M24 18c-2-2-6-2-8 0s-2 6 0 8c2 2 6 2 8 0" stroke={color} strokeWidth="1" fill="none" />
+          {/* Çevre çizgiler */}
+          <circle cx="24" cy="24" r="18" stroke={color} strokeWidth="0.5" strokeDasharray="2 4" opacity="0.5" />
+        </g>
+      )}
+
+      {/* Sinastry - İki ruh */}
+      {path === "/synastry" && (
+        <g>
+          {/* Sol daire */}
+          <circle cx="18" cy="24" r="10" stroke={color} strokeWidth="1.5" />
+          <circle cx="18" cy="24" r="4" fill={color} />
+          {/* Sağ daire */}
+          <circle cx="30" cy="24" r="10" stroke={color} strokeWidth="1.5" />
+          <circle cx="30" cy="24" r="4" fill={color} />
+          {/* Bağlantı */}
+          <path d="M28 24h4" stroke={color} strokeWidth="2" strokeLinecap="round" />
+          <circle cx="26" cy="22" r="1" fill={color} />
+          <circle cx="26" cy="26" r="1" fill={color} />
+          {/* Yaylar */}
+          <path d="M8 14c-2-4 2-8 6-8s6 4 4 8" stroke={color} strokeWidth="1" fill="none" />
+          <path d="M40 34c2 4-2 8-6 8s-6-4-4-8" stroke={color} strokeWidth="1" fill="none" />
+        </g>
+      )}
+
+      {/* Salonlar - Hücre */}
+      {path === "/chambers" && (
+        <g>
+          <circle cx="24" cy="24" r="20" stroke={color} strokeWidth="1.5" />
+          <circle cx="24" cy="24" r="14" stroke={color} strokeWidth="1" />
+          <circle cx="24" cy="24" r="8" stroke={color} strokeWidth="1" />
+          {/* Işınlar */}
+          <path d="M24 4v4M24 40v4M4 24h4M40 24h4" stroke={color} strokeWidth="1" strokeLinecap="round" />
+          {/* Köşeler */}
+          <path d="M10 10l2 2M38 38l-2-2M10 38l2-2M38 10l-2 2" stroke={color} strokeWidth="0.8" strokeLinecap="round" />
+          <motion.circle cx="24" cy="24" r="3" fill={color} 
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 3, repeat: Infinity }}
+          />
+        </g>
+      )}
+
+      {/* Ben - Kişisel */}
+      {path === "/whoami" && (
+        <g>
+          {/* Kafa */}
+          <circle cx="24" cy="14" r="8" stroke={color} strokeWidth="1.5" />
+          {/* Gözler */}
+          <circle cx="21" cy="12" r="1.5" fill={color} />
+          <circle cx="27" cy="12" r="1.5" fill={color} />
+          {/* Göz bebekleri */}
+          <circle cx="21" cy="12" r="0.5" fill="#0a0a1a" />
+          <circle cx="27" cy="12" r="0.5" fill="#0a0a1a" />
+          {/* Gülümseme */}
+          <path d="M20 17q2 3 4 0" stroke={color} strokeWidth="1" fill="none" strokeLinecap="round" />
+          {/* Vücut */}
+          <path d="M24 22v10" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M16 42c0-5 4-8 8-8s8 3 8 8" stroke={color} strokeWidth="1.5" fill="none" strokeLinecap="round" />
+          {/* Kafa üstü ışık */}
+          <motion.circle cx="24" cy="6" r="2" fill={color} opacity="0.6"
+            animate={{ opacity: [0.3, 0.8, 0.3] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </g>
+      )}
+
+      {/* Premium - Taç */}
+      {path === "/premium" && (
+        <g>
+          <path d="M24 8L10 20l14 10 14-10L24 8z" stroke={color} strokeWidth="1.5" strokeLinejoin="round" fill="none" />
+          <path d="M10 28l14 10 14-10" stroke={color} strokeWidth="1.5" strokeLinejoin="round" fill="none" />
+          <path d="M10 34l14 10 14-10" stroke={color} strokeWidth="1.5" strokeLinejoin="round" fill="none" />
+          {/* Taç ucu */}
+          <path d="M24 8v-4" stroke={color} strokeWidth="2" strokeLinecap="round" />
+          <motion.circle cx="24" cy="4" r="2" fill={color}
+            animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          />
+          {/* Kenar taşlar */}
+          <circle cx="10" cy="20" r="2" fill={color} />
+          <circle cx="38" cy="20" r="2" fill={color} />
+          <circle cx="24" cy="38" r="2" fill={color} />
+        </g>
+      )}
+
+      {/* Profil - Ayarlar/Dünya */}
+      {path === "/profile" && (
+        <g>
+          <circle cx="24" cy="24" r="18" stroke={color} strokeWidth="1.5" />
+          <circle cx="24" cy="24" r="12" stroke={color} strokeWidth="1" />
+          {/* Boylamlar */}
+          <ellipse cx="24" cy="24" rx="6" ry="18" stroke={color} strokeWidth="0.8" fill="none" />
+          <ellipse cx="24" cy="24" rx="12" ry="4" stroke={color} strokeWidth="0.8" fill="none" />
+          {/* Enlemler */}
+          <path d="M6 24h36" stroke={color} strokeWidth="0.5" />
+          <path d="M9 16h30" stroke={color} strokeWidth="0.5" />
+          <path d="M9 32h30" stroke={color} strokeWidth="0.5" />
+          {/* Merkez */}
+          <circle cx="24" cy="24" r="2" fill={color} />
+        </g>
+      )}
+
       {/* Ev - Ana sayfa */}
       {path === "/dashboard" && (
-        <>
-          <path d="M4 10l10-7 10 7v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9Z" />
-          <path d="M10 14v6M18 14v6" strokeLinecap="round" />
-          <path d="M8 10V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4" strokeLinecap="round" strokeLinejoin="round" />
-        </>
+        <g>
+          <path d="M8 18l16-12 16 12v14a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V18z" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
+          <path d="M16 22v8M32 22v8" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M12 18V8a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v10" stroke={color} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
+          {/* Şimşek/Enerji */}
+          <motion.path d="M22 8l-2 6 4-4-2 6 4-4-2 6" stroke={color} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1, repeat: Infinity }}
+          />
+        </g>
       )}
-      
+
       {/* Menu */}
       {path === "/menu" && (
-        <>
-          <path d="M4 7h16M4 14h16M4 21h16" strokeLinecap="round" />
-        </>
+        <g>
+          <path d="M8 14h32" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+          <path d="M8 24h32" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+          <path d="M8 34h32" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+        </g>
       )}
     </svg>
   );
@@ -92,7 +232,7 @@ const menuItems = [
   { path: "/chambers", label: "Salonlar", description: "Ruh odaları", color: COLORS.chambers },
   { path: "/whoami", label: "Ben", description: "Kişisel analiz", color: COLORS.whoami },
   { path: "/premium", label: "Premium", description: "Üyelik", color: COLORS.premium },
-  { path: "/profile", label: "Profil", description: "Ayarlar", color: "#64748b" },
+  { path: "/profile", label: "Profil", description: "Ayarlar", color: COLORS.profile },
 ];
 
 const menuVariants = {
@@ -112,14 +252,12 @@ const BottomNav = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const isMantar = location.pathname === "/mentor";
-  const isHome = location.pathname === "/dashboard";
 
   const handleNavigate = (path: string) => {
     setMenuOpen(false);
     navigate(path);
   };
 
-  // Tüm nav öğeleri - eşit aralıklı
   const allNavItems = [
     { path: "/dashboard", label: "Ev", color: "#ffffff" },
     { path: "/insight", label: "Keşif", color: COLORS.insight },
@@ -132,7 +270,7 @@ const BottomNav = () => {
     { path: "/menu", label: "Menü", color: "#ffffff" },
   ];
 
-  const NavButton = ({ item, isMantarBtn = false }: { item: { path: string; label: string; color: string }; isMantarBtn?: boolean }) => {
+  const NavButton = ({ item }: { item: { path: string; label: string; color: string } }) => {
     const isActive = location.pathname === item.path || (item.path === "/menu" && menuOpen);
     
     return (
@@ -142,7 +280,7 @@ const BottomNav = () => {
         whileTap={{ scale: 0.92 }}
         className="relative flex flex-col items-center justify-center w-14 h-14"
       >
-        {isActive && !isMantarBtn && (
+        {isActive && item.path !== "/menu" && (
           <motion.div
             layoutId="navBg"
             className="absolute inset-0 rounded-xl"
@@ -155,7 +293,7 @@ const BottomNav = () => {
           <NavIcon path={item.path} color={isActive ? item.color : '#ffffff55'} />
         </div>
         
-        {isActive && !isMantarBtn && (
+        {isActive && item.path !== "/menu" && (
           <motion.div
             layoutId="navDot"
             className="absolute -bottom-1 w-1 h-1 rounded-full"
@@ -164,7 +302,7 @@ const BottomNav = () => {
           />
         )}
         
-        <span className={`text-[7px] mt-0.5 font-medium ${isActive ? 'text-white' : 'text-white/45'}`}>
+        <span className="text-[7px] mt-0.5 font-medium text-white/50">
           {item.label}
         </span>
       </motion.button>
@@ -210,15 +348,20 @@ const BottomNav = () => {
                       key={item.path}
                       variants={itemVariants}
                       onClick={() => handleNavigate(item.path)}
-                      className={`relative p-4 rounded-2xl text-left transition-all ${
+                      className={`relative p-3.5 rounded-xl text-left transition-all flex items-center gap-3 ${
                         location.pathname === item.path ? "bg-white/15 border border-white/30" : "bg-white/5 border border-white/10 hover:bg-white/10"
                       }`}
                     >
-                      <div className="flex items-center gap-2">
-                        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color, boxShadow: `0 0 6px ${item.color}` }} />
-                        <span className="text-white font-medium text-sm">{item.label}</span>
+                      <div 
+                        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                        style={{ background: `${item.color}15`, border: `1px solid ${item.color}25` }}
+                      >
+                        <NavIcon path={item.path} color={item.color} />
                       </div>
-                      <span className="text-white/40 text-xs">{item.description}</span>
+                      <div>
+                        <span className="text-white font-medium text-sm block">{item.label}</span>
+                        <span className="text-white/40 text-xs">{item.description}</span>
+                      </div>
                     </motion.button>
                   ))}
                 </div>
@@ -232,7 +375,7 @@ const BottomNav = () => {
         )}
       </AnimatePresence>
 
-      {/* Bottom Navigation - Glassmorphism */}
+      {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-30">
         <div 
           className="max-w-md mx-auto"
@@ -246,35 +389,25 @@ const BottomNav = () => {
           }}
         >
           <div className="flex items-end justify-center h-16 px-1 pb-1">
-            {/* Sol taraf - 3 icon */}
             <div className="flex items-end gap-0.5 -mb-1">
               {allNavItems.map((item) => (
                 <NavButton key={item.path} item={item} />
               ))}
             </div>
 
-            {/* MANTAR - Ortada, hafif yukarıda */}
+            {/* MANTAR */}
             <button onClick={() => navigate("/mentor")} className="relative mx-0.5">
-              <motion.div 
-                whileHover={{ scale: 1.1 }} 
-                whileTap={{ scale: 0.95 }} 
-                className="relative"
-              >
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="relative">
                 {isMantar && <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 opacity-40 blur-xl" />}
-                
-                <div 
-                  className={`h-11 w-11 rounded-full border-2 border-[#0f172a] shadow-[0_0_18px_rgba(168,85,247,0.3)] overflow-hidden ${isMantar ? 'ring-2 ring-purple-500/40 ring-offset-1 ring-offset-[#0f172a]' : ''}`}
-                >
+                <div className={`h-11 w-11 rounded-full border-2 border-[#0f172a] shadow-[0_0_18px_rgba(168,85,247,0.3)] overflow-hidden ${isMantar ? 'ring-2 ring-purple-500/40 ring-offset-1 ring-offset-[#0f172a]' : ''}`}>
                   <img src={mantarImg} alt="MANTAR" className="h-full w-full object-cover" />
                 </div>
-                
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[5.5px] font-bold px-1.5 py-0.5 rounded-full shadow-md tracking-wide whitespace-nowrap">
                   MANTAR
                 </div>
               </motion.div>
             </button>
 
-            {/* Sağ taraf - 3 icon */}
             <div className="flex items-end gap-0.5 -mb-1">
               {rightNavItems.map((item) => (
                 <NavButton key={item.path} item={item} />
