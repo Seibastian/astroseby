@@ -160,7 +160,6 @@ const CardIcon = ({ path, color }: { path: string; color: string }) => (
       </g>
       )}
     </g>
-    </g>
   </svg>
 );
 
