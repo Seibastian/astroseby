@@ -17,279 +17,313 @@ const COLORS = {
 
 const GOLD_COLOR = "#d4af37";
 
-const CARD_BACKGROUNDS: Record<string, { gradient: string; icon: React.ReactNode }> = {
-  "/insight": {
-    gradient: "linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(249, 115, 22, 0.1) 100%)",
+const CARD_DATA = [
+  {
+    id: "insight",
+    title: "Keşif",
+    subtitle: "Natal Harita",
+    description: "Gezegenlerin konumunu keşfet",
+    path: "/insight",
+    color: COLORS.insight,
+    layout: "large",
+    preview: "♈ ♉ ♊ ♋ ♌ ♍",
+    shortcuts: ["Burçlar", "Gezegenler", "Evler"],
   },
-  "/edu": {
-    gradient: "linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(139, 92, 246, 0.1) 100%)",
+  {
+    id: "edu",
+    title: "Eğitim",
+    subtitle: "Astroloji Okulu",
+    description: "Kozmik bilgeliği öğren",
+    path: "/edu",
+    color: COLORS.edu,
+    layout: "wide",
+    preview: "6 Modül • Quiz • Sertifika",
+    shortcuts: ["Burç 101", "Gezegenler", "Evler", "Aspktler"],
   },
-  "/meditation": {
-    gradient: "linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(6, 182, 212, 0.1) 100%)",
+  {
+    id: "meditation",
+    title: "Meditasyon",
+    subtitle: "Nefes & Frekans",
+    description: "Kozmik titreşimlerle sakinleş",
+    path: "/meditation",
+    color: COLORS.meditation,
+    layout: "square",
+    preview: "432Hz • 528Hz • Binaural",
+    shortcuts: ["Nefes", "Frekans", "Gözler Kapalı"],
   },
-  "/dreams": {
-    gradient: "linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(168, 85, 247, 0.1) 100%)",
+  {
+    id: "dreams",
+    title: "Rüyalar",
+    subtitle: "Rüya Yorumu",
+    description: "Bilinçaltının mesajlarını çöz",
+    path: "/dreams",
+    color: COLORS.dreams,
+    layout: "tall",
+    preview: "🔮 Rüya Günlüğü",
+    shortcuts: ["Yorum", "Semboller", "Tarot"],
   },
-  "/karmic-match": {
-    gradient: "linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(236, 72, 153, 0.1) 100%)",
+  {
+    id: "karmic",
+    title: "Karmik",
+    subtitle: "Eş Bulma",
+    description: "Kadersel bağların sırları",
+    path: "/karmic-match",
+    color: COLORS.karmic,
+    layout: "wide",
+    preview: "♂️ × ♀️ Karma Skoru",
+    shortcuts: ["Karma", "Reinkarnasyon", "Soulmate"],
   },
-  "/synastry": {
-    gradient: "linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(59, 130, 246, 0.1) 100%)",
+  {
+    id: "synastry",
+    title: "Sinastri",
+    subtitle: "İlişki Analizi",
+    description: "İki kalbin uyumu",
+    path: "/synastry",
+    color: COLORS.synastry,
+    layout: "square",
+    preview: "❤️ Uyum: 87%",
+    shortcuts: ["Karşıt", "Trigon", "Kare"],
   },
-  "/chambers": {
-    gradient: "linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(34, 197, 94, 0.1) 100%)",
+  {
+    id: "chambers",
+    title: "Salonlar",
+    subtitle: "Ruh Odaları",
+    description: "İç dünyana yolculuk",
+    path: "/chambers",
+    color: COLORS.chambers,
+    layout: "tall",
+    preview: "🏛️ 12 Oda",
+    shortcuts: ["Kalp", "Para", "Aşk", "Kariyer"],
   },
-  "/whoami": {
-    gradient: "linear-gradient(135deg, rgba(234, 179, 8, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(234, 179, 8, 0.1) 100%)",
+  {
+    id: "whoami",
+    title: "Ben",
+    subtitle: "Kişisel Analiz",
+    description: "Gerçek beni keşfet",
+    path: "/whoami",
+    color: COLORS.whoami,
+    layout: "small",
+    preview: "✨ DNA Haritası",
+    shortcuts: ["Güçlü Yön", "Gölge", "Amaç"],
   },
-  "/premium": {
-    gradient: "linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(124, 58, 237, 0.15) 100%)",
+  {
+    id: "premium",
+    title: "Premium",
+    subtitle: "Üyelik",
+    description: "Sınırsız kozmik güç",
+    path: "/premium",
+    color: COLORS.premium,
+    layout: "featured",
+    preview: "👑 VIP",
+    shortcuts: ["Detaylı Analiz", "Canlı Burç", "Sohbet"],
   },
-  "/profile": {
-    gradient: "linear-gradient(135deg, rgba(100, 116, 139, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(100, 116, 139, 0.1) 100%)",
+  {
+    id: "profile",
+    title: "Profil",
+    subtitle: "Ayarlar",
+    description: "Kişiselleştir deneyimini",
+    path: "/profile",
+    color: COLORS.profile,
+    layout: "small",
+    preview: "⚙️",
+    shortcuts: ["Bildirim", "Tema", "Dil"],
   },
+];
+
+const PreviewIcon = ({ id, color }: { id: string; color: string }) => {
+  const icons: Record<string, React.ReactNode> = {
+    insight: (
+      <svg viewBox="0 0 48 48" className="w-10 h-10 opacity-60">
+        <circle cx="24" cy="24" r="18" stroke={color} strokeWidth="1" fill="none" />
+        <circle cx="24" cy="24" r="12" stroke={color} strokeWidth="0.5" fill="none" />
+        <circle cx="24" cy="24" r="4" fill={color} />
+      </svg>
+    ),
+    edu: (
+      <svg viewBox="0 0 48 48" className="w-10 h-10 opacity-60">
+        <path d="M12 8h24v32H12z" stroke={color} strokeWidth="1" fill="none" />
+        <path d="M18 8V4M30 8V4M18 44v-4M30 44v-4" stroke={color} strokeWidth="1" />
+        <path d="M16 18h16M16 24h16M16 30h10" stroke={color} strokeWidth="0.5" />
+      </svg>
+    ),
+    meditation: (
+      <svg viewBox="0 0 48 48" className="w-10 h-10 opacity-60">
+        <circle cx="24" cy="24" r="16" stroke={color} strokeWidth="1" fill="none" />
+        <circle cx="24" cy="24" r="8" stroke={color} strokeWidth="0.5" fill="none" />
+        <circle cx="24" cy="24" r="2" fill={color} />
+      </svg>
+    ),
+    dreams: (
+      <svg viewBox="0 0 48 48" className="w-10 h-10 opacity-60">
+        <path d="M24 6c-8 0-14 10-14 20s6 16 14 16 14-6 14-16-6-20-14-20z" stroke={color} strokeWidth="1" fill="none" />
+        <path d="M14 14l4 4 6-8" stroke={color} strokeWidth="1" fill="none" />
+      </svg>
+    ),
+    karmic: (
+      <svg viewBox="0 0 48 48" className="w-10 h-10 opacity-60">
+        <circle cx="18" cy="24" r="8" stroke={color} strokeWidth="1" fill="none" />
+        <circle cx="30" cy="24" r="8" stroke={color} strokeWidth="1" fill="none" />
+        <path d="M26 24h8" stroke={color} strokeWidth="1" />
+      </svg>
+    ),
+    synastry: (
+      <svg viewBox="0 0 48 48" className="w-10 h-10 opacity-60">
+        <circle cx="16" cy="24" r="6" stroke={color} strokeWidth="1" fill="none" />
+        <circle cx="32" cy="24" r="6" stroke={color} strokeWidth="1" fill="none" />
+        <path d="M22 24l4 0l6 0" stroke={color} strokeWidth="1" />
+        <path d="M16 14c0-6 6-8 8-8s8 2 8 8" stroke={color} strokeWidth="0.5" fill="none" />
+      </svg>
+    ),
+    chambers: (
+      <svg viewBox="0 0 48 48" className="w-10 h-10 opacity-60">
+        <rect x="8" y="8" width="32" height="32" rx="4" stroke={color} strokeWidth="1" fill="none" />
+        <path d="M8 24h32M24 8v32" stroke={color} strokeWidth="0.5" />
+      </svg>
+    ),
+    whoami: (
+      <svg viewBox="0 0 48 48" className="w-10 h-10 opacity-60">
+        <circle cx="24" cy="16" r="8" stroke={color} strokeWidth="1" fill="none" />
+        <path d="M14 40c0-6 4-10 10-10s10 4 10 10" stroke={color} strokeWidth="1" fill="none" />
+      </svg>
+    ),
+    premium: (
+      <svg viewBox="0 0 48 48" className="w-10 h-10 opacity-60">
+        <path d="M24 4l6 12 14 2-10 10 2 14-12-6-12 6 2-14L4 18l14-2z" stroke={color} strokeWidth="1" fill="none" />
+      </svg>
+    ),
+    profile: (
+      <svg viewBox="0 0 48 48" className="w-10 h-10 opacity-60">
+        <circle cx="24" cy="24" r="18" stroke={color} strokeWidth="1" fill="none" />
+        <circle cx="24" cy="18" r="6" stroke={color} strokeWidth="1" fill="none" />
+        <path d="M14 40c0-6 4-10 10-10s10 4 10 10" stroke={color} strokeWidth="1" fill="none" />
+      </svg>
+    ),
+  };
+  return <>{icons[id]}</>;
 };
 
-// Detaylı ikonlar - FloatingCards için (64x64 + glow efekti)
-const CardIcon = ({ path, color }: { path: string; color: string }) => (
-  <svg viewBox="0 0 64 64" fill="none" className="w-6 h-6">
-    <defs>
-      <filter id={`glow-fc-${path.replace('/', '')}`} x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
-        <feMerge>
-          <feMergeNode in="coloredBlur" />
-          <feMergeNode in="SourceGraphic" />
-        </feMerge>
-      </filter>
-    </defs>
-    <g filter={`url(#glow-fc-${path.replace('/', '')})`} transform="scale(1.33) translate(-8, -8)">
-    {/* Keşif */}
-    {path === "/insight" && (
-      <g>
-        <circle cx="24" cy="24" r="20" stroke={color} strokeWidth="1.5" />
-        <circle cx="24" cy="24" r="14" stroke={color} strokeWidth="0.8" strokeDasharray="2 2" />
-        <circle cx="24" cy="24" r="8" stroke={color} strokeWidth="1" />
-        <circle cx="24" cy="6" r="2" fill={color} />
-        <circle cx="24" cy="42" r="2" fill={color} />
-        <path d="M24 8v6M24 34v6M8 24h6M34 24h6" stroke={color} strokeWidth="1" strokeLinecap="round" />
-        <circle cx="24" cy="24" r="4" fill={color} />
-      </g>
-    )}
-
-    {/* Eğitim */}
-    {path === "/edu" && (
-      <g>
-        <path d="M24 6L6 22l18 11 18-11L24 6z" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
-        <path d="M6 33l18 11 18-11" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
-        <path d="M6 22l18 11 18-11" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
-        <circle cx="24" cy="14" r="3" fill={color} opacity="0.6" />
-      </g>
-    )}
-
-    {/* Meditasyon */}
-    {path === "/meditation" && (
-      <g>
-        <circle cx="24" cy="24" r="18" stroke={color} strokeWidth="1.5" />
-        <circle cx="24" cy="24" r="12" stroke={color} strokeWidth="1" />
-        <circle cx="24" cy="24" r="6" stroke={color} strokeWidth="0.8" strokeDasharray="3 3" />
-        <path d="M24 6v4M24 38v4M6 24h4M38 24h4" stroke={color} strokeWidth="1" strokeLinecap="round" />
-        <circle cx="24" cy="24" r="3" fill={color} />
-        <motion.circle cx="24" cy="24" r="5" stroke={color} strokeWidth="0.5" fill="none" 
-          animate={{ scale: [1, 1.3, 1], opacity: [0.8, 0.3, 0.8] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
-      </g>
-    )}
-
-    {/* Rüyalar */}
-    {path === "/dreams" && (
-      <g>
-        <path d="M36 10c0 10-8 18-18 18-10 0-18-8-18-18 0 10 8 18 18 18 2 0 4-0.5 6-1" stroke={color} strokeWidth="1.5" fill="none" />
-        <path d="M36 10c0 10-8 18-18 18-10 0-18-8-18-18 0 10 8 18 18 18 2 0 4-0.5 6-1" stroke={color} strokeWidth="3" fill={`${color}20`} />
-        <motion.path d="M10 8l1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3z" fill={color}
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
-        <motion.path d="M38 36l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2z" fill={color}
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-        />
-      </g>
-    )}
-
-    {/* Karmik */}
-    {path === "/karmic-match" && (
-      <g>
-        <path d="M38 12c0 12-10 20-22 20-6 0-12-4-16-10-4-6-4-14 4-20 8-6 18-6 26 0 8-6 10 8 8 10" stroke={color} strokeWidth="1.5" fill="none" strokeLinejoin="round" />
-        <path d="M24 18c-2-2-6-2-8 0s-2 6 0 8c2 2 6 2 8 0" stroke={color} strokeWidth="1" fill="none" />
-        <circle cx="24" cy="24" r="18" stroke={color} strokeWidth="0.5" strokeDasharray="2 4" opacity="0.5" />
-      </g>
-    )}
-
-    {/* Sinastri */}
-    {path === "/synastry" && (
-      <g>
-        <circle cx="18" cy="24" r="10" stroke={color} strokeWidth="1.5" />
-        <circle cx="18" cy="24" r="4" fill={color} />
-        <circle cx="30" cy="24" r="10" stroke={color} strokeWidth="1.5" />
-        <circle cx="30" cy="24" r="4" fill={color} />
-        <path d="M28 24h4" stroke={color} strokeWidth="2" strokeLinecap="round" />
-        <path d="M8 14c-2-4 2-8 6-8s6 4 4 8" stroke={color} strokeWidth="1" fill="none" />
-        <path d="M40 34c2 4-2 8-6 8s-6-4-4-8" stroke={color} strokeWidth="1" fill="none" />
-      </g>
-    )}
-
-    {/* Salonlar */}
-    {path === "/chambers" && (
-      <g>
-        <circle cx="24" cy="24" r="20" stroke={color} strokeWidth="1.5" />
-        <circle cx="24" cy="24" r="14" stroke={color} strokeWidth="1" />
-        <circle cx="24" cy="24" r="8" stroke={color} strokeWidth="1" />
-        <path d="M24 4v4M24 40v4M4 24h4M40 24h4" stroke={color} strokeWidth="1" strokeLinecap="round" />
-        <motion.circle cx="24" cy="24" r="3" fill={color} 
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 3, repeat: Infinity }}
-        />
-      </g>
-    )}
-
-    {/* Ben */}
-    {path === "/whoami" && (
-      <g>
-        <circle cx="24" cy="14" r="8" stroke={color} strokeWidth="1.5" />
-        <circle cx="21" cy="12" r="1.5" fill={color} />
-        <circle cx="27" cy="12" r="1.5" fill={color} />
-        <path d="M20 17q2 3 4 0" stroke={color} strokeWidth="1" fill="none" strokeLinecap="round" />
-        <path d="M24 22v10" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M16 42c0-5 4-8 8-8s8 3 8 8" stroke={color} strokeWidth="1.5" fill="none" strokeLinecap="round" />
-        <motion.circle cx="24" cy="6" r="2" fill={color} opacity="0.6"
-          animate={{ opacity: [0.3, 0.8, 0.3] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
-      </g>
-    )}
-
-    {/* Premium */}
-    {path === "/premium" && (
-      <g>
-        <path d="M24 8L10 20l14 10 14-10L24 8z" stroke={color} strokeWidth="1.5" strokeLinejoin="round" fill="none" />
-        <path d="M10 28l14 10 14-10" stroke={color} strokeWidth="1.5" strokeLinejoin="round" fill="none" />
-        <path d="M10 34l14 10 14-10" stroke={color} strokeWidth="1.5" strokeLinejoin="round" fill="none" />
-        <path d="M24 8v-4" stroke={color} strokeWidth="2" strokeLinecap="round" />
-        <motion.circle cx="24" cy="4" r="2" fill={color}
-          animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        />
-      </g>
-    )}
-
-    {/* Profil */}
-    {path === "/profile" && (
-      <g>
-        <circle cx="24" cy="24" r="18" stroke={color} strokeWidth="1.5" />
-        <circle cx="24" cy="24" r="12" stroke={color} strokeWidth="1" />
-        <ellipse cx="24" cy="24" rx="6" ry="18" stroke={color} strokeWidth="0.8" fill="none" />
-        <circle cx="24" cy="24" r="2" fill={color} />
-      </g>
-      )}
-    </g>
-  </svg>
-);
-
-const FloatingCard = ({ title, description, path, color, delay = 0 }: { title: string; description: string; path: string; color: string; delay?: number }) => {
+const MysticCard = ({ card, index }: { card: typeof CARD_DATA[0]; index: number }) => {
   const navigate = useNavigate();
-  const [isActive, setIsActive] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const displayColor = isActive ? color : GOLD_COLOR;
-  const bg = CARD_BACKGROUNDS[path] || CARD_BACKGROUNDS["/profile"];
+  
+  const layoutClasses: Record<string, string> = {
+    large: "col-span-2 row-span-2",
+    featured: "col-span-2",
+    wide: "col-span-2",
+    tall: "row-span-2",
+    square: "",
+    small: "",
+  };
+
+  const sizeClasses: Record<string, string> = {
+    large: "min-h-[180px]",
+    featured: "min-h-[100px]",
+    wide: "min-h-[100px]",
+    tall: "min-h-[160px]",
+    square: "min-h-[140px]",
+    small: "min-h-[100px]",
+  };
 
   return (
     <motion.button
-      initial={{ opacity: 0, y: 15 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.3, ease: "easeOut" }}
-      whileHover={{ y: -3, transition: { duration: 0.15 } }}
+      transition={{ delay: index * 0.05, duration: 0.3 }}
+      whileHover={{ y: -4, transition: { duration: 0.15 } }}
       whileTap={{ scale: 0.98 }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => {
-        setIsActive(true);
-        navigate(path);
-        setTimeout(() => setIsActive(false), 300);
-      }}
-      className="relative w-full p-3.5 rounded-xl text-left transition-all duration-200 overflow-hidden"
+      onClick={() => navigate(card.path)}
+      className={`relative rounded-2xl text-left transition-all duration-300 overflow-hidden ${layoutClasses[card.layout]} ${sizeClasses[card.layout]}`}
       style={{
-        background: bg.gradient,
+        background: `linear-gradient(135deg, ${card.color}12 0%, rgba(15, 23, 42, 0.95) 40%, ${card.color}08 100%)`,
         backdropFilter: 'blur(12px)',
-        border: `1px solid ${color}30`,
-        boxShadow: isHovered ? `0 8px 30px rgba(0, 0, 0, 0.3), 0 0 20px ${color}20` : '0 8px 20px rgba(0, 0, 0, 0.2)',
+        border: `1px solid ${card.color}25`,
+        boxShadow: isHovered 
+          ? `0 12px 40px rgba(0, 0, 0, 0.4), 0 0 30px ${card.color}15, inset 0 0 20px ${card.color}10`
+          : '0 8px 24px rgba(0, 0, 0, 0.25)',
       }}
     >
-      {/* Arkaplan parlaması */}
+      {/* Arkaplan glow */}
       <motion.div 
         className="absolute inset-0 pointer-events-none"
         animate={{ 
-          opacity: isHovered ? [0.3, 0.5, 0.3] : [0.1, 0.2, 0.1],
+          opacity: isHovered ? [0.4, 0.6, 0.4] : [0.15, 0.25, 0.15],
         }}
-        transition={{ duration: 3, repeat: Infinity }}
+        transition={{ duration: 4, repeat: Infinity }}
         style={{
-          background: `radial-gradient(circle at 30% 50%, ${color}15 0%, transparent 60%)`,
+          background: `radial-gradient(circle at ${card.layout === 'wide' ? '70%' : '30%'} 50%, ${card.color}20 0%, transparent 60%)`,
         }}
       />
-      
-      {/* Yıldız parçacıkları */}
-      {[...Array(4)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-0.5 h-0.5 rounded-full"
-          style={{
-            top: `${20 + i * 15}%`,
-            left: `${80 + i * 5}%`,
-            backgroundColor: color,
-          }}
-          animate={{
-            opacity: [0, 1, 0],
-            scale: [0.5, 1.5, 0.5],
-            y: [0, -10, -20],
-          }}
-          transition={{
-            duration: 2 + i * 0.5,
-            repeat: Infinity,
-            delay: i * 0.3,
-          }}
-        />
-      ))}
-      
-      {/* Kenar çizgisi parlaması */}
+
+      {/* Kenar efekti */}
       <motion.div 
-        className="absolute inset-0 rounded-xl pointer-events-none"
+        className="absolute inset-0 rounded-2xl pointer-events-none"
         animate={{ 
-          boxShadow: isHovered ? `inset 0 0 20px ${color}20, inset 0 0 40px ${color}10` : 'none',
+          boxShadow: isHovered ? `inset 0 0 30px ${card.color}15, inset 0 0 60px ${card.color}08` : 'none',
         }}
         transition={{ duration: 0.3 }}
+        style={{
+          border: `1px solid ${card.color}${isHovered ? '40' : '20'}`,
+        }}
       />
 
-      <div className="relative z-10 flex items-center gap-3">
-        <div 
-          className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-          style={{
-            background: `${displayColor}15`,
-            border: `1px solid ${displayColor}40`,
-            boxShadow: `0 0 15px ${displayColor}30, inset 0 0 10px ${displayColor}10`,
-          }}
-        >
-          <CardIcon path={path} color={displayColor} />
-        </div>
-        
-        <div className="flex-1 min-w-0">
-          <h3 className="text-white font-medium text-sm">{title}</h3>
-          <p className="text-white/40 text-xs truncate">{description}</p>
+      <div className="relative z-10 p-4 h-full flex flex-col justify-between">
+        {/* Üst kısım */}
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-2">
+            <div 
+              className="w-10 h-10 rounded-xl flex items-center justify-center"
+              style={{
+                background: `${card.color}15`,
+                border: `1px solid ${card.color}30`,
+                boxShadow: `0 0 15px ${card.color}20`,
+              }}
+            >
+              <PreviewIcon id={card.id} color={card.color} />
+            </div>
+            <div>
+              <h3 className="text-white font-semibold text-base">{card.title}</h3>
+              <p className="text-white/50 text-xs">{card.subtitle}</p>
+            </div>
+          </div>
+          
+          <motion.div 
+            animate={{ scale: isHovered ? 1.1 : 1, opacity: isHovered ? 1 : 0.4 }}
+            style={{ color: card.color }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </motion.div>
         </div>
 
-        <div style={{ color }} className="opacity-40">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
+        {/* Orta kısım - Preview */}
+        <div 
+          className="py-2 text-center rounded-lg my-2"
+          style={{ 
+            background: `${card.color}08`,
+            border: `1px solid ${card.color}15`,
+          }}
+        >
+          <p className="text-white/60 text-xs font-medium tracking-wider">{card.preview}</p>
+        </div>
+
+        {/* Alt kısım - Kısayollar */}
+        <div className="flex flex-wrap gap-1.5 mt-auto">
+          {card.shortcuts.map((shortcut, i) => (
+            <span
+              key={i}
+              className="px-2 py-1 text-[10px] rounded-md"
+              style={{
+                background: `${card.color}12`,
+                color: `${card.color}aa`,
+                border: `1px solid ${card.color}20`,
+              }}
+            >
+              {shortcut}
+            </span>
+          ))}
         </div>
       </div>
     </motion.button>
@@ -297,23 +331,10 @@ const FloatingCard = ({ title, description, path, color, delay = 0 }: { title: s
 };
 
 export const QuickAccessCards = () => {
-  const cards = [
-    { title: "Keşif", description: "Natal harita analizi", path: "/insight", color: COLORS.insight },
-    { title: "Eğitim", description: "Astroloji öğren", path: "/edu", color: COLORS.edu },
-    { title: "Meditasyon", description: "Nefes & frekans", path: "/meditation", color: COLORS.meditation },
-    { title: "Rüyalar", description: "Rüya yorumu", path: "/dreams", color: COLORS.dreams },
-    { title: "Karmik", description: "Karmik eş bulma", path: "/karmic-match", color: COLORS.karmic },
-    { title: "Sinastri", description: "İlişki analizi", path: "/synastry", color: COLORS.synastry },
-    { title: "Salonlar", description: "Ruh odaları", path: "/chambers", color: COLORS.chambers },
-    { title: "Ben", description: "Kişisel analiz", path: "/whoami", color: COLORS.whoami },
-    { title: "Premium", description: "Üyelik", path: "/premium", color: COLORS.premium },
-    { title: "Profil", description: "Ayarlar", path: "/profile", color: COLORS.profile },
-  ];
-
   return (
-    <div className="space-y-2">
-      {cards.map((card, index) => (
-        <FloatingCard key={card.path} {...card} delay={index * 0.05} />
+    <div className="grid grid-cols-2 gap-3 pb-24">
+      {CARD_DATA.map((card, index) => (
+        <MysticCard key={card.id} card={card} index={index} />
       ))}
     </div>
   );
