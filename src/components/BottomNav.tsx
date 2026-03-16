@@ -1,11 +1,12 @@
 import { useState, useRef } from "react";
-import { Home, Menu, X, Compass, BookOpen, Heart, Users, Sparkles, Crown, User, MessageCircle, Star } from "lucide-react";
+import { Home, Menu, X, Compass, BookOpen, Heart, Users, Sparkles, Crown, User, MessageCircle, Star, Wind } from "lucide-react";
 import mantarImg from "@/assets/mantar-avatar.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 const menuItems = [
   { path: "/insight", label: "Keşif", icon: Compass, color: "bg-orange-500" },
+  { path: "/meditation", label: "Meditasyon", icon: Wind, color: "bg-cyan-500" },
   { path: "/dreams", label: "Rüyalar", icon: BookOpen, color: "bg-purple-500" },
   { path: "/karmic-match", label: "Karmik", icon: Heart, color: "bg-pink-500" },
   { path: "/synastry", label: "Sinastri", icon: Sparkles, color: "bg-blue-500" },
