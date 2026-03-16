@@ -99,7 +99,7 @@ export const QuickAccessCards = () => {
       color: COLORS.edu,
     },
     {
-      title: "Rezonans Meditasyonu",
+      title: "Meditasyon",
       description: "Nefes ve frekansla bağlan",
       path: "/meditation",
       color: COLORS.meditation,

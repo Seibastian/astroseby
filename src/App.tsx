@@ -36,20 +36,20 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const pageVariants = {
   initial: {
+    x: 40,
     opacity: 0,
-    scale: 0.98,
   },
   animate: {
+    x: 0,
     opacity: 1,
-    scale: 1,
     transition: {
-      duration: 0.3,
+      duration: 0.25,
       ease: "easeOut",
     },
   },
   exit: {
+    x: -40,
     opacity: 0,
-    scale: 0.98,
     transition: {
       duration: 0.2,
       ease: "easeIn",

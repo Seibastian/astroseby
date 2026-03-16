@@ -85,7 +85,7 @@ const NavIcon = ({ path, color }: { path: string; color: string }) => {
 const menuItems = [
   { path: "/insight", label: "Keşif", description: "Natal harita analizi", color: COLORS.insight },
   { path: "/edu", label: "Eğitim", description: "Astroloji öğren", color: COLORS.edu },
-  { path: "/meditation", label: "Rezonans", description: "Nefes & frekans", color: COLORS.meditation },
+  { path: "/meditation", label: "Meditasyon", description: "Nefes & frekans", color: COLORS.meditation },
   { path: "/dreams", label: "Rüyalar", description: "Rüya yorumu", color: COLORS.dreams },
   { path: "/karmic-match", label: "Karmik", description: "Karmik eş bulma", color: COLORS.karmic },
   { path: "/synastry", label: "Sinastri", description: "İlişki analizi", color: COLORS.synastry },
@@ -127,7 +127,7 @@ const BottomNav = () => {
   ];
 
   const rightNavItems = [
-    { path: "/meditation", label: "Rezonans", color: COLORS.meditation },
+    { path: "/meditation", label: "Meditasyon", color: COLORS.meditation },
     { path: "/dreams", label: "Rüyalar", color: COLORS.dreams },
     { path: "/menu", label: "Menü", color: "#ffffff" },
   ];
@@ -245,16 +245,16 @@ const BottomNav = () => {
             boxShadow: '0 -12px 40px rgba(0, 0, 0, 0.5)',
           }}
         >
-          <div className="flex items-center justify-center h-16 px-1">
+          <div className="flex items-end justify-center h-16 px-1 pb-1">
             {/* Sol taraf - 3 icon */}
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-end gap-0.5 -mb-1">
               {allNavItems.map((item) => (
                 <NavButton key={item.path} item={item} />
               ))}
             </div>
 
-            {/* MANTAR - Ortada, biraz yukarıda */}
-            <button onClick={() => navigate("/mentor")} className="relative -mt-6 mx-1">
+            {/* MANTAR - Ortada, hafif yukarıda */}
+            <button onClick={() => navigate("/mentor")} className="relative mx-0.5">
               <motion.div 
                 whileHover={{ scale: 1.1 }} 
                 whileTap={{ scale: 0.95 }} 
@@ -262,22 +262,20 @@ const BottomNav = () => {
               >
                 {isMantar && <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 opacity-40 blur-xl" />}
                 
-                {/* Mantar - Original boyut korundu */}
                 <div 
-                  className={`h-12 w-12 rounded-full border-2 border-[#0f172a] shadow-[0_0_20px_rgba(168,85,247,0.3)] overflow-hidden ${isMantar ? 'ring-2 ring-purple-500/40 ring-offset-1 ring-offset-[#0f172a]' : ''}`}
+                  className={`h-11 w-11 rounded-full border-2 border-[#0f172a] shadow-[0_0_18px_rgba(168,85,247,0.3)] overflow-hidden ${isMantar ? 'ring-2 ring-purple-500/40 ring-offset-1 ring-offset-[#0f172a]' : ''}`}
                 >
                   <img src={mantarImg} alt="MANTAR" className="h-full w-full object-cover" />
                 </div>
                 
-                {/* Label - Üstte */}
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[6px] font-bold px-1.5 py-0.5 rounded-full shadow-md tracking-wide whitespace-nowrap">
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[5.5px] font-bold px-1.5 py-0.5 rounded-full shadow-md tracking-wide whitespace-nowrap">
                   MANTAR
                 </div>
               </motion.div>
             </button>
 
             {/* Sağ taraf - 3 icon */}
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-end gap-0.5 -mb-1">
               {rightNavItems.map((item) => (
                 <NavButton key={item.path} item={item} />
               ))}
