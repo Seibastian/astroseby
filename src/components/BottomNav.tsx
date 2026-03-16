@@ -15,15 +15,72 @@ const COLORS = {
   premium: "#7c3aed",     
 };
 
-const navItems = [
-  { path: "/insight", label: "Keşif", color: COLORS.insight },
-  { path: "/edu", label: "Eğitim", color: COLORS.edu },
-];
-
-const rightNavItems = [
-  { path: "/meditation", label: "Rezonans", color: COLORS.meditation },
-  { path: "/dreams", label: "Rüyalar", color: COLORS.dreams },
-];
+// Daha detaylı, ezoterik ikonlar
+const NavIcon = ({ path, color }: { path: string; color: string }) => {
+  const strokeColor = color;
+  
+  return (
+    <svg viewBox="0 0 28 28" fill="none" stroke={strokeColor} strokeWidth="1.2" className="w-6 h-6">
+      {/* Keşif - Astrolojik pusula */}
+      {path === "/insight" && (
+        <>
+          <circle cx="14" cy="14" r="11" />
+          <circle cx="14" cy="14" r="7" strokeDasharray="2 2" />
+          <path d="M14 3v4M14 21v4M3 14h4M21 14h4" />
+          <circle cx="14" cy="14" r="2.5" fill={strokeColor} stroke="none" />
+          <circle cx="14" cy="5" r="1.5" fill={strokeColor} stroke="none" />
+        </>
+      )}
+      
+      {/* Eğitim - Piramit/Bilgelik */}
+      {path === "/edu" && (
+        <>
+          <path d="M14 4L4 12l10 6 10-6L14 4z" />
+          <path d="M4 18l10 5 10-5" />
+          <path d="M4 14l10 5 10-5" />
+          <circle cx="14" cy="12" r="2" fill={strokeColor} stroke="none" />
+        </>
+      )}
+      
+      {/* Rezonans - Meditasyon/Zihin */}
+      {path === "/meditation" && (
+        <>
+          <circle cx="14" cy="14" r="10" />
+          <circle cx="14" cy="14" r="6" strokeDasharray="3 3" />
+          <path d="M14 8v4l3 3" />
+          <circle cx="14" cy="14" r="2" fill={strokeColor} stroke="none" />
+          <path d="M10 6c1-1 2.5-1 4-1s3 0 4 1" strokeLinecap="round" />
+        </>
+      )}
+      
+      {/* Rüyalar - Ay/Düş */}
+      {path === "/dreams" && (
+        <>
+          <path d="M21 12.5c0 5-4 9-7 9.5-3-.5-7-4.5-7-9.5a7 7 0 0 1 14 0Z" />
+          <path d="M10 9l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="9" cy="8" r="0.8" fill={strokeColor} stroke="none" />
+          <circle cx="19" cy="10" r="0.6" fill={strokeColor} stroke="none" />
+        </>
+      )}
+      
+      {/* Ev - Ana sayfa */}
+      {path === "/dashboard" && (
+        <>
+          <path d="M4 10l10-7 10 7v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9Z" />
+          <path d="M10 14v6M18 14v6" strokeLinecap="round" />
+          <path d="M8 10V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4" strokeLinecap="round" strokeLinejoin="round" />
+        </>
+      )}
+      
+      {/* Menu */}
+      {path === "/menu" && (
+        <>
+          <path d="M4 7h16M4 14h16M4 21h16" strokeLinecap="round" />
+        </>
+      )}
+    </svg>
+  );
+};
 
 const menuItems = [
   { path: "/insight", label: "Keşif", description: "Natal harita analizi", color: COLORS.insight },
@@ -37,16 +94,6 @@ const menuItems = [
   { path: "/premium", label: "Premium", description: "Üyelik", color: COLORS.premium },
   { path: "/profile", label: "Profil", description: "Ayarlar", color: "#64748b" },
 ];
-
-const NavIcon = ({ path, color }: { path: string; color: string }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" className="w-5 h-5">
-    {path === "/insight" && <><circle cx="12" cy="12" r="10" /><path d="M12 2v4M12 18v4M2 12h4M18 12h4" /><circle cx="12" cy="12" r="3" /></>}
-    {path === "/edu" && <><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></>}
-    {path === "/meditation" && <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" /><circle cx="12" cy="12" r="2" /></>}
-    {path === "/dreams" && <><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /><path d="M12 3v3M12 18v3M3 12h3M18 12h3" /></>}
-    {path === "/dashboard" && <><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></>}
-  </svg>
-);
 
 const menuVariants = {
   hidden: { opacity: 0, scale: 0.95 },
@@ -72,36 +119,52 @@ const BottomNav = () => {
     navigate(path);
   };
 
-  const NavButton = ({ item }: { item: { path: string; label: string; color: string } }) => {
-    const isActive = location.pathname === item.path;
+  // Tüm nav öğeleri - eşit aralıklı
+  const allNavItems = [
+    { path: "/dashboard", label: "Ev", color: "#ffffff" },
+    { path: "/insight", label: "Keşif", color: COLORS.insight },
+    { path: "/edu", label: "Eğitim", color: COLORS.edu },
+  ];
+
+  const rightNavItems = [
+    { path: "/meditation", label: "Rezonans", color: COLORS.meditation },
+    { path: "/dreams", label: "Rüyalar", color: COLORS.dreams },
+    { path: "/menu", label: "Menü", color: "#ffffff" },
+  ];
+
+  const NavButton = ({ item, isMantarBtn = false }: { item: { path: string; label: string; color: string }; isMantarBtn?: boolean }) => {
+    const isActive = location.pathname === item.path || (item.path === "/menu" && menuOpen);
     
     return (
       <motion.button
-        onClick={() => handleNavigate(item.path)}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="relative flex flex-col items-center justify-center px-2 py-1 rounded-xl transition-all"
+        onClick={() => item.path === "/menu" ? setMenuOpen(!menuOpen) : handleNavigate(item.path)}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.92 }}
+        className="relative flex flex-col items-center justify-center w-14 h-14"
       >
-        {isActive && (
+        {isActive && !isMantarBtn && (
           <motion.div
             layoutId="navBg"
             className="absolute inset-0 rounded-xl"
-            style={{ backgroundColor: `${item.color}15` }}
+            style={{ backgroundColor: `${item.color}12` }}
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
           />
         )}
+        
         <div className="relative z-10">
           <NavIcon path={item.path} color={isActive ? item.color : '#ffffff55'} />
         </div>
-        {isActive && (
+        
+        {isActive && !isMantarBtn && (
           <motion.div
-            layoutId="navGlow"
+            layoutId="navDot"
             className="absolute -bottom-1 w-1 h-1 rounded-full"
             style={{ backgroundColor: item.color, boxShadow: `0 0 8px ${item.color}` }}
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
           />
         )}
-        <span className={`text-[8px] mt-0.5 font-medium ${isActive ? 'text-white' : 'text-white/40'}`}>
+        
+        <span className={`text-[7px] mt-0.5 font-medium ${isActive ? 'text-white' : 'text-white/45'}`}>
           {item.label}
         </span>
       </motion.button>
@@ -182,44 +245,42 @@ const BottomNav = () => {
             boxShadow: '0 -12px 40px rgba(0, 0, 0, 0.5)',
           }}
         >
-          <div className="flex items-center justify-between h-16 px-1">
-            {/* Left - Home + Nav Items (no gap) */}
-            <div className="flex items-center">
-              <NavButton item={{ path: "/dashboard", label: "Ev", color: "#ffffff" }} />
-              {navItems.map((item) => (
+          <div className="flex items-center justify-center h-16 px-1">
+            {/* Sol taraf - 3 icon */}
+            <div className="flex items-center gap-0.5">
+              {allNavItems.map((item) => (
                 <NavButton key={item.path} item={item} />
               ))}
             </div>
 
-            {/* MANTAR - CENTER (PROTECTED) */}
-            <button onClick={() => navigate("/mentor")} className="relative -mt-7">
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="relative">
-                {isMantar && <div className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 opacity-40 blur-lg" />}
-                <div className={`h-14 w-14 rounded-full border-3 border-[#0f172a] shadow-[0_0_25px_rgba(168,85,247,0.3)] overflow-hidden ${isMantar ? 'ring-2 ring-purple-500/40 ring-offset-1 ring-offset-[#0f172a]' : ''}`}>
+            {/* MANTAR - Ortada, biraz yukarıda */}
+            <button onClick={() => navigate("/mentor")} className="relative -mt-6 mx-1">
+              <motion.div 
+                whileHover={{ scale: 1.1 }} 
+                whileTap={{ scale: 0.95 }} 
+                className="relative"
+              >
+                {isMantar && <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 opacity-40 blur-xl" />}
+                
+                {/* Mantar - Original boyut korundu */}
+                <div 
+                  className={`h-12 w-12 rounded-full border-2 border-[#0f172a] shadow-[0_0_20px_rgba(168,85,247,0.3)] overflow-hidden ${isMantar ? 'ring-2 ring-purple-500/40 ring-offset-1 ring-offset-[#0f172a]' : ''}`}
+                >
                   <img src={mantarImg} alt="MANTAR" className="h-full w-full object-cover" />
                 </div>
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full shadow-md tracking-wide whitespace-nowrap">
+                
+                {/* Label - Üstte */}
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[6px] font-bold px-1.5 py-0.5 rounded-full shadow-md tracking-wide whitespace-nowrap">
                   MANTAR
                 </div>
               </motion.div>
             </button>
 
-            {/* Right - Nav Items + Menu (no gap) */}
-            <div className="flex items-center">
+            {/* Sağ taraf - 3 icon */}
+            <div className="flex items-center gap-0.5">
               {rightNavItems.map((item) => (
                 <NavButton key={item.path} item={item} />
               ))}
-              {/* Menu */}
-              <button onClick={() => setMenuOpen(!menuOpen)} className="flex flex-col items-center justify-center px-2 py-1 rounded-xl">
-                <div className="text-white/40 hover:text-white transition-colors">
-                  {menuOpen ? (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M18 6L6 18M6 6l12 12" /></svg>
-                  ) : (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
-                  )}
-                </div>
-                <span className="text-[8px] mt-0.5 font-medium text-white/40">Menü</span>
-              </button>
             </div>
           </div>
         </div>
