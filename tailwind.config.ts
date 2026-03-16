@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Cinzel", "serif"],
-        body: ["Raleway", "sans-serif"],
+        display: ["Cormorant Garamond", "serif"],
+        body: ["Quicksand", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
