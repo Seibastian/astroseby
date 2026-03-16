@@ -16,145 +16,182 @@ const COLORS = {
   profile: "#64748b",
 };
 
-// Detaylı, alengirli ezoterik ikonlar
+// Çok detaylı, Mantar tarzı ikonlar
 const NavIcon = ({ path, color }: { path: string; color: string }) => {
   return (
-    <svg viewBox="0 0 48 48" fill="none" className="w-5 h-5">
-      {/* Keşif - Kozmik Pusula - Çok detaylı */}
+    <svg viewBox="0 0 64 64" fill="none" className="w-7 h-7">
+      <defs>
+        <filter id={`glow-${path}`} x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+        <linearGradient id={`grad-${path}`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="1"/>
+          <stop offset="100%" stopColor={color} stopOpacity="0.5"/>
+        </linearGradient>
+      </defs>
+
+      {/* Keşif - Kozmik Pusula */}
       {path === "/insight" && (
-        <g>
-          <circle cx="24" cy="24" r="20" stroke={color} strokeWidth="1.5" />
-          <circle cx="24" cy="24" r="14" stroke={color} strokeWidth="0.8" strokeDasharray="2 2" />
-          <circle cx="24" cy="24" r="8" stroke={color} strokeWidth="1" />
-          {/* Yıldızlar */}
-          <circle cx="24" cy="6" r="2" fill={color} />
-          <circle cx="24" cy="42" r="2" fill={color} />
-          <circle cx="6" cy="24" r="2" fill={color} />
-          <circle cx="42" cy="24" r="2" fill={color} />
-          {/* Çapraz çizgiler */}
-          <path d="M24 8v6M24 34v6M8 24h6M34 24h6" stroke={color} strokeWidth="1" strokeLinecap="round" />
-          {/* Merkez nokta */}
-          <circle cx="24" cy="24" r="4" fill={color} />
-          <circle cx="24" cy="24" r="2" fill="#0a0a1a" />
-        </g>
-      )}
-
-      {/* Eğitim - Piramit/Bilgelik */}
-      {path === "/edu" && (
-        <g>
-          <path d="M24 6L6 22l18 11 18-11L24 6z" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
-          <path d="M6 33l18 11 18-11" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
-          <path d="M6 22l18 11 18-11" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
-          {/* Gölge efekti */}
-          <path d="M24 17v20" stroke={color} strokeWidth="0.8" strokeDasharray="2 2" opacity="0.5" />
-          {/* Parlama */}
-          <circle cx="24" cy="14" r="3" fill={color} opacity="0.6" />
-        </g>
-      )}
-
-      {/* Meditasyon - Zihin/Bilinç */}
-      {path === "/meditation" && (
-        <g>
-          <circle cx="24" cy="24" r="18" stroke={color} strokeWidth="1.5" />
-          <circle cx="24" cy="24" r="12" stroke={color} strokeWidth="1" />
-          <circle cx="24" cy="24" r="6" stroke={color} strokeWidth="0.8" strokeDasharray="3 3" />
+        <g filter={`url(#glow-${path})`}>
+          <circle cx="32" cy="32" r="28" stroke={color} strokeWidth="2" fill="none"/>
+          <circle cx="32" cy="32" r="20" stroke={color} strokeWidth="1" strokeDasharray="4 2" fill="none" opacity="0.7"/>
+          <circle cx="32" cy="32" r="12" stroke={color} strokeWidth="1.5" fill="none"/>
           {/* Işınlar */}
-          <path d="M24 6v4M24 38v4M6 24h4M38 24h4" stroke={color} strokeWidth="1" strokeLinecap="round" />
+          {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
+            <line key={i} x1="32" y1="4" x2="32" y2="10" stroke={color} strokeWidth="1.5" strokeLinecap="round" transform={`rotate(${angle} 32 32)`}/>
+          ))}
+          {/* Yıldızlar köşelerde */}
+          <circle cx="8" cy="8" r="3" fill={color}/>
+          <circle cx="56" cy="8" r="3" fill={color}/>
+          <circle cx="8" cy="56" r="3" fill={color}/>
+          <circle cx="56" cy="56" r="3" fill={color}/>
           {/* Merkez */}
-          <circle cx="24" cy="24" r="3" fill={color} />
-          <motion.circle cx="24" cy="24" r="5" stroke={color} strokeWidth="0.5" fill="none" 
-            animate={{ scale: [1, 1.3, 1], opacity: [0.8, 0.3, 0.8] }}
+          <circle cx="32" cy="32" r="8" fill={color}/>
+          <circle cx="32" cy="32" r="4" fill="#0a0a1a"/>
+          <circle cx="32" cy="32" r="2" fill={color}/>
+        </g>
+      )}
+
+      {/* Eğitim - Bilgelik Piramidi */}
+      {path === "/edu" && (
+        <g filter={`url(#glow-${path})`}>
+          <path d="M32 6L6 30l26 16 26-16L32 6z" stroke={color} strokeWidth="2" fill={`${color}15`} strokeLinejoin="round"/>
+          <path d="M6 46l26 16 26-16" stroke={color} strokeWidth="2" fill="none" strokeLinejoin="round"/>
+          <path d="M6 30l26 16 26-16" stroke={color} strokeWidth="1.5" fill="none" strokeLinejoin="round"/>
+          {/* Işık efekti */}
+          <path d="M32 6v8" stroke={color} strokeWidth="3" strokeLinecap="round"/>
+          <circle cx="32" cy="20" r="4" fill={color} opacity="0.8"/>
+          <motion.circle cx="32" cy="20" r="6" stroke={color} strokeWidth="1" fill="none"
+            animate={{ r: [6, 10, 6], opacity: [0.8, 0.2, 0.8] }}
             transition={{ duration: 2, repeat: Infinity }}
           />
         </g>
       )}
 
-      {/* Rüyalar - Ay/Yıldızlar */}
-      {path === "/dreams" && (
-        <g>
-          {/* Ay */}
-          <path d="M36 10c0 10-8 18-18 18-10 0-18-8-18-18 0 10 8 18 18 18 2 0 4-0.5 6-1" stroke={color} strokeWidth="1.5" fill="none" />
-          <path d="M36 10c0 10-8 18-18 18-10 0-18-8-18-18 0 10 8 18 18 18 2 0 4-0.5 6-1" stroke={color} strokeWidth="3" fill={`${color}20`} />
-          {/* Yıldızlar */}
-          <motion.path d="M10 8l1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3z" fill={color}
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
-          <motion.path d="M38 36l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2z" fill={color}
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-          />
-          <circle cx="8" cy="30" r="1.5" fill={color} opacity="0.7" />
-          <circle cx="40" cy="14" r="1" fill={color} opacity="0.7" />
-        </g>
-      )}
-
-      {/* Karmik - Kalp/Bağlantı */}
-      {path === "/karmic-match" && (
-        <g>
-          <path d="M38 12c0 12-10 20-22 20-6 0-12-4-16-10-4-6-4-14 4-20 8-6 18-6 26 0 8-6 10 8 8 10" stroke={color} strokeWidth="1.5" fill="none" strokeLinejoin="round" />
-          {/* İç detay */}
-          <path d="M24 18c-2-2-6-2-8 0s-2 6 0 8c2 2 6 2 8 0" stroke={color} strokeWidth="1" fill="none" />
-          {/* Çevre çizgiler */}
-          <circle cx="24" cy="24" r="18" stroke={color} strokeWidth="0.5" strokeDasharray="2 4" opacity="0.5" />
-        </g>
-      )}
-
-      {/* Sinastry - İki ruh */}
-      {path === "/synastry" && (
-        <g>
-          {/* Sol daire */}
-          <circle cx="18" cy="24" r="10" stroke={color} strokeWidth="1.5" />
-          <circle cx="18" cy="24" r="4" fill={color} />
-          {/* Sağ daire */}
-          <circle cx="30" cy="24" r="10" stroke={color} strokeWidth="1.5" />
-          <circle cx="30" cy="24" r="4" fill={color} />
-          {/* Bağlantı */}
-          <path d="M28 24h4" stroke={color} strokeWidth="2" strokeLinecap="round" />
-          <circle cx="26" cy="22" r="1" fill={color} />
-          <circle cx="26" cy="26" r="1" fill={color} />
-          {/* Yaylar */}
-          <path d="M8 14c-2-4 2-8 6-8s6 4 4 8" stroke={color} strokeWidth="1" fill="none" />
-          <path d="M40 34c2 4-2 8-6 8s-6-4-4-8" stroke={color} strokeWidth="1" fill="none" />
-        </g>
-      )}
-
-      {/* Salonlar - Hücre */}
-      {path === "/chambers" && (
-        <g>
-          <circle cx="24" cy="24" r="20" stroke={color} strokeWidth="1.5" />
-          <circle cx="24" cy="24" r="14" stroke={color} strokeWidth="1" />
-          <circle cx="24" cy="24" r="8" stroke={color} strokeWidth="1" />
+      {/* Meditasyon - Bilinç */}
+      {path === "/meditation" && (
+        <g filter={`url(#glow-${path})`}>
+          <circle cx="32" cy="32" r="26" stroke={color} strokeWidth="2" fill="none"/>
+          <circle cx="32" cy="32" r="18" stroke={color} strokeWidth="1" strokeDasharray="3 3" fill="none" opacity="0.7"/>
+          <circle cx="32" cy="32" r="10" stroke={color} strokeWidth="1.5" fill={`${color}20`}/>
           {/* Işınlar */}
-          <path d="M24 4v4M24 40v4M4 24h4M40 24h4" stroke={color} strokeWidth="1" strokeLinecap="round" />
-          {/* Köşeler */}
-          <path d="M10 10l2 2M38 38l-2-2M10 38l2-2M38 10l-2 2" stroke={color} strokeWidth="0.8" strokeLinecap="round" />
-          <motion.circle cx="24" cy="24" r="3" fill={color} 
-            animate={{ scale: [1, 1.2, 1] }}
+          {[0, 60, 120, 180, 240, 300].map((angle, i) => (
+            <motion.line key={i} x1="32" y1="6" x2="32" y2="10" stroke={color} strokeWidth="2" strokeLinecap="round" transform={`rotate(${angle} 32 32)`}
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }}
+            />
+          ))}
+          {/* Merkez */}
+          <circle cx="32" cy="32" r="6" fill={color}/>
+          <circle cx="32" cy="32" r="3" fill="#0a0a1a"/>
+          <motion.circle cx="32" cy="32" r="10" stroke={color} strokeWidth="1" fill="none"
+            animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
             transition={{ duration: 3, repeat: Infinity }}
           />
         </g>
       )}
 
-      {/* Ben - Kişisel */}
+      {/* Rüyalar - Ay ve Yıldızlar */}
+      {path === "/dreams" && (
+        <g filter={`url(#glow-${path})`}>
+          {/* Ay */}
+          <path d="M48 12c0 14-12 26-26 26S-2 26 12 12 0-2 22 12" stroke={color} strokeWidth="2.5" fill={`${color}15`} strokeLinecap="round"/>
+          <path d="M48 12c0 14-12 26-26 26S-2 26 12 12 0-2 22 12" stroke={color} strokeWidth="1" fill="none" strokeDasharray="2 2" opacity="0.5"/>
+          {/* Yıldızlar */}
+          <motion.path d="M12 8l2 4 4.5.5-3.5 3.5.5L12 20l-4-.5 3.5-3.5-.5L8 12l2-4z" fill={color}
+            animate={{ opacity: [0.5, 1, 0.5], scale: [0.9, 1.1, 0.9] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+          <motion.path d="M52 48l1.5 3 3.5.5-2.5 2.5.5L52 58l-4-.5 2.5-2.5-.5L48 51l1.5-3z" fill={color}
+            animate={{ opacity: [0.5, 1, 0.5], scale: [0.9, 1.1, 0.9] }}
+            transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+          />
+          <circle cx="8" cy="40" r="2" fill={color} opacity="0.7"/>
+          <circle cx="56" cy="20" r="1.5" fill={color} opacity="0.6"/>
+        </g>
+      )}
+
+      {/* Karmik - Kalp ve Bağ */}
+      {path === "/karmic-match" && (
+        <g filter={`url(#glow-${path})`}>
+          <path d="M32 16c0 0-20 12-20 28 0 10 8 18 20 18s20-8 20-18c0-16-20-28-20-28z" stroke={color} strokeWidth="2" fill={`${color}15`} strokeLinejoin="round"/>
+          <path d="M32 32c-4-4-12-4-12 0s4 12 12 12 12-4 12-12" stroke={color} strokeWidth="1.5" fill="none"/>
+          {/* Çevre daire */}
+          <circle cx="32" cy="32" r="24" stroke={color} strokeWidth="0.5" strokeDasharray="3 5" opacity="0.4"/>
+          {/* Işınlar */}
+          {[0, 90, 180, 270].map((angle, i) => (
+            <motion.line key={i} x1="32" y1="56" x2="32" y2="60" stroke={color} strokeWidth="1.5" strokeLinecap="round" transform={`rotate(${angle} 32 32)`}
+              animate={{ opacity: [0.3, 0.8, 0.3] }}
+              transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3 }}
+            />
+          ))}
+        </g>
+      )}
+
+      {/* Sinastri - İki ruh */}
+      {path === "/synastry" && (
+        <g filter={`url(#glow-${path})`}>
+          {/* Sol ruh */}
+          <circle cx="22" cy="32" r="14" stroke={color} strokeWidth="2" fill={`${color}10`}/>
+          <circle cx="22" cy="32" r="6" fill={color}/>
+          <circle cx="22" cy="32" r="3" fill="#0a0a1a"/>
+          {/* Sağ ruh */}
+          <circle cx="42" cy="32" r="14" stroke={color} strokeWidth="2" fill={`${color}10`}/>
+          <circle cx="42" cy="32" r="6" fill={color}/>
+          <circle cx="42" cy="32" r="3" fill="#0a0a1a"/>
+          {/* Bağlantı */}
+          <path d="M36 32h4" stroke={color} strokeWidth="3" strokeLinecap="round"/>
+          {/* Yaylar */}
+          <path d="M8 18c-4-6 0-12 8-12s12 6 8 12" stroke={color} strokeWidth="1.5" fill="none"/>
+          <path d="M56 46c4 6 0 12-8 12s-12-6-8-12" stroke={color} strokeWidth="1.5" fill="none"/>
+          <motion.circle cx="22" cy="32" r="18" stroke={color} strokeWidth="0.5" fill="none"
+            animate={{ r: [18, 20, 18], opacity: [0.3, 0, 0.3] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </g>
+      )}
+
+      {/* Salonlar - Hücre */}
+      {path === "/chambers" && (
+        <g filter={`url(#glow-${path})`}>
+          <circle cx="32" cy="32" r="26" stroke={color} strokeWidth="2" fill="none"/>
+          <circle cx="32" cy="32" r="18" stroke={color} strokeWidth="1.5" fill={`${color}10`}/>
+          <circle cx="32" cy="32" r="10" stroke={color} strokeWidth="1" fill="none"/>
+          {/* Köşe detayları */}
+          <circle cx="12" cy="12" r="2" fill={color}/>
+          <circle cx="52" cy="12" r="2" fill={color}/>
+          <circle cx="12" cy="52" r="2" fill={color}/>
+          <circle cx="52" cy="52" r="2" fill={color}/>
+          {/* Işınlar */}
+          <path d="M32 6v6M32 52v6M6 32h6M52 32h6" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
+          {/* Merkez */}
+          <motion.circle cx="32" cy="32" r="4" fill={color}
+            animate={{ scale: [1, 1.3, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </g>
+      )}
+
+      {/* Ben - Kişi */}
       {path === "/whoami" && (
-        <g>
+        <g filter={`url(#glow-${path})`}>
           {/* Kafa */}
-          <circle cx="24" cy="14" r="8" stroke={color} strokeWidth="1.5" />
+          <circle cx="32" cy="18" r="12" stroke={color} strokeWidth="2" fill={`${color}15`}/>
           {/* Gözler */}
-          <circle cx="21" cy="12" r="1.5" fill={color} />
-          <circle cx="27" cy="12" r="1.5" fill={color} />
-          {/* Göz bebekleri */}
-          <circle cx="21" cy="12" r="0.5" fill="#0a0a1a" />
-          <circle cx="27" cy="12" r="0.5" fill="#0a0a1a" />
+          <circle cx="27" cy="16" r="2" fill={color}/>
+          <circle cx="37" cy="16" r="2" fill={color}/>
           {/* Gülümseme */}
-          <path d="M20 17q2 3 4 0" stroke={color} strokeWidth="1" fill="none" strokeLinecap="round" />
+          <path d="M27 22q5 4 10 0" stroke={color} strokeWidth="1.5" fill="none" strokeLinecap="round"/>
           {/* Vücut */}
-          <path d="M24 22v10" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
-          <path d="M16 42c0-5 4-8 8-8s8 3 8 8" stroke={color} strokeWidth="1.5" fill="none" strokeLinecap="round" />
-          {/* Kafa üstü ışık */}
-          <motion.circle cx="24" cy="6" r="2" fill={color} opacity="0.6"
-            animate={{ opacity: [0.3, 0.8, 0.3] }}
+          <path d="M32 30v16" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+          <path d="M20 56c0-8 6-12 12-12s12 4 12 12" stroke={color} strokeWidth="2" fill="none" strokeLinecap="round"/>
+          {/* Işık efekti */}
+          <motion.circle cx="32" cy="6" r="3" fill={color} opacity="0.8"
+            animate={{ opacity: [0.4, 1, 0.4], scale: [0.8, 1.2, 0.8] }}
             transition={{ duration: 2, repeat: Infinity }}
           />
         </g>
@@ -162,50 +199,52 @@ const NavIcon = ({ path, color }: { path: string; color: string }) => {
 
       {/* Premium - Taç */}
       {path === "/premium" && (
-        <g>
-          <path d="M24 8L10 20l14 10 14-10L24 8z" stroke={color} strokeWidth="1.5" strokeLinejoin="round" fill="none" />
-          <path d="M10 28l14 10 14-10" stroke={color} strokeWidth="1.5" strokeLinejoin="round" fill="none" />
-          <path d="M10 34l14 10 14-10" stroke={color} strokeWidth="1.5" strokeLinejoin="round" fill="none" />
+        <g filter={`url(#glow-${path})`}>
+          <path d="M32 8L12 26l20 16 20-16L32 8z" stroke={color} strokeWidth="2" fill={`${color}15`} strokeLinejoin="round"/>
+          <path d="M12 40l20 16 20-16" stroke={color} strokeWidth="2" fill="none" strokeLinejoin="round"/>
+          <path d="M12 52l20 16 20-16" stroke={color} strokeWidth="2" fill="none" strokeLinejoin="round"/>
           {/* Taç ucu */}
-          <path d="M24 8v-4" stroke={color} strokeWidth="2" strokeLinecap="round" />
-          <motion.circle cx="24" cy="4" r="2" fill={color}
-            animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
+          <path d="M32 8V4" stroke={color} strokeWidth="3" strokeLinecap="round"/>
+          <motion.circle cx="32" cy="4" r="3" fill={color}
+            animate={{ scale: [1, 1.4, 1], opacity: [0.6, 1, 0.6] }}
             transition={{ duration: 1.5, repeat: Infinity }}
           />
-          {/* Kenar taşlar */}
-          <circle cx="10" cy="20" r="2" fill={color} />
-          <circle cx="38" cy="20" r="2" fill={color} />
-          <circle cx="24" cy="38" r="2" fill={color} />
+          {/* Kenar taşları */}
+          <circle cx="12" cy="26" r="3" fill={color}/>
+          <circle cx="52" cy="26" r="3" fill={color}/>
+          <circle cx="32" cy="56" r="3" fill={color}/>
         </g>
       )}
 
-      {/* Profil - Ayarlar/Dünya */}
+      {/* Profil - Dünya */}
       {path === "/profile" && (
-        <g>
-          <circle cx="24" cy="24" r="18" stroke={color} strokeWidth="1.5" />
-          <circle cx="24" cy="24" r="12" stroke={color} strokeWidth="1" />
+        <g filter={`url(#glow-${path})`}>
+          <circle cx="32" cy="32" r="26" stroke={color} strokeWidth="2" fill="none"/>
+          <circle cx="32" cy="32" r="18" stroke={color} strokeWidth="1" fill={`${color}10`}/>
           {/* Boylamlar */}
-          <ellipse cx="24" cy="24" rx="6" ry="18" stroke={color} strokeWidth="0.8" fill="none" />
-          <ellipse cx="24" cy="24" rx="12" ry="4" stroke={color} strokeWidth="0.8" fill="none" />
+          <ellipse cx="32" cy="32" rx="8" ry="26" stroke={color} strokeWidth="1" fill="none"/>
+          <ellipse cx="32" cy="32" rx="18" ry="5" stroke={color} strokeWidth="0.5" fill="none" opacity="0.6"/>
+          <ellipse cx="32" cy="32" rx="18" ry="12" stroke={color} strokeWidth="0.5" fill="none" opacity="0.4"/>
           {/* Enlemler */}
-          <path d="M6 24h36" stroke={color} strokeWidth="0.5" />
-          <path d="M9 16h30" stroke={color} strokeWidth="0.5" />
-          <path d="M9 32h30" stroke={color} strokeWidth="0.5" />
+          <path d="M6 32h52" stroke={color} strokeWidth="0.5"/>
+          <path d="M10 20h44" stroke={color} strokeWidth="0.5" opacity="0.6"/>
+          <path d="M10 44h44" stroke={color} strokeWidth="0.5" opacity="0.6"/>
           {/* Merkez */}
-          <circle cx="24" cy="24" r="2" fill={color} />
+          <circle cx="32" cy="32" r="4" fill={color}/>
+          <circle cx="32" cy="32" r="2" fill="#0a0a1a"/>
         </g>
       )}
 
       {/* Ev - Ana sayfa */}
       {path === "/dashboard" && (
-        <g>
-          <path d="M8 18l16-12 16 12v14a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V18z" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
-          <path d="M16 22v8M32 22v8" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
-          <path d="M12 18V8a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v10" stroke={color} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-          {/* Şimşek/Enerji */}
-          <motion.path d="M22 8l-2 6 4-4-2 6 4-4-2 6" stroke={color} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 1, repeat: Infinity }}
+        <g filter={`url(#glow-${path})`}>
+          <path d="M10 24l22-16 22 16v20a2 2 0 0 1-2 2H12a2 2 0 0 1-2-2V24z" stroke={color} strokeWidth="2" fill={`${color}15`} strokeLinejoin="round"/>
+          <path d="M22 30v12M42 30v12" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+          <path d="M14 24V12a6 6 0 0 1 6-6h24a6 6 0 0 1 6 6v12" stroke={color} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
+          {/* Şimşek */}
+          <motion.path d="M30 12l-4 8 8-8-4 8 8-8" stroke={color} strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"
+            animate={{ opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 0.8, repeat: Infinity }}
           />
         </g>
       )}
@@ -213,9 +252,12 @@ const NavIcon = ({ path, color }: { path: string; color: string }) => {
       {/* Menu */}
       {path === "/menu" && (
         <g>
-          <path d="M8 14h32" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
-          <path d="M8 24h32" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
-          <path d="M8 34h32" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+          {[14, 28, 42].map((y, i) => (
+            <motion.line key={i} x1="12" y1={y} x2="52" y2={y} stroke={color} strokeWidth="3" strokeLinecap="round"
+              animate={{ x1: [12, 14, 12], x2: [52, 50, 52] }}
+              transition={{ duration: 0.5, repeat: Infinity, delay: i * 0.1 }}
+            />
+          ))}
         </g>
       )}
     </svg>
@@ -260,8 +302,8 @@ const BottomNav = () => {
 
   const allNavItems = [
     { path: "/dashboard", label: "Ev", color: "#ffffff" },
-    { path: "/insight", label: "Keşif", color: COLORS.insight },
-    { path: "/edu", label: "Eğitim", color: COLORS.edu },
+    { path: "/karmic-match", label: "Karmik", color: COLORS.karmic },
+    { path: "/chambers", label: "Salon", color: COLORS.chambers },
   ];
 
   const rightNavItems = [
@@ -276,28 +318,28 @@ const BottomNav = () => {
     return (
       <motion.button
         onClick={() => item.path === "/menu" ? setMenuOpen(!menuOpen) : handleNavigate(item.path)}
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.92 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
         className="relative flex flex-col items-center justify-center w-14 h-14"
       >
         {isActive && item.path !== "/menu" && (
           <motion.div
             layoutId="navBg"
             className="absolute inset-0 rounded-xl"
-            style={{ backgroundColor: `${item.color}12` }}
+            style={{ backgroundColor: `${item.color}15` }}
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
           />
         )}
         
         <div className="relative z-10">
-          <NavIcon path={item.path} color={isActive ? item.color : '#ffffff55'} />
+          <NavIcon path={item.path} color={isActive ? item.color : '#d4af37'} />
         </div>
         
         {isActive && item.path !== "/menu" && (
           <motion.div
             layoutId="navDot"
-            className="absolute -bottom-1 w-1 h-1 rounded-full"
-            style={{ backgroundColor: item.color, boxShadow: `0 0 8px ${item.color}` }}
+            className="absolute -bottom-1 w-1.5 h-1.5 rounded-full"
+            style={{ backgroundColor: item.color, boxShadow: `0 0 10px ${item.color}` }}
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
           />
         )}
@@ -353,8 +395,8 @@ const BottomNav = () => {
                       }`}
                     >
                       <div 
-                        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                        style={{ background: `${item.color}15`, border: `1px solid ${item.color}25` }}
+                        className="w-11 h-11 rounded-xl flex items-center justify-center"
+                        style={{ background: `${item.color}15`, border: `1px solid ${item.color}30` }}
                       >
                         <NavIcon path={item.path} color={item.color} />
                       </div>
@@ -382,33 +424,72 @@ const BottomNav = () => {
           style={{
             background: 'linear-gradient(180deg, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 0.92) 10%, rgba(15, 23, 42, 0.98) 100%)',
             backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
             borderTop: '1px solid rgba(255, 255, 255, 0.05)',
             borderRadius: '24px 24px 0 0',
             boxShadow: '0 -12px 40px rgba(0, 0, 0, 0.5)',
           }}
         >
           <div className="flex items-end justify-center h-16 px-1 pb-1">
-            <div className="flex items-end gap-0.5 -mb-1">
+            <div className="flex items-end gap-0 -mb-1">
               {allNavItems.map((item) => (
                 <NavButton key={item.path} item={item} />
               ))}
             </div>
 
-            {/* MANTAR */}
-            <button onClick={() => navigate("/mentor")} className="relative mx-0.5">
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="relative">
-                {isMantar && <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 opacity-40 blur-xl" />}
-                <div className={`h-11 w-11 rounded-full border-2 border-[#0f172a] shadow-[0_0_18px_rgba(168,85,247,0.3)] overflow-hidden ${isMantar ? 'ring-2 ring-purple-500/40 ring-offset-1 ring-offset-[#0f172a]' : ''}`}>
+            {/* MANTAR - Label AŞAĞIDA */}
+            <button onClick={() => navigate("/mentor")} className="relative mx-2" style={{ transform: 'translateY(-15px)' }}>
+              <motion.div 
+                whileHover={{ scale: 1.1 }} 
+                whileTap={{ scale: 0.95 }} 
+                className="relative"
+                animate={{ scale: [1, 1.03, 1] }}
+                transition={{ duration: 4, repeat: Infinity }}
+              >
+                {/* Minimal parıltı */}
+                <motion.div 
+                  className="absolute inset-0 rounded-full"
+                  animate={{ 
+                    opacity: [0.3, 0.7, 0.3],
+                    scale: [1, 1.05, 1],
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  style={{ 
+                    boxShadow: '0 0 15px rgba(234,179,8,0.4), 0 0 30px rgba(234,179,8,0.2)',
+                    background: 'radial-gradient(circle, rgba(234,179,8,0.15) 0%, transparent 70%)'
+                  }}
+                />
+                {/* Minik parıltılar */}
+                {[...Array(3)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1 h-1 rounded-full bg-amber-300"
+                    style={{ top: '20%', left: i === 1 ? '80%' : i === 2 ? '15%' : '50%' }}
+                    animate={{
+                      opacity: [0, 1, 0],
+                      scale: [0.5, 1.2, 0.5],
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      delay: i * 0.5,
+                    }}
+                  />
+                ))}
+                
+                <div 
+                  className={`h-11 w-11 rounded-full border-2 border-[#0f172a] shadow-[0_0_18px_rgba(234,179,8,0.4)] overflow-hidden ${isMantar ? 'ring-2 ring-amber-500/50 ring-offset-1 ring-offset-[#0f172a]' : ''}`}
+                >
                   <img src={mantarImg} alt="MANTAR" className="h-full w-full object-cover" />
                 </div>
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[5.5px] font-bold px-1.5 py-0.5 rounded-full shadow-md tracking-wide whitespace-nowrap">
+                
+                {/* Label AŞAĞIDA - Ezoterik altın */}
+                <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 text-[#1a1a2e] text-[7px] font-bold px-2.5 py-0.5 rounded-full shadow-[0_0_12px_rgba(234,179,8,0.6)] tracking-wide whitespace-nowrap">
                   MANTAR
                 </div>
               </motion.div>
             </button>
 
-            <div className="flex items-end gap-0.5 -mb-1">
+            <div className="flex items-end gap-0 -mb-1">
               {rightNavItems.map((item) => (
                 <NavButton key={item.path} item={item} />
               ))}

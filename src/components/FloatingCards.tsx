@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const COLORS = {
   insight: "#f97316",
@@ -14,9 +15,21 @@ const COLORS = {
   profile: "#64748b",
 };
 
-// Detaylı ikonlar - FloatingCards için
+const GOLD_COLOR = "#d4af37";
+
+// Detaylı ikonlar - FloatingCards için (64x64 + glow efekti)
 const CardIcon = ({ path, color }: { path: string; color: string }) => (
-  <svg viewBox="0 0 48 48" fill="none" className="w-5 h-5">
+  <svg viewBox="0 0 64 64" fill="none" className="w-6 h-6">
+    <defs>
+      <filter id={`glow-fc-${path.replace('/', '')}`} x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
+        <feMerge>
+          <feMergeNode in="coloredBlur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    </defs>
+    <g filter={`url(#glow-fc-${path.replace('/', '')})`} transform="scale(1.33) translate(-8, -8)">
     {/* Keşif */}
     {path === "/insight" && (
       <g>
@@ -145,12 +158,16 @@ const CardIcon = ({ path, color }: { path: string; color: string }) => (
         <ellipse cx="24" cy="24" rx="6" ry="18" stroke={color} strokeWidth="0.8" fill="none" />
         <circle cx="24" cy="24" r="2" fill={color} />
       </g>
-    )}
+      )}
+    </g>
+    </g>
   </svg>
 );
 
 const FloatingCard = ({ title, description, path, color, delay = 0 }: { title: string; description: string; path: string; color: string; delay?: number }) => {
   const navigate = useNavigate();
+  const [isActive, setIsActive] = useState(false);
+  const displayColor = isActive ? color : GOLD_COLOR;
 
   return (
     <motion.button
@@ -159,7 +176,11 @@ const FloatingCard = ({ title, description, path, color, delay = 0 }: { title: s
       transition={{ delay, duration: 0.3, ease: "easeOut" }}
       whileHover={{ y: -3, transition: { duration: 0.15 } }}
       whileTap={{ scale: 0.98 }}
-      onClick={() => navigate(path)}
+      onClick={() => {
+        setIsActive(true);
+        navigate(path);
+        setTimeout(() => setIsActive(false), 300);
+      }}
       className="relative w-full p-3.5 rounded-xl text-left transition-all duration-200"
       style={{
         background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.6) 100%)',
@@ -170,13 +191,14 @@ const FloatingCard = ({ title, description, path, color, delay = 0 }: { title: s
     >
       <div className="flex items-center gap-3">
         <div 
-          className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+          className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
           style={{
-            background: `${color}15`,
-            border: `1px solid ${color}25`,
+            background: `${displayColor}15`,
+            border: `1px solid ${displayColor}40`,
+            boxShadow: `0 0 15px ${displayColor}30, inset 0 0 10px ${displayColor}10`,
           }}
         >
-          <CardIcon path={path} color={color} />
+          <CardIcon path={path} color={displayColor} />
         </div>
         
         <div className="flex-1 min-w-0">
