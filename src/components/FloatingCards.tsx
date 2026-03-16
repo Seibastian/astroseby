@@ -17,6 +17,39 @@ const COLORS = {
 
 const GOLD_COLOR = "#d4af37";
 
+const CARD_BACKGROUNDS: Record<string, { gradient: string; icon: React.ReactNode }> = {
+  "/insight": {
+    gradient: "linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(249, 115, 22, 0.1) 100%)",
+  },
+  "/edu": {
+    gradient: "linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(139, 92, 246, 0.1) 100%)",
+  },
+  "/meditation": {
+    gradient: "linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(6, 182, 212, 0.1) 100%)",
+  },
+  "/dreams": {
+    gradient: "linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(168, 85, 247, 0.1) 100%)",
+  },
+  "/karmic-match": {
+    gradient: "linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(236, 72, 153, 0.1) 100%)",
+  },
+  "/synastry": {
+    gradient: "linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(59, 130, 246, 0.1) 100%)",
+  },
+  "/chambers": {
+    gradient: "linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(34, 197, 94, 0.1) 100%)",
+  },
+  "/whoami": {
+    gradient: "linear-gradient(135deg, rgba(234, 179, 8, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(234, 179, 8, 0.1) 100%)",
+  },
+  "/premium": {
+    gradient: "linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(124, 58, 237, 0.15) 100%)",
+  },
+  "/profile": {
+    gradient: "linear-gradient(135deg, rgba(100, 116, 139, 0.15) 0%, rgba(15, 23, 42, 0.9) 50%, rgba(100, 116, 139, 0.1) 100%)",
+  },
+};
+
 // Detaylı ikonlar - FloatingCards için (64x64 + glow efekti)
 const CardIcon = ({ path, color }: { path: string; color: string }) => (
   <svg viewBox="0 0 64 64" fill="none" className="w-6 h-6">
@@ -166,7 +199,9 @@ const CardIcon = ({ path, color }: { path: string; color: string }) => (
 const FloatingCard = ({ title, description, path, color, delay = 0 }: { title: string; description: string; path: string; color: string; delay?: number }) => {
   const navigate = useNavigate();
   const [isActive, setIsActive] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const displayColor = isActive ? color : GOLD_COLOR;
+  const bg = CARD_BACKGROUNDS[path] || CARD_BACKGROUNDS["/profile"];
 
   return (
     <motion.button
@@ -175,20 +210,66 @@ const FloatingCard = ({ title, description, path, color, delay = 0 }: { title: s
       transition={{ delay, duration: 0.3, ease: "easeOut" }}
       whileHover={{ y: -3, transition: { duration: 0.15 } }}
       whileTap={{ scale: 0.98 }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       onClick={() => {
         setIsActive(true);
         navigate(path);
         setTimeout(() => setIsActive(false), 300);
       }}
-      className="relative w-full p-3.5 rounded-xl text-left transition-all duration-200"
+      className="relative w-full p-3.5 rounded-xl text-left transition-all duration-200 overflow-hidden"
       style={{
-        background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.6) 100%)',
+        background: bg.gradient,
         backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255, 255, 255, 0.06)',
-        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.2)',
+        border: `1px solid ${color}30`,
+        boxShadow: isHovered ? `0 8px 30px rgba(0, 0, 0, 0.3), 0 0 20px ${color}20` : '0 8px 20px rgba(0, 0, 0, 0.2)',
       }}
     >
-      <div className="flex items-center gap-3">
+      {/* Arkaplan parlaması */}
+      <motion.div 
+        className="absolute inset-0 pointer-events-none"
+        animate={{ 
+          opacity: isHovered ? [0.3, 0.5, 0.3] : [0.1, 0.2, 0.1],
+        }}
+        transition={{ duration: 3, repeat: Infinity }}
+        style={{
+          background: `radial-gradient(circle at 30% 50%, ${color}15 0%, transparent 60%)`,
+        }}
+      />
+      
+      {/* Yıldız parçacıkları */}
+      {[...Array(4)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-0.5 h-0.5 rounded-full"
+          style={{
+            top: `${20 + i * 15}%`,
+            left: `${80 + i * 5}%`,
+            backgroundColor: color,
+          }}
+          animate={{
+            opacity: [0, 1, 0],
+            scale: [0.5, 1.5, 0.5],
+            y: [0, -10, -20],
+          }}
+          transition={{
+            duration: 2 + i * 0.5,
+            repeat: Infinity,
+            delay: i * 0.3,
+          }}
+        />
+      ))}
+      
+      {/* Kenar çizgisi parlaması */}
+      <motion.div 
+        className="absolute inset-0 rounded-xl pointer-events-none"
+        animate={{ 
+          boxShadow: isHovered ? `inset 0 0 20px ${color}20, inset 0 0 40px ${color}10` : 'none',
+        }}
+        transition={{ duration: 0.3 }}
+      />
+
+      <div className="relative z-10 flex items-center gap-3">
         <div 
           className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
           style={{
