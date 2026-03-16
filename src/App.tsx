@@ -22,6 +22,7 @@ import Synastry from "./pages/Synastry";
 import OnboardingGuide from "./pages/OnboardingGuide";
 import Insight from "./pages/Insight";
 import Meditation from "./pages/Meditation";
+import AstroEdu from "./pages/AstroEdu";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const AppRoutes = () => (
     <Route path="/guide" element={<ProtectedRoute><OnboardingGuide /></ProtectedRoute>} />
     <Route path="/insight" element={<ProtectedRoute><Insight /></ProtectedRoute>} />
     <Route path="/meditation" element={<ProtectedRoute><Meditation /></ProtectedRoute>} />
+    <Route path="/edu" element={<ProtectedRoute><AstroEdu /></ProtectedRoute>} />
     <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
     <Route path="/dreams" element={<ProtectedRoute><Dreams /></ProtectedRoute>} />
     <Route path="/mentor" element={<ProtectedRoute><Mentor /></ProtectedRoute>} />
