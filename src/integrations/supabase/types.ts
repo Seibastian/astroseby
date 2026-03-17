@@ -6,366 +6,139 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "14.1"
-  }
+export interface Database {
   public: {
     Tables: {
-      chamber_messages: {
+      profiles: {
         Row: {
-          chamber_id: string
-          content: string
-          created_at: string
           id: string
-          sender_handle: string
-          user_id: string
+          email: string
+          full_name: string | null
+          avatar_url: string | null
+          birth_date: string | null
+          birth_time: string | null
+          birth_place: string | null
+          timezone: string | null
+          created_at: string
+          updated_at: string
         }
         Insert: {
-          chamber_id: string
-          content: string
+          id: string
+          email: string
+          full_name?: string | null
+          avatar_url?: string | null
+          birth_date?: string | null
+          birth_time?: string | null
+          birth_place?: string | null
+          timezone?: string | null
           created_at?: string
-          id?: string
-          sender_handle: string
-          user_id: string
+          updated_at?: string
         }
         Update: {
-          chamber_id?: string
-          content?: string
-          created_at?: string
           id?: string
-          sender_handle?: string
-          user_id?: string
+          email?: string
+          full_name?: string | null
+          avatar_url?: string | null
+          birth_date?: string | null
+          birth_time?: string | null
+          birth_place?: string | null
+          timezone?: string | null
+          created_at?: string
+          updated_at?: string
         }
-        Relationships: []
       }
       dreams: {
         Row: {
-          content: string
-          created_at: string
           id: string
-          title: string
           user_id: string
-        }
-        Insert: {
-          content: string
-          created_at?: string
-          id?: string
           title: string
-          user_id: string
-        }
-        Update: {
-          content?: string
-          created_at?: string
-          id?: string
-          title?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      karmic_matches: {
-        Row: {
-          accepted_a: boolean
-          accepted_b: boolean
-          ai_analysis: string | null
+          content: string | null
+          mood: string | null
+          symbols: string | null
+          interpretation: string | null
+          is_recurring: boolean | null
+          emotion: string | null
           created_at: string
-          expires_at: string
-          id: string
-          score: number
-          score_details: Json | null
-          user_a: string
-          user_b: string
-        }
-        Insert: {
-          accepted_a?: boolean
-          accepted_b?: boolean
-          ai_analysis?: string | null
-          created_at?: string
-          expires_at?: string
-          id?: string
-          score?: number
-          score_details?: Json | null
-          user_a: string
-          user_b: string
-        }
-        Update: {
-          accepted_a?: boolean
-          accepted_b?: boolean
-          ai_analysis?: string | null
-          created_at?: string
-          expires_at?: string
-          id?: string
-          score?: number
-          score_details?: Json | null
-          user_a?: string
-          user_b?: string
-        }
-        Relationships: []
-      }
-      profiles: {
-        Row: {
-          avatar_url: string | null
-          birth_place: string | null
-          birth_time: string | null
-          created_at: string
-          date_of_birth: string | null
-          gender: string | null
-          id: string
-          karmic_match_enabled: boolean
-          moon_sign: string | null
-          name: string | null
-          nickname: string | null
-          onboarding_completed: boolean
-          profession: string | null
-          relationship_status: string | null
-          rising_sign: string | null
-          sun_sign: string | null
           updated_at: string
-          user_id: string
         }
         Insert: {
-          avatar_url?: string | null
-          birth_place?: string | null
-          birth_time?: string | null
-          created_at?: string
-          date_of_birth?: string | null
-          gender?: string | null
           id?: string
-          karmic_match_enabled?: boolean
-          moon_sign?: string | null
-          name?: string | null
-          nickname?: string | null
-          onboarding_completed?: boolean
-          profession?: string | null
-          relationship_status?: string | null
-          rising_sign?: string | null
-          sun_sign?: string | null
-          updated_at?: string
           user_id: string
+          title: string
+          content?: string | null
+          mood?: string | null
+          symbols?: string | null
+          interpretation?: string | null
+          is_recurring?: boolean | null
+          emotion?: string | null
+          created_at?: string
+          updated_at?: string
         }
         Update: {
-          avatar_url?: string | null
-          birth_place?: string | null
-          birth_time?: string | null
-          created_at?: string
-          date_of_birth?: string | null
-          gender?: string | null
           id?: string
-          karmic_match_enabled?: boolean
-          moon_sign?: string | null
-          name?: string | null
-          nickname?: string | null
-          onboarding_completed?: boolean
-          profession?: string | null
-          relationship_status?: string | null
-          rising_sign?: string | null
-          sun_sign?: string | null
-          updated_at?: string
           user_id?: string
+          title?: string
+          content?: string | null
+          mood?: string | null
+          symbols?: string | null
+          interpretation?: string | null
+          is_recurring?: boolean | null
+          emotion?: string | null
+          created_at?: string
+          updated_at?: string
         }
-        Relationships: []
       }
-      soul_chat_messages: {
+      dream_symbols: {
         Row: {
+          id: string
+          user_id: string
+          symbol: string
+          interpretation: string | null
+          category: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          symbol: string
+          interpretation?: string | null
+          category?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          symbol?: string
+          interpretation?: string | null
+          category?: string | null
+          created_at?: string
+        }
+      }
+      cosmic_letters: {
+        Row: {
+          id: string
+          user_id: string
           content: string
           created_at: string
-          id: string
-          match_id: string
-          sender_id: string
         }
         Insert: {
+          id?: string
+          user_id: string
           content: string
           created_at?: string
-          id?: string
-          match_id: string
-          sender_id: string
         }
         Update: {
+          id?: string
+          user_id?: string
           content?: string
           created_at?: string
-          id?: string
-          match_id?: string
-          sender_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "soul_chat_messages_match_id_fkey"
-            columns: ["match_id"]
-            isOneToOne: false
-            referencedRelation: "karmic_matches"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      syntheses: {
-        Row: {
-          created_at: string
-          dream_id: string
-          id: string
-          report_text: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          dream_id: string
-          id?: string
-          report_text: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          dream_id?: string
-          id?: string
-          report_text?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "syntheses_dream_id_fkey"
-            columns: ["dream_id"]
-            isOneToOne: false
-            referencedRelation: "dreams"
-            referencedColumns: ["id"]
-          },
-        ]
       }
     }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      get_user_sun_sign: { Args: { _user_id: string }; Returns: string }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
+    Views: {}
+    Functions: {}
+    Enums: {}
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
-
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
-
-export type Tables<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
-    }
-    ? R
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
-    : never
-
-export type TablesInsert<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
-    }
-    ? I
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
-    : never
-
-export type TablesUpdate<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
-    }
-    ? U
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
-    : never
-
-export type Enums<
-  DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
-> = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
-
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
-
-export const Constants = {
-  public: {
-    Enums: {},
-  },
-} as const
+export type Database = Database
